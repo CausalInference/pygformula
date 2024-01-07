@@ -31,7 +31,6 @@ The package supports python ≥ 3.8. It requires these necessary dependencies:
 - statsmodels
 - tqdm
 
-and these optional dependencies:
+and an optional dependency:
 
 - cmprsk
-- rpy2
