@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Intervention &mdash; pygformula 0.0.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Covariate model" href="Covariate%20model.html" />
+    <link rel="prev" title="Input data" href="Input%20data.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            pygformula
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Get%20Started.html">Get Started</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Specifications</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Input%20data.html">Input data</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Intervention</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#natural-course-intervention">Natural course intervention</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#static-interventions">Static interventions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dynamic-interventions">Dynamic interventions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#threshold-interventions">Threshold interventions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Covariate%20model.html">Covariate model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Outcome%20model.html">Outcome model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Censoring%20event.html">Censoring event</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Competing%20event.html">Competing event</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Hazard%20ratio.html">Hazard ratio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Visit%20process.html">Visit process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Deterministic%20knowledge.html">Deterministic knowledge</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Output.html">Output</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../Datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Contact.html">Contact</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pygformula</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Specifications</a></li>
+      <li class="breadcrumb-item active">Intervention</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/Specifications/Intervention.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="intervention">
+<span id="id1"></span><h1>Intervention<a class="headerlink" href="#intervention" title="Permalink to this headline"></a></h1>
+<p>The package supports natural course intervention, static and dynamic interventions, as well as
+threshold interventions <a class="footnote-reference brackets" href="#id4" id="id2">1</a> <a class="footnote-reference brackets" href="#id5" id="id3">2</a> . The package provides pre-coded intervention functions and options for users
+to define other custom interventions that are beyond the interventions
+provided.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Natural course</strong>: no intervention on any treatment variables..</p></li>
+<li><p><strong>Static intervention</strong>:  intervention wherein the rule for assigning treatment at each time point does not depend on past covariates.</p></li>
+<li><p><strong>Dynamic intervention</strong>: intervention wherein the rule for assigning treatment depends on past covariates.</p></li>
+<li><p><strong>Threshold intervention</strong>: intervention wherein the rule for assigning treatment at each time point depends on the natural value of treatment at the time point.</p></li>
+</ul>
+</div></blockquote>
+<p>The following is the arguments for specifying the intervention of interest. If not specified, the package will
+return the result without intervention, i.e., natural course result. This section introduces how to
+specify different types of intervention with these arguments.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Arguments</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>int_descripts</p></td>
+<td><p>None</p></td>
+<td><p>(Required) A list of strings, each of which describes a user-specified intervention.</p></td>
+</tr>
+<tr class="row-odd"><td><p>intvars</p></td>
+<td><p>None</p></td>
+<td><p>(Required) A list, each element is a list of strings. The kth element in intvars specifies the name(s)
+of the variable(s) to be intervened on under the kth intervention in interventions.</p></td>
+</tr>
+<tr class="row-even"><td><p>interventions</p></td>
+<td><p>None</p></td>
+<td><p>(Required) A list whose elements are lists of lists. Each list in interventions specifies a unique intervention on
+the relevant variable(s) in intvars. Each inner list contains a function implementing a particular intervention
+on a single variable, and required values for the specific treatment strategy. (e.g., intervention values for static strategy; threshold values for threshold strategy.)</p></td>
+</tr>
+<tr class="row-odd"><td><p>int_times</p></td>
+<td><p>None</p></td>
+<td><p>(Optional) A list, each element is a list. The kth list in int_times corresponds to the kth intervention in interventions.
+Each inner list specifies the time points in which the relevant intervention is applied on the corresponding
+variable in intvars. By default, this argument is set so that all interventions are applied in all the time points.</p></td>
+</tr>
+</tbody>
+</table>
+<section id="natural-course-intervention">
+<h2>Natural course intervention<a class="headerlink" href="#natural-course-intervention" title="Permalink to this headline"></a></h2>
+<p>If no intervention is specified, the package will return the result of natural course, containing
+parametric and nonparametric natural course risk/mean outcome of g-formula. The user may assess model misspecification in
+the parametric g-formula by comparing the two estimates.</p>
+<p><strong>Running example</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pygformula</span>
+<span class="kn">from</span> <span class="nn">pygformula</span> <span class="kn">import</span> <span class="n">ParametricGformula</span>
+<span class="kn">from</span> <span class="nn">pygformula.data</span> <span class="kn">import</span> <span class="n">load_basicdata_nocomp</span>
+
+<span class="n">obs_data</span> <span class="o">=</span> <span class="n">load_basicdata_nocomp</span><span class="p">()</span>
+<span class="n">time_name</span> <span class="o">=</span> <span class="s1">&#39;t0&#39;</span>
+<span class="n">id_name</span> <span class="o">=</span> <span class="s1">&#39;id&#39;</span>
+
+<span class="n">covnames</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L1&#39;</span><span class="p">,</span> <span class="s1">&#39;L2&#39;</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span><span class="p">]</span>
+<span class="n">covtypes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;binary&#39;</span><span class="p">,</span> <span class="s1">&#39;bounded normal&#39;</span><span class="p">,</span> <span class="s1">&#39;binary&#39;</span><span class="p">]</span>
+<span class="n">covmodels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L1 ~ lag1_A + lag2_A + lag_cumavg1_L1 + lag_cumavg1_L2 + L3 + t0&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;L2 ~ lag1_A + L1 + lag_cumavg1_L1 + lag_cumavg1_L2 + L3 + t0&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;A ~ lag1_A + L1 + L2 + lag_cumavg1_L1 + lag_cumavg1_L2 + L3 + t0&#39;</span><span class="p">]</span>
+
+<span class="n">basecovs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L3&#39;</span><span class="p">]</span>
+
+<span class="n">outcome_name</span> <span class="o">=</span> <span class="s1">&#39;Y&#39;</span>
+<span class="n">outcome_model</span> <span class="o">=</span> <span class="s1">&#39;Y ~ L1 + L2 + L3 + A + lag1_A + lag1_L1 + lag1_L2 + t0&#39;</span>
+<span class="n">outcome_type</span> <span class="o">=</span> <span class="s1">&#39;survival&#39;</span>
+
+<span class="n">time_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">obs_data</span><span class="p">[</span><span class="n">time_name</span><span class="p">]))</span> <span class="o">+</span> <span class="mi">1</span>
+
+<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="n">obs_data</span> <span class="o">=</span> <span class="n">obs_data</span><span class="p">,</span> <span class="n">id_name</span> <span class="o">=</span> <span class="n">id_name</span><span class="p">,</span> <span class="n">time_name</span><span class="o">=</span><span class="n">time_name</span><span class="p">,</span> <span class="n">time_points</span> <span class="o">=</span> <span class="n">time_points</span><span class="p">,</span>
+           <span class="n">covnames</span><span class="o">=</span><span class="n">covnames</span><span class="p">,</span> <span class="n">covtypes</span><span class="o">=</span><span class="n">covtypes</span><span class="p">,</span> <span class="n">covmodels</span><span class="o">=</span><span class="n">covmodels</span><span class="p">,</span> <span class="n">basecovs</span><span class="o">=</span><span class="n">basecovs</span><span class="p">,</span>
+           <span class="n">outcome_name</span><span class="o">=</span><span class="n">outcome_name</span><span class="p">,</span> <span class="n">outcome_model</span><span class="o">=</span><span class="n">outcome_model</span><span class="p">,</span> <span class="n">outcome_type</span><span class="o">=</span><span class="n">outcome_type</span>
+           <span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><strong>Output</strong>:</p>
+<blockquote>
+<div><img alt="../_images/natural_course_output.png" class="align-center" src="../_images/natural_course_output.png" />
+</div></blockquote>
+</section>
+<section id="static-interventions">
+<h2>Static interventions<a class="headerlink" href="#static-interventions" title="Permalink to this headline"></a></h2>
+<p>Users can specify multiple interventions as well as multiple treatment variables for each intervention. For each
+intervention, users should specify its name or description in ‘‘int_descripts’’. For each treatment variable,
+users should specify the treatment name in ‘‘intvars’’, and specify corresponding
+intervention function and intervened values in ‘interventions’’. If the intervention type is defined as static,
+the treatment value at each time step k will be replaced by the kth value in the intervened values list.</p>
+<p><strong>Sample syntax of static intervention on one treatment variable</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">int_descripts</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Always treat&#39;</span><span class="p">]</span>
+<span class="n">interventions</span> <span class="o">=</span> <span class="p">[[[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">time_points</span><span class="p">)]]]</span>
+<span class="n">intvars</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;A&#39;</span><span class="p">]]</span>
+<span class="n">int_times</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">]]</span>
+
+<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">int_descripts</span> <span class="o">=</span> <span class="n">int_descripts</span><span class="p">,</span> <span class="n">interventions</span> <span class="o">=</span> <span class="n">interventions</span><span class="p">,</span>
+                  <span class="n">intvars</span> <span class="o">=</span> <span class="n">intvars</span><span class="p">,</span> <span class="n">int_times</span> <span class="o">=</span> <span class="n">int_times</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For ‘‘int_times’’ argument, the corresponding intervention is not applied for the unspecified time points, the simulated natural course
+value is used in this case.</p>
+<p><strong>Running example</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pygformula</span>
+<span class="kn">from</span> <span class="nn">pygformula</span> <span class="kn">import</span> <span class="n">ParametricGformula</span>
+<span class="kn">from</span> <span class="nn">pygformula.data</span> <span class="kn">import</span> <span class="n">load_basicdata_nocomp</span>
+
+<span class="n">obs_data</span> <span class="o">=</span> <span class="n">load_basicdata_nocomp</span><span class="p">()</span>
+<span class="n">time_name</span> <span class="o">=</span> <span class="s1">&#39;t0&#39;</span>
+<span class="n">id_name</span> <span class="o">=</span> <span class="s1">&#39;id&#39;</span>
+
+<span class="n">covnames</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L1&#39;</span><span class="p">,</span> <span class="s1">&#39;L2&#39;</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span><span class="p">]</span>
+<span class="n">covtypes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;binary&#39;</span><span class="p">,</span> <span class="s1">&#39;bounded normal&#39;</span><span class="p">,</span> <span class="s1">&#39;binary&#39;</span><span class="p">]</span>
+<span class="n">covmodels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L1 ~ lag1_A + lag2_A + lag_cumavg1_L1 + lag_cumavg1_L2 + L3 + t0&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;L2 ~ lag1_A + L1 + lag_cumavg1_L1 + lag_cumavg1_L2 + L3 + t0&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;A ~ lag1_A + L1 + L2 + lag_cumavg1_L1 + lag_cumavg1_L2 + L3 + t0&#39;</span><span class="p">]</span>
+
+<span class="n">basecovs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L3&#39;</span><span class="p">]</span>
+
+<span class="n">time_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">obs_data</span><span class="p">[</span><span class="n">time_name</span><span class="p">]))</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="n">int_descripts</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Always treat&#39;</span><span class="p">]</span>
+<span class="n">interventions</span> <span class="o">=</span> <span class="p">[[[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">time_points</span><span class="p">)]]]</span>
+<span class="n">intvars</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;A&#39;</span><span class="p">]]</span>
+<span class="n">int_times</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">]]</span>
+
+<span class="n">outcome_name</span> <span class="o">=</span> <span class="s1">&#39;Y&#39;</span>
+<span class="n">outcome_model</span> <span class="o">=</span> <span class="s1">&#39;Y ~ L1 + L2 + L3 + A + lag1_A + lag1_L1 + lag1_L2 + t0&#39;</span>
+
+<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="n">obs_data</span> <span class="o">=</span> <span class="n">obs_data</span><span class="p">,</span> <span class="n">id_name</span> <span class="o">=</span> <span class="n">id_name</span><span class="p">,</span> <span class="n">time_name</span><span class="o">=</span><span class="n">time_name</span><span class="p">,</span> <span class="n">time_points</span> <span class="o">=</span> <span class="n">time_points</span><span class="p">,</span>
+             <span class="n">covnames</span><span class="o">=</span><span class="n">covnames</span><span class="p">,</span>  <span class="n">covtypes</span><span class="o">=</span><span class="n">covtypes</span><span class="p">,</span> <span class="n">covmodels</span><span class="o">=</span><span class="n">covmodels</span><span class="p">,</span> <span class="n">basecovs</span><span class="o">=</span><span class="n">basecovs</span><span class="p">,</span>
+             <span class="n">int_descripts</span> <span class="o">=</span> <span class="n">int_descripts</span><span class="p">,</span> <span class="n">interventions</span> <span class="o">=</span> <span class="n">interventions</span><span class="p">,</span> <span class="n">intvars</span> <span class="o">=</span> <span class="n">intvars</span><span class="p">,</span> <span class="n">int_times</span> <span class="o">=</span> <span class="n">int_times</span><span class="p">,</span>
+             <span class="n">outcome_name</span><span class="o">=</span><span class="n">outcome_name</span><span class="p">,</span> <span class="n">outcome_model</span><span class="o">=</span><span class="n">outcome_model</span><span class="p">,</span> <span class="n">outcome_type</span><span class="o">=</span><span class="s1">&#39;survival&#39;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><strong>Output</strong>:</p>
+<blockquote>
+<div><img alt="../_images/static_example_one_treatment_output.png" class="align-center" src="../_images/static_example_one_treatment_output.png" />
+</div></blockquote>
+<p><strong>Sample syntax of a static intervention on multiple treatment variables</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">int_descripts</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Always treat&#39;</span><span class="p">]</span>
+<span class="n">interventions</span> <span class="o">=</span> <span class="p">[[[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">time_points</span><span class="p">)],</span> <span class="p">[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">time_points</span><span class="p">)]]]</span>
+<span class="n">intvars</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;A1&#39;</span><span class="p">,</span> <span class="s1">&#39;A2&#39;</span><span class="p">]]</span>
+
+<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">int_descripts</span> <span class="o">=</span> <span class="n">int_descripts</span><span class="p">,</span> <span class="n">interventions</span> <span class="o">=</span> <span class="n">interventions</span><span class="p">,</span>
+                 <span class="n">intvars</span> <span class="o">=</span> <span class="n">intvars</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Running example</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pygformula</span>
+<span class="kn">from</span> <span class="nn">pygformula</span> <span class="kn">import</span> <span class="n">ParametricGformula</span>
+<span class="kn">from</span> <span class="nn">pygformula.parametric_gformula.interventions</span> <span class="kn">import</span> <span class="n">static</span>
+<span class="kn">from</span> <span class="nn">pygformula.data</span> <span class="kn">import</span> <span class="n">load_multiple_treatments_data</span>
+
+<span class="n">obs_data</span> <span class="o">=</span> <span class="n">load_multiple_treatments_data</span><span class="p">()</span>
+<span class="n">time_name</span> <span class="o">=</span> <span class="s1">&#39;t0&#39;</span>
+<span class="n">id_name</span> <span class="o">=</span> <span class="s1">&#39;id&#39;</span>
+
+<span class="n">covnames</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L1&#39;</span><span class="p">,</span> <span class="s1">&#39;L2&#39;</span><span class="p">,</span> <span class="s1">&#39;A1&#39;</span><span class="p">,</span> <span class="s1">&#39;A2&#39;</span><span class="p">]</span>
+<span class="n">covtypes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;binary&#39;</span><span class="p">,</span> <span class="s1">&#39;bounded normal&#39;</span><span class="p">,</span> <span class="s1">&#39;binary&#39;</span><span class="p">,</span> <span class="s1">&#39;binary&#39;</span><span class="p">]</span>
+<span class="n">covmodels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L1 ~ lag1_L1&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;L2 ~ lag1_L1 + lag1_L2 + lag1_A2 + L1&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;A1 ~ lag1_L1 + lag1_L2&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;A2 ~ lag1_A1&#39;</span><span class="p">]</span>
+
+<span class="n">time_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">obs_data</span><span class="p">[</span><span class="n">time_name</span><span class="p">]))</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="n">int_descripts</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Always treat on A1 &amp; A2&#39;</span><span class="p">]</span>
+<span class="n">interventions</span> <span class="o">=</span> <span class="p">[[[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">time_points</span><span class="p">)],</span> <span class="p">[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">time_points</span><span class="p">)]]]</span>
+<span class="n">intvars</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;A1&#39;</span><span class="p">,</span> <span class="s1">&#39;A2&#39;</span><span class="p">]]</span>
+
+<span class="n">outcome_name</span> <span class="o">=</span> <span class="s1">&#39;Y&#39;</span>
+<span class="n">outcome_model</span> <span class="o">=</span> <span class="s1">&#39;Y ~ L1 + L2 + A1 + A2&#39;</span>
+
+<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="n">obs_data</span> <span class="o">=</span> <span class="n">obs_data</span><span class="p">,</span> <span class="n">id_name</span> <span class="o">=</span> <span class="n">id_name</span><span class="p">,</span> <span class="n">time_name</span><span class="o">=</span><span class="n">time_name</span><span class="p">,</span> <span class="n">time_points</span> <span class="o">=</span> <span class="n">time_points</span><span class="p">,</span>
+             <span class="n">covnames</span><span class="o">=</span><span class="n">covnames</span><span class="p">,</span>  <span class="n">covtypes</span><span class="o">=</span><span class="n">covtypes</span><span class="p">,</span> <span class="n">covmodels</span><span class="o">=</span><span class="n">covmodels</span><span class="p">,</span>
+             <span class="n">int_descripts</span> <span class="o">=</span> <span class="n">int_descripts</span><span class="p">,</span> <span class="n">interventions</span> <span class="o">=</span> <span class="n">interventions</span><span class="p">,</span> <span class="n">intvars</span> <span class="o">=</span> <span class="n">intvars</span><span class="p">,</span>
+             <span class="n">outcome_name</span><span class="o">=</span><span class="n">outcome_name</span><span class="p">,</span> <span class="n">outcome_model</span><span class="o">=</span><span class="n">outcome_model</span><span class="p">,</span> <span class="n">outcome_type</span><span class="o">=</span><span class="s1">&#39;survival&#39;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><strong>Output</strong>:</p>
+<blockquote>
+<div><img alt="../_images/static_example_two_treatments.png" class="align-center" src="../_images/static_example_two_treatments.png" />
+</div></blockquote>
+<p><strong>Sample syntax of multiple interventions</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">time_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">obs_data</span><span class="p">[</span><span class="n">time_name</span><span class="p">]))</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="n">intervention_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Never treat&#39;</span><span class="p">,</span> <span class="s1">&#39;Always treat&#39;</span><span class="p">]</span>
+<span class="n">interventions</span> <span class="o">=</span> <span class="p">[[[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">time_points</span><span class="p">)]],</span> <span class="p">[[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">time_points</span><span class="p">)]]]</span>
+<span class="n">intvars</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;A&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">]]</span>
+</pre></div>
+</div>
+<p><strong>Running example</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pygformula</span>
+<span class="kn">from</span> <span class="nn">pygformula</span> <span class="kn">import</span> <span class="n">ParametricGformula</span>
+<span class="kn">from</span> <span class="nn">pygformula.parametric_gformula.interventions</span> <span class="kn">import</span> <span class="n">static</span>
+<span class="kn">from</span> <span class="nn">pygformula.data</span> <span class="kn">import</span> <span class="n">load_basicdata_nocomp</span>
+
+<span class="n">obs_data</span> <span class="o">=</span> <span class="n">load_basicdata_nocomp</span><span class="p">()</span>
+<span class="n">time_name</span> <span class="o">=</span> <span class="s1">&#39;t0&#39;</span>
+<span class="n">id_name</span> <span class="o">=</span> <span class="s1">&#39;id&#39;</span>
+
+<span class="n">covnames</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L1&#39;</span><span class="p">,</span> <span class="s1">&#39;L2&#39;</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span><span class="p">]</span>
+<span class="n">covtypes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;binary&#39;</span><span class="p">,</span> <span class="s1">&#39;bounded normal&#39;</span><span class="p">,</span> <span class="s1">&#39;binary&#39;</span><span class="p">]</span>
+<span class="n">covmodels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L1 ~ lag1_A + lag2_A + lag_cumavg1_L1 + lag_cumavg1_L2 + L3 + t0&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;L2 ~ lag1_A + L1 + lag_cumavg1_L1 + lag_cumavg1_L2 + L3 + t0&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;A ~ lag1_A + L1 + L2 + lag_cumavg1_L1 + lag_cumavg1_L2 + L3 + t0&#39;</span><span class="p">]</span>
+
+<span class="n">basecovs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L3&#39;</span><span class="p">]</span>
+
+<span class="n">outcome_name</span> <span class="o">=</span> <span class="s1">&#39;Y&#39;</span>
+<span class="n">outcome_model</span> <span class="o">=</span> <span class="s1">&#39;Y ~ L1 + L2 + L3 + A + lag1_A + lag1_L1 + lag1_L2 + t0&#39;</span>
+<span class="n">outcome_type</span> <span class="o">=</span> <span class="s1">&#39;survival&#39;</span>
+
+<span class="n">time_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">obs_data</span><span class="p">[</span><span class="n">time_name</span><span class="p">]))</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="n">int_descripts</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Never treat&#39;</span><span class="p">,</span> <span class="s1">&#39;Always treat&#39;</span><span class="p">]</span>
+<span class="n">interventions</span> <span class="o">=</span> <span class="p">[[[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">time_points</span><span class="p">)]],</span> <span class="p">[[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">time_points</span><span class="p">)]]]</span>
+<span class="n">intvars</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;A&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">]]</span>
+
+<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="n">obs_data</span> <span class="o">=</span> <span class="n">obs_data</span><span class="p">,</span> <span class="n">id_name</span> <span class="o">=</span> <span class="n">id_name</span><span class="p">,</span> <span class="n">time_name</span><span class="o">=</span><span class="n">time_name</span><span class="p">,</span> <span class="n">time_points</span> <span class="o">=</span> <span class="n">time_points</span><span class="p">,</span>
+               <span class="n">interventions</span><span class="o">=</span><span class="n">interventions</span><span class="p">,</span> <span class="n">int_descripts</span> <span class="o">=</span> <span class="n">int_descripts</span><span class="p">,</span> <span class="n">intvars</span><span class="o">=</span><span class="n">intvars</span><span class="p">,</span>
+               <span class="n">covnames</span><span class="o">=</span><span class="n">covnames</span><span class="p">,</span> <span class="n">covtypes</span><span class="o">=</span><span class="n">covtypes</span><span class="p">,</span> <span class="n">covmodels</span><span class="o">=</span><span class="n">covmodels</span><span class="p">,</span> <span class="n">basecovs</span><span class="o">=</span><span class="n">basecovs</span><span class="p">,</span>
+               <span class="n">outcome_name</span><span class="o">=</span><span class="n">outcome_name</span><span class="p">,</span> <span class="n">outcome_model</span><span class="o">=</span><span class="n">outcome_model</span><span class="p">,</span> <span class="n">outcome_type</span><span class="o">=</span><span class="n">outcome_type</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><strong>Output</strong>:</p>
+<blockquote>
+<div><img alt="../_images/static_multiple_interventions.png" class="align-center" src="../_images/static_multiple_interventions.png" />
+</div></blockquote>
+</section>
+<section id="dynamic-interventions">
+<h2>Dynamic interventions<a class="headerlink" href="#dynamic-interventions" title="Permalink to this headline"></a></h2>
+<p>For dynamic intervention, users need to define a custom function which encodes the dynamic strategy for
+one treatment variable and then pass it into the g-formula method by the ‘‘interventions’’ argument.</p>
+<p>Example dynamic intervention: treatment is assgined (A = 1) for individuals where the covariate L2 is above a certain threshold 0.75.
+Otherwise, the treatment is assigned 0.</p>
+<p><strong>Sample syntax of a dynamic intervention example</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">dynamic_intervention</span><span class="p">(</span><span class="n">new_df</span><span class="p">,</span> <span class="n">pool</span><span class="p">,</span> <span class="n">intvar</span><span class="p">,</span> <span class="n">int_type</span><span class="p">,</span> <span class="n">int_values</span><span class="p">,</span> <span class="n">time_name</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+    <span class="n">new_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">new_df</span><span class="p">[</span><span class="n">time_name</span><span class="p">]</span> <span class="o">==</span> <span class="n">t</span><span class="p">,</span> <span class="n">intvar</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">new_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">new_df</span><span class="p">[</span><span class="s1">&#39;L2&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.75</span><span class="p">,</span> <span class="n">intvar</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="n">intervention_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Dynamic intervention&#39;</span><span class="p">]</span>
+<span class="n">interventions</span> <span class="o">=</span> <span class="p">[[[</span><span class="n">dynamic_intervention</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]]</span>
+<span class="n">intvars</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;A&#39;</span><span class="p">]]</span>
+
+<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">intervention_names</span> <span class="o">=</span> <span class="n">intervention_names</span><span class="p">,</span> <span class="n">interventions</span> <span class="o">=</span> <span class="n">interventions</span><span class="p">,</span>
+                  <span class="n">intvars</span> <span class="o">=</span> <span class="n">intvars</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The dynamic intervention function should contain the following input parameters (these parameters are not all need to be specified in the function).
+The function should modify the data table ‘‘new_df’’ in place, no output is required.</p>
+<ul class="simple">
+<li><p>new_df: data table of the simulated data at current time t.</p></li>
+<li><p>pool: data table of the simulated data from time 0 to current time t.</p></li>
+<li><p>intvar: the name of treatment variable to be intervened.</p></li>
+<li><p>int_type: the distribution type of the treatment variable to be intervened.</p></li>
+<li><p>int_values: user-specified threshold values for an intervention (only applicable for Threshold interventions).</p></li>
+<li><p>time_name: the name of time variable.</p></li>
+<li><p>t: current time index.</p></li>
+</ul>
+<p>Note that in the argument ‘‘interventions’’, the list that contains the custom dynamic function should also contain a
+‘‘None’’ value although no specific value is specified here.</p>
+<p><strong>Running example</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pygformula</span>
+<span class="kn">from</span> <span class="nn">pygformula</span> <span class="kn">import</span> <span class="n">ParametricGformula</span>
+<span class="kn">from</span> <span class="nn">pygformula.parametric_gformula.interventions</span> <span class="kn">import</span> <span class="n">static</span>
+<span class="kn">from</span> <span class="nn">pygformula.data</span> <span class="kn">import</span> <span class="n">load_basicdata_nocomp</span>
+
+<span class="n">obs_data</span> <span class="o">=</span> <span class="n">load_basicdata_nocomp</span><span class="p">()</span>
+<span class="n">time_name</span> <span class="o">=</span> <span class="s1">&#39;t0&#39;</span>
+<span class="n">id_name</span> <span class="o">=</span> <span class="s1">&#39;id&#39;</span>
+
+<span class="n">covnames</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L1&#39;</span><span class="p">,</span> <span class="s1">&#39;L2&#39;</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span><span class="p">]</span>
+<span class="n">covtypes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;binary&#39;</span><span class="p">,</span> <span class="s1">&#39;bounded normal&#39;</span><span class="p">,</span> <span class="s1">&#39;binary&#39;</span><span class="p">]</span>
+<span class="n">covmodels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L1 ~ lag1_A + lag2_A + lag_cumavg1_L1 + lag_cumavg1_L2 + L3 + t0&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;L2 ~ lag1_A + L1 + lag_cumavg1_L1 + lag_cumavg1_L2 + L3 + t0&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;A ~ lag1_A + L1 + L2 + lag_cumavg1_L1 + lag_cumavg1_L2 + L3 + t0&#39;</span><span class="p">]</span>
+
+<span class="n">basecovs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L3&#39;</span><span class="p">]</span>
+
+<span class="n">time_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">obs_data</span><span class="p">[</span><span class="n">time_name</span><span class="p">]))</span> <span class="o">+</span> <span class="mi">1</span>
+
+<span class="k">def</span> <span class="nf">dynamic_intervention</span><span class="p">(</span><span class="n">new_df</span><span class="p">,</span> <span class="n">pool</span><span class="p">,</span> <span class="n">intvar</span><span class="p">,</span> <span class="n">int_values</span><span class="p">,</span> <span class="n">time_name</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+    <span class="n">new_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">new_df</span><span class="p">[</span><span class="n">time_name</span><span class="p">]</span> <span class="o">==</span> <span class="n">t</span><span class="p">,</span> <span class="n">intvar</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">new_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">new_df</span><span class="p">[</span><span class="s1">&#39;L2&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.75</span><span class="p">,</span> <span class="n">intvar</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="n">int_descripts</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Dynamic intervention&#39;</span><span class="p">]</span>
+<span class="n">interventions</span> <span class="o">=</span> <span class="p">[[[</span><span class="n">dynamic_intervention</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]]</span>
+<span class="n">intvars</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;A&#39;</span><span class="p">]]</span>
+
+<span class="n">outcome_name</span> <span class="o">=</span> <span class="s1">&#39;Y&#39;</span>
+<span class="n">outcome_model</span> <span class="o">=</span> <span class="s1">&#39;Y ~ L1 + L2 + L3 + A + lag1_A + lag1_L1 + lag1_L2 + t0&#39;</span>
+
+<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="n">obs_data</span> <span class="o">=</span> <span class="n">obs_data</span><span class="p">,</span> <span class="n">id_name</span> <span class="o">=</span> <span class="n">id_name</span><span class="p">,</span> <span class="n">time_name</span><span class="o">=</span><span class="n">time_name</span><span class="p">,</span> <span class="n">time_points</span> <span class="o">=</span> <span class="n">time_points</span><span class="p">,</span>
+             <span class="n">covnames</span><span class="o">=</span><span class="n">covnames</span><span class="p">,</span>  <span class="n">covtypes</span><span class="o">=</span><span class="n">covtypes</span><span class="p">,</span> <span class="n">covmodels</span><span class="o">=</span><span class="n">covmodels</span><span class="p">,</span> <span class="n">basecovs</span><span class="o">=</span><span class="n">basecovs</span><span class="p">,</span>
+             <span class="n">int_descripts</span> <span class="o">=</span> <span class="n">int_descripts</span><span class="p">,</span> <span class="n">interventions</span> <span class="o">=</span> <span class="n">interventions</span><span class="p">,</span> <span class="n">intvars</span> <span class="o">=</span> <span class="n">intvars</span><span class="p">,</span>
+             <span class="n">outcome_name</span><span class="o">=</span><span class="n">outcome_name</span><span class="p">,</span> <span class="n">outcome_model</span><span class="o">=</span><span class="n">outcome_model</span><span class="p">,</span> <span class="n">outcome_type</span><span class="o">=</span><span class="s1">&#39;survival&#39;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><strong>Output</strong>:</p>
+<blockquote>
+<div><img alt="../_images/dynamic_example_output.png" class="align-center" src="../_images/dynamic_example_output.png" />
+</div></blockquote>
+<p>The package also provides two pre-coded dynamic interventions with grace period: natural grace period intervention
+and uniform grace period intervention.</p>
+<p><strong>Natural grace period intervention</strong>:  once a conditional covariate meets a threshold level, the treatment
+is initiated within a duration of the grace period. During the grace period, the treatment takes its natural value.</p>
+<p><strong>Sample syntax of an example</strong>:</p>
+<p>When the covariate ‘‘L1’’ equals 1, start a treatment initiation within 3 time points. The ‘‘natural_grace_period’’
+specifies the type of the grace period intervention, the two-element list specifies the duration of the grace period
+in the first entry and the condition of the covariate in the second entry.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pygformula.parametric_gformula.interventions</span> <span class="kn">import</span> <span class="n">natural_grace_period</span>
+
+<span class="n">int_descripts</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;natural grace period intervention&#39;</span><span class="p">]</span>
+<span class="n">conditions</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;L1&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">==</span> <span class="mi">1</span><span class="p">}</span>
+<span class="n">interventions</span> <span class="o">=</span> <span class="p">[[[</span><span class="n">natural_grace_period</span><span class="p">,</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="n">conditions</span><span class="p">]]]]</span>
+<span class="n">intvars</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;A&#39;</span><span class="p">]]</span>
+
+<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">int_descripts</span> <span class="o">=</span> <span class="n">int_descripts</span><span class="p">,</span> <span class="n">interventions</span> <span class="o">=</span> <span class="n">interventions</span><span class="p">,</span>
+                  <span class="n">intvars</span> <span class="o">=</span> <span class="n">intvars</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Running example</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pygformula</span>
+<span class="kn">from</span> <span class="nn">pygformula</span> <span class="kn">import</span> <span class="n">ParametricGformula</span>
+<span class="kn">from</span> <span class="nn">pygformula.parametric_gformula.interventions</span> <span class="kn">import</span> <span class="n">natural_grace_period</span>
+<span class="kn">from</span> <span class="nn">pygformula.data</span> <span class="kn">import</span> <span class="n">load_basicdata_nocomp</span>
+
+<span class="n">obs_data</span> <span class="o">=</span> <span class="n">load_basicdata_nocomp</span><span class="p">()</span>
+<span class="n">time_name</span> <span class="o">=</span> <span class="s1">&#39;t0&#39;</span>
+<span class="n">id_name</span> <span class="o">=</span> <span class="s1">&#39;id&#39;</span>
+
+<span class="n">covnames</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L1&#39;</span><span class="p">,</span> <span class="s1">&#39;L2&#39;</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span><span class="p">]</span>
+<span class="n">covtypes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;binary&#39;</span><span class="p">,</span> <span class="s1">&#39;bounded normal&#39;</span><span class="p">,</span> <span class="s1">&#39;binary&#39;</span><span class="p">]</span>
+<span class="n">covmodels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L1 ~ lag1_A + lag2_A + lag_cumavg1_L1 + lag_cumavg1_L2 + L3 + t0&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;L2 ~ lag1_A + L1 + lag_cumavg1_L1 + lag_cumavg1_L2 + L3 + t0&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;A ~ lag1_A + L1 + L2 + lag_cumavg1_L1 + lag_cumavg1_L2 + L3 + t0&#39;</span><span class="p">]</span>
+
+<span class="n">basecovs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L3&#39;</span><span class="p">]</span>
+
+<span class="n">time_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">obs_data</span><span class="p">[</span><span class="n">time_name</span><span class="p">]))</span> <span class="o">+</span> <span class="mi">1</span>
+
+<span class="n">int_descripts</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;natural grace period intervention&#39;</span><span class="p">]</span>
+<span class="n">conditions</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;L1&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">==</span> <span class="mi">1</span><span class="p">}</span>
+<span class="n">interventions</span> <span class="o">=</span> <span class="p">[[[</span><span class="n">natural_grace_period</span><span class="p">,</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="n">conditions</span><span class="p">]]]]</span>
+<span class="n">intvars</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;A&#39;</span><span class="p">]]</span>
+
+<span class="n">outcome_name</span> <span class="o">=</span> <span class="s1">&#39;Y&#39;</span>
+<span class="n">outcome_model</span> <span class="o">=</span> <span class="s1">&#39;Y ~ L1 + L2 + L3 + A + lag1_A + lag1_L1 + lag1_L2 + t0&#39;</span>
+
+<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="n">obs_data</span> <span class="o">=</span> <span class="n">obs_data</span><span class="p">,</span> <span class="n">id_name</span> <span class="o">=</span> <span class="n">id_name</span><span class="p">,</span> <span class="n">time_name</span><span class="o">=</span><span class="n">time_name</span><span class="p">,</span> <span class="n">time_points</span> <span class="o">=</span> <span class="n">time_points</span><span class="p">,</span>
+             <span class="n">covnames</span><span class="o">=</span><span class="n">covnames</span><span class="p">,</span>  <span class="n">covtypes</span><span class="o">=</span><span class="n">covtypes</span><span class="p">,</span> <span class="n">covmodels</span><span class="o">=</span><span class="n">covmodels</span><span class="p">,</span> <span class="n">basecovs</span><span class="o">=</span><span class="n">basecovs</span><span class="p">,</span>
+             <span class="n">int_descripts</span> <span class="o">=</span> <span class="n">int_descripts</span><span class="p">,</span> <span class="n">interventions</span> <span class="o">=</span> <span class="n">interventions</span><span class="p">,</span> <span class="n">intvars</span> <span class="o">=</span> <span class="n">intvars</span><span class="p">,</span>
+             <span class="n">outcome_name</span><span class="o">=</span><span class="n">outcome_name</span><span class="p">,</span> <span class="n">outcome_model</span><span class="o">=</span><span class="n">outcome_model</span><span class="p">,</span> <span class="n">outcome_type</span><span class="o">=</span><span class="s1">&#39;survival&#39;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><strong>Uniform grace period intervention</strong>  Once a conditional covariate meets a threshold level, the treatment
+is initiated within a duration of the grace period. During grace period, treatment initiation is
+randomly allocated with a uniform probability of starting treatment in each time interval of the grace period.</p>
+<p><strong>Sample syntax of an example</strong>:</p>
+<p>When the covariate ‘‘L1’’ equals 1, start a treatment initiation within 3 time points. The ‘‘uniform_grace_period’’
+specifies the type of the grace period intervention, the two-element list specifies the duration of the grace period
+in the first entry and the condition of the covariate in the second entry.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pygformula.parametric_gformula.interventions</span> <span class="kn">import</span> <span class="n">uniform_grace_period</span>
+
+<span class="n">int_descripts</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;uniform grace period intervention&#39;</span><span class="p">]</span>
+<span class="n">conditions</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;L1&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">==</span> <span class="mi">1</span><span class="p">}</span>
+<span class="n">interventions</span> <span class="o">=</span> <span class="p">[[[</span><span class="n">uniform_grace_period</span><span class="p">,</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="n">conditions</span><span class="p">]]]]</span>
+<span class="n">intvars</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;A&#39;</span><span class="p">]]</span>
+
+<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">int_descripts</span> <span class="o">=</span> <span class="n">int_descripts</span><span class="p">,</span> <span class="n">interventions</span> <span class="o">=</span> <span class="n">interventions</span><span class="p">,</span>
+                  <span class="n">intvars</span> <span class="o">=</span> <span class="n">intvars</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Running example</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pygformula</span>
+<span class="kn">from</span> <span class="nn">pygformula</span> <span class="kn">import</span> <span class="n">ParametricGformula</span>
+<span class="kn">from</span> <span class="nn">pygformula.parametric_gformula.interventions</span> <span class="kn">import</span> <span class="n">uniform_grace_period</span>
+<span class="kn">from</span> <span class="nn">pygformula.data</span> <span class="kn">import</span> <span class="n">load_basicdata_nocomp</span>
+
+<span class="n">obs_data</span> <span class="o">=</span> <span class="n">load_basicdata_nocomp</span><span class="p">()</span>
+<span class="n">time_name</span> <span class="o">=</span> <span class="s1">&#39;t0&#39;</span>
+<span class="n">id_name</span> <span class="o">=</span> <span class="s1">&#39;id&#39;</span>
+
+<span class="n">covnames</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L1&#39;</span><span class="p">,</span> <span class="s1">&#39;L2&#39;</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span><span class="p">]</span>
+<span class="n">covtypes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;binary&#39;</span><span class="p">,</span> <span class="s1">&#39;bounded normal&#39;</span><span class="p">,</span> <span class="s1">&#39;binary&#39;</span><span class="p">]</span>
+<span class="n">covmodels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L1 ~ lag1_A + lag2_A + lag_cumavg1_L1 + lag_cumavg1_L2 + L3 + t0&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;L2 ~ lag1_A + L1 + lag_cumavg1_L1 + lag_cumavg1_L2 + L3 + t0&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;A ~ lag1_A + L1 + L2 + lag_cumavg1_L1 + lag_cumavg1_L2 + L3 + t0&#39;</span><span class="p">]</span>
+
+<span class="n">basecovs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L3&#39;</span><span class="p">]</span>
+
+<span class="n">time_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">obs_data</span><span class="p">[</span><span class="n">time_name</span><span class="p">]))</span> <span class="o">+</span> <span class="mi">1</span>
+
+<span class="n">int_descripts</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;uniform grace period intervention&#39;</span><span class="p">]</span>
+<span class="n">conditions</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;L1&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">==</span> <span class="mi">1</span><span class="p">}</span>
+<span class="n">interventions</span> <span class="o">=</span> <span class="p">[[[</span><span class="n">uniform_grace_period</span><span class="p">,</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="n">conditions</span><span class="p">]]]]</span>
+<span class="n">intvars</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;A&#39;</span><span class="p">]]</span>
+
+<span class="n">outcome_name</span> <span class="o">=</span> <span class="s1">&#39;Y&#39;</span>
+<span class="n">outcome_model</span> <span class="o">=</span> <span class="s1">&#39;Y ~ L1 + L2 + L3 + A + lag1_A + lag1_L1 + lag1_L2 + t0&#39;</span>
+
+<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="n">obs_data</span> <span class="o">=</span> <span class="n">obs_data</span><span class="p">,</span> <span class="n">id_name</span> <span class="o">=</span> <span class="n">id_name</span><span class="p">,</span> <span class="n">time_name</span><span class="o">=</span><span class="n">time_name</span><span class="p">,</span> <span class="n">time_points</span> <span class="o">=</span> <span class="n">time_points</span><span class="p">,</span>
+             <span class="n">covnames</span><span class="o">=</span><span class="n">covnames</span><span class="p">,</span>  <span class="n">covtypes</span><span class="o">=</span><span class="n">covtypes</span><span class="p">,</span> <span class="n">covmodels</span><span class="o">=</span><span class="n">covmodels</span><span class="p">,</span> <span class="n">basecovs</span><span class="o">=</span><span class="n">basecovs</span><span class="p">,</span>
+             <span class="n">int_descripts</span> <span class="o">=</span> <span class="n">int_descripts</span><span class="p">,</span> <span class="n">interventions</span> <span class="o">=</span> <span class="n">interventions</span><span class="p">,</span> <span class="n">intvars</span> <span class="o">=</span> <span class="n">intvars</span><span class="p">,</span>
+             <span class="n">outcome_name</span><span class="o">=</span><span class="n">outcome_name</span><span class="p">,</span> <span class="n">outcome_model</span><span class="o">=</span><span class="n">outcome_model</span><span class="p">,</span> <span class="n">outcome_type</span><span class="o">=</span><span class="s1">&#39;survival&#39;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="threshold-interventions">
+<h2>Threshold interventions<a class="headerlink" href="#threshold-interventions" title="Permalink to this headline"></a></h2>
+<p>The threshold interventions in the package implement interventions that depend on the natural value of treatment.
+In a threshold intervention, if a subject’s natural value of treatment at time k is below/above a particular threshold
+, then set treatment to this threshold value. Otherwise, do not intervene on this subject at k.
+The natural value of treatment at time k is the value of treatment that would have been observed at
+time k were the intervention discontinued right before k.</p>
+<p>Example threshold intervention: if the subject’s natural value of treatment L2 falls outside the interval [0.5, inf],
+set the treatment the threshold value.</p>
+<p><strong>Sample syntax of example threshold intervention</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">int_descripts</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Threshold intervention&#39;</span><span class="p">]</span>
+<span class="n">interventions</span> <span class="o">=</span> <span class="p">[[[</span><span class="n">threshold</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">)]]]]</span>
+<span class="n">intvars</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;A&#39;</span><span class="p">]]</span>
+
+<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">int_descripts</span> <span class="o">=</span> <span class="n">int_descripts</span><span class="p">,</span> <span class="n">interventions</span> <span class="o">=</span> <span class="n">interventions</span><span class="p">,</span>
+                 <span class="n">intvars</span> <span class="o">=</span> <span class="n">intvars</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The user should specify a two-element list (containing minimum and maximum values) of int_values after the threshold function
+in the argument ‘‘interventions’’.</p>
+<p><strong>Running example</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pygformula</span>
+<span class="kn">from</span> <span class="nn">pygformula</span> <span class="kn">import</span> <span class="n">ParametricGformula</span>
+<span class="kn">from</span> <span class="nn">pygformula.parametric_gformula.interventions</span> <span class="kn">import</span> <span class="n">threshold</span>
+<span class="kn">from</span> <span class="nn">pygformula.data</span> <span class="kn">import</span> <span class="n">load_threshold_data</span>
+
+<span class="n">obs_data</span> <span class="o">=</span> <span class="n">load_threshold_data</span><span class="p">()</span>
+<span class="n">time_name</span> <span class="o">=</span> <span class="s1">&#39;t0&#39;</span>
+<span class="n">id_name</span> <span class="o">=</span> <span class="s1">&#39;id&#39;</span>
+
+<span class="n">covnames</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L1&#39;</span><span class="p">,</span> <span class="s1">&#39;L2&#39;</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span><span class="p">]</span>
+<span class="n">covtypes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;binary&#39;</span><span class="p">,</span> <span class="s1">&#39;bounded normal&#39;</span><span class="p">,</span> <span class="s1">&#39;normal&#39;</span><span class="p">]</span>
+<span class="n">covmodels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L1 ~ lag1_L1&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;L2 ~ lag1_L1 + lag1_L2 + L1&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;A ~ L1 + L2&#39;</span><span class="p">]</span>
+
+<span class="n">time_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">obs_data</span><span class="p">[</span><span class="n">time_name</span><span class="p">]))</span> <span class="o">+</span> <span class="mi">1</span>
+
+<span class="n">int_descripts</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Threshold intervention&#39;</span><span class="p">]</span>
+<span class="n">interventions</span> <span class="o">=</span> <span class="p">[[[</span><span class="n">threshold</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">)]]]]</span>
+<span class="n">intvars</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;A&#39;</span><span class="p">]]</span>
+
+<span class="n">outcome_name</span> <span class="o">=</span> <span class="s1">&#39;Y&#39;</span>
+<span class="n">outcome_model</span> <span class="o">=</span> <span class="s1">&#39;Y ~ L1 + L2 + A&#39;</span>
+
+<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="n">obs_data</span> <span class="o">=</span> <span class="n">obs_data</span><span class="p">,</span> <span class="n">id_name</span> <span class="o">=</span> <span class="n">id_name</span><span class="p">,</span> <span class="n">time_name</span><span class="o">=</span><span class="n">time_name</span><span class="p">,</span> <span class="n">time_points</span> <span class="o">=</span> <span class="n">time_points</span><span class="p">,</span>
+             <span class="n">covnames</span><span class="o">=</span><span class="n">covnames</span><span class="p">,</span>  <span class="n">covtypes</span><span class="o">=</span><span class="n">covtypes</span><span class="p">,</span> <span class="n">covmodels</span><span class="o">=</span><span class="n">covmodels</span><span class="p">,</span>
+             <span class="n">int_descripts</span> <span class="o">=</span> <span class="n">int_descripts</span><span class="p">,</span> <span class="n">interventions</span> <span class="o">=</span> <span class="n">interventions</span><span class="p">,</span> <span class="n">intvars</span> <span class="o">=</span> <span class="n">intvars</span><span class="p">,</span>
+             <span class="n">outcome_name</span><span class="o">=</span><span class="n">outcome_name</span><span class="p">,</span> <span class="n">outcome_model</span><span class="o">=</span><span class="n">outcome_model</span><span class="p">,</span> <span class="n">outcome_type</span><span class="o">=</span><span class="s1">&#39;survival&#39;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><strong>Output</strong>:</p>
+<blockquote>
+<div><img alt="../_images/threshold_example_output.png" class="align-center" src="../_images/threshold_example_output.png" />
+</div></blockquote>
+<dl class="footnote brackets">
+<dt class="label" id="id4"><span class="brackets"><a class="fn-backref" href="#id2">1</a></span></dt>
+<dd><p>Taubman SL, Robins JM, Mittleman MA, Hernán MA. Intervening on risk factors for coronary heart disease: an
+application of the parametric g-formula. Int J Epidemiol 2009; 38(6):1599-611.</p>
+</dd>
+<dt class="label" id="id5"><span class="brackets"><a class="fn-backref" href="#id3">2</a></span></dt>
+<dd><p>Young JG, Hernán MA, Robins JM. Identification, estimation and approximation of risk under interventions that
+depend on the natural value of treatment using observational data. Epidemiologic Methods 2014; 3(1):1-19.</p>
+</dd>
+</dl>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Input%20data.html" class="btn btn-neutral float-left" title="Input data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Covariate%20model.html" class="btn btn-neutral float-right" title="Covariate model" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, CAUSALab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
