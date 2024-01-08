@@ -707,7 +707,9 @@ class ParametricGformula:
                                                  )
 
                     boot_results_dicts.append(boot_result_dict)
-            self.boot_results = [boot_results_dicts[i]['boot_results'] for i in range(self.nsamples)]
+
+            self.boot_results = [boot_results_dicts[i]['boot_results'] for i in range(self.nsamples) if
+                                 boot_results_dicts[i]['boot_results'] is not None]
 
             self.bootests = {'sample_{0}_estimates'.format(i): {self.all_int_descripts[j]:
                              boot_results_dicts[i]['boot_results'][j] for j in range(len(self.all_int_descripts))}

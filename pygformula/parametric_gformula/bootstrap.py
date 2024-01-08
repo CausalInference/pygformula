@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import warnings
 from lifelines import CoxPHFitter
 from .histories import update_precoded_history, update_custom_history
 from .simulate import simulate
@@ -182,61 +183,12 @@ def Bootstrap(obs_data, boot_id, boot_seeds, interventions, int_descripts, intva
         A dictionary contains the 'boot_results', 'bootcoeffs', 'bootstderrs', 'bootvcovs' and 'boot_hr' for a bootstrap sample.
 
     """
+    try:
+        np.random.seed(boot_seeds[boot_id])
 
-    np.random.seed(boot_seeds[boot_id])
-
-    data_list = dict(list(obs_data.groupby(id_name, group_keys=False)))
-    ids = np.unique(obs_data[id_name])
-    new_ids = np.random.choice(ids, len(ids), replace=True)
-
-    new_df = []
-    for index, new_id in enumerate(new_ids):
-        new_id_df = data_list[new_id].copy()
-        new_id_df[id_name] = index
-        new_df.append(new_id_df)
-    resample_data = pd.concat(new_df, ignore_index=True)
-
-    update_precoded_history(pool=resample_data, covnames=covnames, cov_hist=cov_hist, covtypes=covtypes,
-                            time_name=time_name, id_name=id_name, below_zero_indicator=below_zero_indicator,
-                            baselags=baselags, ts_visit_names = ts_visit_names)
-    if custom_histvars is not None:
-        for t in range(time_points):
-            update_custom_history(resample_data, custom_histvars, custom_histories, time_name, t, id_name)
-
-    covariate_fits, bounds, rmses, cov_model_coeffs, cov_model_stderrs, cov_model_vcovs, cov_model_fits_summary = \
-        fit_covariate_model(covmodels=covmodels, covnames=covnames, covtypes=covtypes,
-                            covfits_custom=covfits_custom, time_name=time_name, obs_data=resample_data,
-                            return_fits=boot_diag, trunc_params=trunc_params, visit_names=visit_names,
-                            max_visits=max_visits, ts_visit_names=ts_visit_names,
-                            visit_covs=visit_covs, restrictions=restrictions)
-
-    outcome_fit, outcome_model_coeffs, outcome_model_stderrs, outcome_model_vcovs, outcome_model_fits_summary = \
-        fit_outcome_model(outcome_model=outcome_model, outcome_type=outcome_type,
-                          outcome_name=outcome_name, time_name=time_name, obs_data=resample_data,
-                          competing=competing, compevent_name=compevent_name, return_fits=boot_diag,
-                          yrestrictions=yrestrictions)
-
-    model_coeffs = {**cov_model_coeffs, **outcome_model_coeffs}
-    model_stderrs = {**cov_model_stderrs, **outcome_model_stderrs}
-    model_vcovs = {**cov_model_vcovs, **outcome_model_vcovs}
-    model_fits_summary = {**cov_model_fits_summary, **outcome_model_fits_summary}
-
-    if competing:
-        compevent_fit, comp_model_coeffs, comp_model_stderrs, comp_model_vcovs, comp_model_fits_summary = \
-            fit_compevent_model(compevent_model=compevent_model, compevent_name=compevent_name,
-                                time_name=time_name, obs_data=resample_data, return_fits=boot_diag,
-                                compevent_restrictions=compevent_restrictions)
-        model_coeffs.update(comp_model_coeffs)
-        model_stderrs.update(comp_model_stderrs)
-        model_vcovs.update(comp_model_vcovs)
-        model_fits_summary.update(comp_model_fits_summary)
-    else:
-        compevent_fit = None
-
-    if n_simul != len(np.unique(resample_data[id_name])):
-        data_list = dict(list(obs_data.groupby(id_name, group_keys=True)))
+        data_list = dict(list(obs_data.groupby(id_name, group_keys=False)))
         ids = np.unique(obs_data[id_name])
-        new_ids = np.random.choice(ids, n_simul, replace=True)
+        new_ids = np.random.choice(ids, len(ids), replace=True)
 
         new_df = []
         for index, new_id in enumerate(new_ids):
@@ -245,67 +197,121 @@ def Bootstrap(obs_data, boot_id, boot_seeds, interventions, int_descripts, intva
             new_df.append(new_id_df)
         resample_data = pd.concat(new_df, ignore_index=True)
 
-    boot_results = []
-    boot_pools = []
-    for i in range(len(int_descripts)):
-        boot_result = simulate(seed=boot_seeds[boot_id], time_points=time_points, time_name=time_name,
-                                   id_name=id_name, covnames=covnames, basecovs=basecovs,
-                                   covmodels=covmodels,  covtypes=covtypes, cov_hist=cov_hist,
-                                   covariate_fits=covariate_fits, rmses=rmses, bounds=bounds, outcome_type=outcome_type,
-                                   obs_data=resample_data, intervention=interventions[i],
-                                   intvar=intvars[i], int_time=int_times[i],
-                                   custom_histvars = custom_histvars, custom_histories=custom_histories,
-                                   covpredict_custom=covpredict_custom,
-                                   outcome_fit=outcome_fit, outcome_name=outcome_name,
-                                   competing=competing, compevent_name=compevent_name,
-                                   compevent_fit=compevent_fit, compevent_model=compevent_model,
-                                   compevent_cens=compevent_cens, trunc_params=trunc_params, visit_names=visit_names,
-                                   visit_covs=visit_covs, ts_visit_names=ts_visit_names,
-                                   max_visits=max_visits, time_thresholds=time_thresholds,
-                                   baselags=baselags, below_zero_indicator=below_zero_indicator,
-                                   restrictions=restrictions, yrestrictions=yrestrictions,
-                                   compevent_restrictions=compevent_restrictions
-                               )
-        boot_results.append(boot_result['g_result'])
-        boot_pools.append(boot_result['pool'])
+        update_precoded_history(pool=resample_data, covnames=covnames, cov_hist=cov_hist, covtypes=covtypes,
+                                time_name=time_name, id_name=id_name, below_zero_indicator=below_zero_indicator,
+                                baselags=baselags, ts_visit_names = ts_visit_names)
+        if custom_histvars is not None:
+            for t in range(time_points):
+                update_custom_history(resample_data, custom_histvars, custom_histories, time_name, t, id_name)
 
-    boot_results_dict = {'boot_results': boot_results, 'bootcoeffs': model_coeffs, 'bootstderrs': model_stderrs,
-                         'bootvcovs': model_vcovs}
+        covariate_fits, bounds, rmses, cov_model_coeffs, cov_model_stderrs, cov_model_vcovs, cov_model_fits_summary = \
+            fit_covariate_model(covmodels=covmodels, covnames=covnames, covtypes=covtypes,
+                                covfits_custom=covfits_custom, time_name=time_name, obs_data=resample_data,
+                                return_fits=boot_diag, trunc_params=trunc_params, visit_names=visit_names,
+                                max_visits=max_visits, ts_visit_names=ts_visit_names,
+                                visit_covs=visit_covs, restrictions=restrictions)
 
-    if hazardratio:
-        pool1 = boot_pools[intcomp[0]]
-        pool2 = boot_pools[intcomp[1]]
+        outcome_fit, outcome_model_coeffs, outcome_model_stderrs, outcome_model_vcovs, outcome_model_fits_summary = \
+            fit_outcome_model(outcome_model=outcome_model, outcome_type=outcome_type,
+                              outcome_name=outcome_name, time_name=time_name, obs_data=resample_data,
+                              competing=competing, compevent_name=compevent_name, return_fits=boot_diag,
+                              yrestrictions=yrestrictions)
 
-        if competing and not compevent_cens:
-            import cmprsk.cmprsk as cmprsk
+        model_coeffs = {**cov_model_coeffs, **outcome_model_coeffs}
+        model_stderrs = {**cov_model_stderrs, **outcome_model_stderrs}
+        model_vcovs = {**cov_model_vcovs, **outcome_model_vcovs}
+        model_fits_summary = {**cov_model_fits_summary, **outcome_model_fits_summary}
 
-            new_pool1 = pool1.groupby(id_name, group_keys=False).apply(hr_comp_data_helper,
-                        outcome_name=outcome_name, compevent_name=compevent_name)
-            new_pool2 = pool2.groupby(id_name, group_keys=False).apply(hr_comp_data_helper,
-                        outcome_name=outcome_name, compevent_name=compevent_name)
-            new_pool1['regime'] = 0
-            new_pool2['regime'] = 1
-            concat_data = pd.concat([new_pool1, new_pool2])
-            concat_data = concat_data[[time_name, outcome_name, compevent_name, 'regime']]
-            concat_data = concat_data.reset_index(drop=True)
-            concat_data['event'] = np.where(concat_data[compevent_name] == 1, 2,
-                                            concat_data[outcome_name]).tolist()
-            ftime = concat_data[time_name]
-            fstatus = concat_data['event']
-            crr_res = cmprsk.crr(failure_time=ftime, failure_status=fstatus, static_covariates=concat_data[['regime']])
-            hazard_ratio = crr_res.hazard_ratio()[0][0]
+        if competing:
+            compevent_fit, comp_model_coeffs, comp_model_stderrs, comp_model_vcovs, comp_model_fits_summary = \
+                fit_compevent_model(compevent_model=compevent_model, compevent_name=compevent_name,
+                                    time_name=time_name, obs_data=resample_data, return_fits=boot_diag,
+                                    compevent_restrictions=compevent_restrictions)
+            model_coeffs.update(comp_model_coeffs)
+            model_stderrs.update(comp_model_stderrs)
+            model_vcovs.update(comp_model_vcovs)
+            model_fits_summary.update(comp_model_fits_summary)
         else:
-            new_pool1 = pool1.groupby(id_name, group_keys=False).apply(hr_data_helper, outcome_name=outcome_name)
-            new_pool2 = pool2.groupby(id_name, group_keys=False).apply(hr_data_helper, outcome_name=outcome_name)
-            new_pool1['regime'] = 0
-            new_pool2['regime'] = 1
-            concat_data = pd.concat([new_pool1, new_pool2])
-            concat_data = concat_data[[time_name, outcome_name, 'regime']]
-            cph = CoxPHFitter()
-            cph.fit(concat_data, duration_col=time_name, event_col=outcome_name)
-            hazard_ratio = cph.hazard_ratios_.values[0]
+            compevent_fit = None
 
-        boot_results_dict['boot_hr'] = hazard_ratio
+        if n_simul != len(np.unique(resample_data[id_name])):
+            data_list = dict(list(obs_data.groupby(id_name, group_keys=True)))
+            ids = np.unique(obs_data[id_name])
+            new_ids = np.random.choice(ids, n_simul, replace=True)
+
+            new_df = []
+            for index, new_id in enumerate(new_ids):
+                new_id_df = data_list[new_id].copy()
+                new_id_df[id_name] = index
+                new_df.append(new_id_df)
+            resample_data = pd.concat(new_df, ignore_index=True)
+
+        boot_results = []
+        boot_pools = []
+        for i in range(len(int_descripts)):
+            boot_result = simulate(seed=boot_seeds[boot_id], time_points=time_points, time_name=time_name,
+                                       id_name=id_name, covnames=covnames, basecovs=basecovs,
+                                       covmodels=covmodels,  covtypes=covtypes, cov_hist=cov_hist,
+                                       covariate_fits=covariate_fits, rmses=rmses, bounds=bounds, outcome_type=outcome_type,
+                                       obs_data=resample_data, intervention=interventions[i],
+                                       intvar=intvars[i], int_time=int_times[i],
+                                       custom_histvars = custom_histvars, custom_histories=custom_histories,
+                                       covpredict_custom=covpredict_custom,
+                                       outcome_fit=outcome_fit, outcome_name=outcome_name,
+                                       competing=competing, compevent_name=compevent_name,
+                                       compevent_fit=compevent_fit, compevent_model=compevent_model,
+                                       compevent_cens=compevent_cens, trunc_params=trunc_params, visit_names=visit_names,
+                                       visit_covs=visit_covs, ts_visit_names=ts_visit_names,
+                                       max_visits=max_visits, time_thresholds=time_thresholds,
+                                       baselags=baselags, below_zero_indicator=below_zero_indicator,
+                                       restrictions=restrictions, yrestrictions=yrestrictions,
+                                       compevent_restrictions=compevent_restrictions
+                                   )
+            boot_results.append(boot_result['g_result'])
+            boot_pools.append(boot_result['pool'])
+
+        boot_results_dict = {'boot_results': boot_results, 'bootcoeffs': model_coeffs, 'bootstderrs': model_stderrs,
+                             'bootvcovs': model_vcovs}
+
+        if hazardratio:
+            pool1 = boot_pools[intcomp[0]]
+            pool2 = boot_pools[intcomp[1]]
+
+            if competing and not compevent_cens:
+                import cmprsk.cmprsk as cmprsk
+
+                new_pool1 = pool1.groupby(id_name, group_keys=False).apply(hr_comp_data_helper,
+                            outcome_name=outcome_name, compevent_name=compevent_name)
+                new_pool2 = pool2.groupby(id_name, group_keys=False).apply(hr_comp_data_helper,
+                            outcome_name=outcome_name, compevent_name=compevent_name)
+                new_pool1['regime'] = 0
+                new_pool2['regime'] = 1
+                concat_data = pd.concat([new_pool1, new_pool2])
+                concat_data = concat_data[[time_name, outcome_name, compevent_name, 'regime']]
+                concat_data = concat_data.reset_index(drop=True)
+                concat_data['event'] = np.where(concat_data[compevent_name] == 1, 2,
+                                                concat_data[outcome_name]).tolist()
+                ftime = concat_data[time_name]
+                fstatus = concat_data['event']
+                crr_res = cmprsk.crr(failure_time=ftime, failure_status=fstatus, static_covariates=concat_data[['regime']])
+                hazard_ratio = crr_res.hazard_ratio()[0][0]
+            else:
+                new_pool1 = pool1.groupby(id_name, group_keys=False).apply(hr_data_helper, outcome_name=outcome_name)
+                new_pool2 = pool2.groupby(id_name, group_keys=False).apply(hr_data_helper, outcome_name=outcome_name)
+                new_pool1['regime'] = 0
+                new_pool2['regime'] = 1
+                concat_data = pd.concat([new_pool1, new_pool2])
+                concat_data = concat_data[[time_name, outcome_name, 'regime']]
+                cph = CoxPHFitter()
+                cph.fit(concat_data, duration_col=time_name, event_col=outcome_name)
+                hazard_ratio = cph.hazard_ratios_.values[0]
+
+            boot_results_dict['boot_hr'] = hazard_ratio
+
+    except Exception as e:
+        warnings.warn("An error occurred at bootstrap sample {0}: {1}. "
+                      "The analysis should likely be repeated with more parsimonious models.".format(boot_id, e))
+        boot_results_dict = {'boot_results': None, 'bootcoeffs': None, 'bootstderrs': None, 'bootvcovs': None}
 
     return boot_results_dict
 

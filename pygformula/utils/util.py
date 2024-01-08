@@ -629,7 +629,7 @@ def get_hr_output(boot_results_dicts, nsamples, ci_method, hazard_ratio):
     None
 
     """
-    boot_hr_results = [boot_results_dicts[i]['boot_hr'] for i in range(nsamples)]
+    boot_hr_results = [boot_results_dicts[i]['boot_hr'] for i in range(nsamples) if boot_results_dicts[i]['boot_hr'] is not None]
     hr_se = np.std(boot_hr_results, ddof=1)
     if ci_method == 'percentile':
         lb_hr = np.percentile(boot_hr_results, 2.5)
