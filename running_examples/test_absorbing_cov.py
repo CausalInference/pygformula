@@ -20,12 +20,12 @@ outcome_type = 'survival'
 
 time_points = np.max(np.unique(obs_data[time_name])) + 1
 int_descripts = ['Never treat', 'Always treat']
-interventions = [[[static, np.zeros(time_points)]], [[static, np.ones(time_points)]]]
-intvars = [['A'], ['A']]
 
 g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name, time_points = time_points,
-             interventions=interventions, int_descripts = int_descripts, intvars=intvars,
+             int_descripts = int_descripts,
              covnames=covnames, covtypes=covtypes, covmodels=covmodels,
+             Intervention1_A = [static, np.zeros(time_points)],
+             Intervention2_A = [static, np.ones(time_points)],
              outcome_name=outcome_name, outcome_model=outcome_model, outcome_type=outcome_type
              )
 g.fit()

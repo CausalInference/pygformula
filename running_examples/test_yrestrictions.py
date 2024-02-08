@@ -23,14 +23,14 @@ outcome_model = 'Y ~ L1 + L2 + A'
 # define interventions
 time_points = np.max(np.unique(obs_data[time_name])) + 1
 int_descripts = ['Never treat', 'Always treat']
-interventions = [[[static, np.zeros(time_points)]], [[static, np.ones(time_points)]]]
-intvars = [['A'], ['A']]
 
 yrestrictions = [[{'L1': lambda x: x == 0}, 0], [{'L2': lambda x: x > 0.5}, 0.1]]
 
 
 g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name, time_points = time_points,
-             interventions=interventions, int_descripts = int_descripts, intvars=intvars,
+             int_descripts = int_descripts,
+             Intervention1_A = [static, np.zeros(time_points)],
+             Intervention2_A = [static, np.ones(time_points)],
              covnames=covnames,  covtypes=covtypes, covmodels=covmodels, basecovs=basecovs,
              yrestrictions=yrestrictions, outcome_name=outcome_name, outcome_model=outcome_model, outcome_type='survival')
 g.fit()

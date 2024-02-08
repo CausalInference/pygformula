@@ -18,14 +18,13 @@ covmodels = ['L1 ~ lag1_L1',
 time_points = np.max(np.unique(obs_data[time_name])) + 1
 
 int_descripts = ['Threshold intervention']
-interventions = [[[threshold, [0.5, float('inf')]]]]
-intvars = [['A']]
 
 outcome_name = 'Y'
 outcome_model = 'Y ~ L1 + L2 + A'
 
 g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name, time_points = time_points,
              covnames=covnames,  covtypes=covtypes, covmodels=covmodels,
-             int_descripts = int_descripts, interventions = interventions, intvars = intvars,
+             int_descripts = int_descripts,
+             Intervention1_A = [threshold, [0.5, float('inf')]],
              outcome_name=outcome_name, outcome_model=outcome_model, outcome_type='survival')
 g.fit()
