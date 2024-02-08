@@ -19,7 +19,7 @@ def load_basicdata():
     -------
     A pandas dataframe
     """
-    data = pd.read_csv(r"..\datasets\example_simulation_dataset\example_data_basicdata.csv")
+    data = pd.read_csv(r"..\datasets\example_data_basicdata.csv")
     return data
 
 def load_basicdata_nocomp():
