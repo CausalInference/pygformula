@@ -12,7 +12,7 @@ from .simulate import simulate
 from .bootstrap import Bootstrap
 from .interventions import natural
 from ..utils.helper import get_cov_hist_info, visit_func, hr_data_helper, hr_comp_data_helper, categorical_func
-from ..utils.util import error_catch, save_config, save_results, get_output, get_hr_output
+from ..utils.util import read_intervention_input, error_catch, save_config, save_results, get_output, get_hr_output
 from ..comparisons import comparison_calculate
 from ..plot import plot_nc_comparison, plot_interventions
 
@@ -28,9 +28,6 @@ class ParametricGformula:
                  covtypes = None,
                  covmodels=None,
                  int_descripts=None,
-                 interventions=None,
-                 intvars=None,
-                 int_times=None,
                  custom_histvars=None,
                  custom_histories=None,
                  covfits_custom=None,
@@ -63,7 +60,8 @@ class ParametricGformula:
                  ci_method=None,
                  seed=None,
                  save_path=None,
-                 save_results=False
+                 save_results=False,
+                 **interventions
                  ):
 
         """
@@ -102,20 +100,6 @@ class ParametricGformula:
 
         int_descripts: List, default is None
             A list of strings, each of which describes a user-specified intervention.
-
-        interventions: List, default is None
-             A list whose elements are lists of lists. Each list in interventions specifies a unique intervention on
-             the relevant variable(s) in intvars. Each inner list contains a function implementing a particular intervention
-             on a single variable, and required values for the specific treatment strategy.
-
-        intvars: List, default is None
-            A list, each element is a list of strings. The kth element in intvars specifies the name(s)
-            of the variable(s) to be intervened on under the kth intervention in interventions.
-
-        int_times: List, default is None
-            A list, each element is a list. The kth list in int_times corresponds to the kth intervention in interventions.
-            Each inner list specifies the time points in which the relevant intervention is applied on the corresponding
-            variable in intvars. By default, this argument is set so that all interventions are applied in all the time points.
 
         custom_histvars: List, default is None
             A list of strings, each of which specifies the names of the time-varying covariates with user-specified custom histories.
@@ -246,6 +230,12 @@ class ParametricGformula:
 
         save_results: Bool, default is False
             A boolean value indicating whether to save all the returned results to the save_path.
+
+        **interventions: Dict, default is None
+            A dictionary whose key is the treatment name in the intervention with the format Intervention{id}_{treatment_name},
+            value is a list that contains the intervention function, values required by the function, and a list of time
+            points in which the intervention is applied.
+
         """
 
         self.obs_data = obs_data
@@ -257,9 +247,7 @@ class ParametricGformula:
         self.covmodels = covmodels
         self.outcome_model = outcome_model
         self.int_descripts = int_descripts
-        self.intvars = intvars
         self.interventions = interventions
-        self.int_times = int_times
         self.custom_histvars = custom_histvars
         self.custom_histories = custom_histories
         self.covfits_custom = covfits_custom
@@ -344,11 +332,14 @@ class ParametricGformula:
         else:
             self.cov_hist = None
 
-        error_catch(obs_data=self.obs_data, id_name=self.id_name, time_points=self.time_points,
-                    interventions=self.interventions, int_descripts=self.int_descripts,
-                    custom_histvars = self.custom_histvars, custom_histories = self.custom_histories,
+        self.intervention_dicts = read_intervention_input(self.interventions, self.int_descripts)
+
+
+        error_catch(obs_data=self.obs_data, id_name=self.id_name, time_points=self.time_points, time_name=self.time_name,
+                    interventions=self.interventions, intervention_dicts=self.intervention_dicts,
+                    int_descripts=self.int_descripts, custom_histvars = self.custom_histvars,
+                    custom_histories = self.custom_histories,
                     covfits_custom = self.covfits_custom, covpredict_custom = covpredict_custom,
-                    time_name=self.time_name, intvars=self.intvars,
                     outcome_name=self.outcome_name, covnames=self.covnames, covtypes=self.covtypes,
                     covmodels=self.covmodels, outcome_model=self.outcome_model,
                     compevent_name=self.compevent_name, compevent_model=self.compevent_model,
@@ -361,19 +352,8 @@ class ParametricGformula:
         if self.outcome_type == 'binary_eof' or self.outcome_type == 'continuous_eof':
             self.time_points = np.max(np.unique(self.obs_data[self.time_name])) + 1
 
-        if self.int_descripts is not None:
-            if self.int_times is None:
-                self.int_times = [[t for t in range(self.time_points)] for i in range(len(self.interventions))]
-            self.all_int_descripts = ['Natural course'] + self.int_descripts
-            self.all_interventions = [[natural, None]] + self.interventions
-            self.all_intvars = [None] + self.intvars
-            if self.int_times:
-                self.all_int_times = [[t for t in range(self.time_points)]] + self.int_times
-        else:
-            self.all_int_descripts = ['Natural course']
-            self.all_interventions = [[natural, None]]
-            self.all_intvars = [None]
-            self.all_int_times = [[t for t in range(self.time_points)]]
+        self.int_descripts = ['Natural course'] + self.int_descripts if self.int_descripts is not None else ['Natural course']
+        self.intervention_dicts.update({'Natural course': natural})
 
         if self.covtypes is not None:
             if 'categorical time' in self.covtypes:
@@ -414,9 +394,7 @@ class ParametricGformula:
                 'covtypes': self.covtypes,
                 'covmodels': self.covmodels,
                 'outcome_model': self.outcome_model,
-                'all_int_descripts': self.all_int_descripts,
-                'all_intvars': self.all_intvars,
-                'all_int_times': self.all_int_times,
+                'int_descripts': self.int_descripts,
                 'nsamples': self.nsamples,
                 'competing': self.competing,
                 'compevent_name': self.compevent_name,
@@ -543,8 +521,7 @@ class ParametricGformula:
                                    id_name=self.id_name, covnames=self.covnames, basecovs=self.basecovs,
                                    covmodels=self.covmodels,  covtypes=self.covtypes, cov_hist=self.cov_hist,
                                    covariate_fits=covariate_fits, rmses=rmses, bounds=bounds, outcome_type=self.outcome_type,
-                                   obs_data=data, intervention=self.all_interventions[i],
-                                   intvar=self.all_intvars[i], int_time=self.all_int_times[i],
+                                   obs_data=data, intervention=self.intervention_dicts[intervention_name],
                                    custom_histvars = self.custom_histvars, custom_histories=self.custom_histories,
                                    covpredict_custom = self.covpredict_custom,
                                    outcome_fit=outcome_fit, outcome_name=self.outcome_name,
@@ -557,17 +534,16 @@ class ParametricGformula:
                                    baselags=self.baselags, below_zero_indicator=self.below_zero_indicator,
                                    restrictions = self.restrictions, yrestrictions=self.yrestrictions,
                                    compevent_restrictions = self.compevent_restrictions)
-                 for i in range(len(self.all_int_descripts)))
+                 for intervention_name in self.int_descripts)
             )
         else:
             self.all_simulate_results = []
-            for i in range(len(self.all_int_descripts)):
+            for intervention_name in self.int_descripts:
                 simulate_result = simulate(seed=self.simul_seed, time_points=self.time_points, time_name=self.time_name,
                                    id_name=self.id_name, covnames=self.covnames, basecovs=self.basecovs,
                                    covmodels=self.covmodels,  covtypes=self.covtypes, cov_hist=self.cov_hist,
                                    covariate_fits=covariate_fits, rmses=rmses, bounds=bounds, outcome_type=self.outcome_type,
-                                   obs_data=data, intervention=self.all_interventions[i],
-                                   intvar=self.all_intvars[i], int_time=self.all_int_times[i],
+                                   obs_data=data, intervention=self.intervention_dicts[intervention_name],
                                    custom_histvars = self.custom_histvars, custom_histories=self.custom_histories,
                                    covpredict_custom = self.covpredict_custom,
                                    outcome_fit=outcome_fit, outcome_name=self.outcome_name,
@@ -592,8 +568,8 @@ class ParametricGformula:
 
         self.pools = [res['pool'] for i, res in enumerate(self.all_simulate_results)]
         self.pool_dict = {}
-        for i in range(len(self.all_interventions)):
-            self.pool_dict[self.all_int_descripts[i]] = self.pools[i]
+        for i in range(len(self.int_descripts)):
+            self.pool_dict[self.int_descripts[i]] = self.pools[i]
         self.natural_course_pool = self.pool_dict['Natural course']
 
         # compute non-parametric and parametric covariates means and risks
@@ -642,7 +618,7 @@ class ParametricGformula:
                 self.hazard_ratio = cph.hazard_ratios_.values[0]
 
         if self.nsamples == 0:
-            res_table = get_output(ref_int=self.ref_int, all_int_descripts=self.all_int_descripts, censor=self.censor,
+            res_table = get_output(ref_int=self.ref_int, int_descripts=self.int_descripts, censor=self.censor,
                        obs_res=self.obs_res, g_results=self.g_results,  time_points=self.time_points,
                        ci_method=self.ci_method, time_name=self.time_name, obs_means=self.obs_means,
                        outcome_type=self.outcome_type, nsamples=self.nsamples)
@@ -655,9 +631,8 @@ class ParametricGformula:
                 boot_results_dicts = (
                     Parallel(n_jobs=self.ncores)
                     (delayed(Bootstrap)(obs_data=self.origin_obs_data, boot_id=i, boot_seeds=self.boot_seeds,
-                                                 interventions=self.all_interventions,
-                                                 int_descripts=self.all_int_descripts,
-                                                 intvars=self.all_intvars, int_times=self.all_int_times,
+                                                 int_descripts=self.int_descripts,
+                                                 intervention_dicts = self.intervention_dicts,
                                                  covnames=self.covnames, basecovs=self.basecovs, cov_hist=self.cov_hist,
                                                  time_points=self.time_points, n_simul=self.n_simul,
                                                  time_name=self.time_name, id_name=self.id_name,
@@ -683,9 +658,8 @@ class ParametricGformula:
                 boot_results_dicts = []
                 for i in tqdm(range(self.nsamples), desc='Bootstrap progress'):
                     boot_result_dict = Bootstrap(obs_data=self.origin_obs_data, boot_id=i, boot_seeds=self.boot_seeds,
-                                                 interventions=self.all_interventions,
-                                                 int_descripts=self.all_int_descripts,
-                                                 intvars=self.all_intvars, int_times=self.all_int_times,
+                                                 int_descripts=self.int_descripts,
+                                                 intervention_dicts=self.intervention_dicts,
                                                  covnames=self.covnames, basecovs=self.basecovs, cov_hist=self.cov_hist,
                                                  time_points=self.time_points, n_simul=self.n_simul,
                                                  time_name=self.time_name, id_name=self.id_name,
@@ -708,11 +682,10 @@ class ParametricGformula:
 
                     boot_results_dicts.append(boot_result_dict)
 
-            self.boot_results = [boot_results_dicts[i]['boot_results'] for i in range(self.nsamples) if
-                                 boot_results_dicts[i]['boot_results'] is not None]
+            self.boot_results = [boot_results_dicts[i]['boot_results'] for i in range(self.nsamples) if boot_results_dicts[i]['boot_results'] is not None]
 
-            self.bootests = {'sample_{0}_estimates'.format(i): {self.all_int_descripts[j]:
-                             boot_results_dicts[i]['boot_results'][j] for j in range(len(self.all_int_descripts))}
+            self.bootests = {'sample_{0}_estimates'.format(i): {self.int_descripts[j]:
+                             boot_results_dicts[i]['boot_results'][j] for j in range(len(self.int_descripts))}
                              for i in range(self.nsamples)}
             self.bootcoeffs = {'sample_{0}_coeffs'.format(i): boot_results_dicts[i]['bootcoeffs'] for i in
                                range(self.nsamples)}
@@ -724,7 +697,7 @@ class ParametricGformula:
                 get_hr_output(boot_results_dicts=boot_results_dicts, nsamples=self.nsamples, ci_method=self.ci_method,
                               hazard_ratio=self.hazard_ratio)
 
-            res_table = get_output(ref_int=self.ref_int, all_int_descripts=self.all_int_descripts,
+            res_table = get_output(ref_int=self.ref_int, int_descripts=self.int_descripts,
                                    censor=self.censor, obs_res=self.obs_res, g_results=self.g_results,
                                    time_points=self.time_points, ci_method=self.ci_method, time_name=self.time_name,
                                    obs_means=self.obs_means, outcome_type=self.outcome_type, nsamples=self.nsamples,
@@ -773,6 +746,6 @@ class ParametricGformula:
 
     def plot_interventions(self, colors=None, marker='o', markersize=4, linewidth=0.5, save_figure=False):
         plot_interventions(time_points=self.time_points, time_name=self.time_name, risk_results=self.g_results,
-                           int_descripts=self.all_int_descripts, outcome_type=self.outcome_type,
+                           int_descripts=self.int_descripts, outcome_type=self.outcome_type,
                            colors=colors, marker=marker, markersize=markersize, linewidth=linewidth,
                            save_path=self.save_path, save_figure=save_figure)

@@ -7,11 +7,28 @@ import pandas as pd
 from scipy import stats
 
 
-def error_catch(obs_data, id_name, time_points, interventions, int_descripts, intvars, custom_histvars, custom_histories,
-                covfits_custom, covpredict_custom, time_name, outcome_name, censor_name, censor_model, ipw_cutoff_quantile,
-                ipw_cutoff_value, outcome_type, ref_int, covnames = None, covtypes = None, covmodels=None,
-                outcome_model=None, compevent_name=None, compevent_model=None, intcomp=None, trunc_params=None,
-                basecovs=None, time_thresholds=None):
+def read_intervention_input(interventions, int_descripts):
+
+    intervention_dicts = {}
+    for intervention_key, intervention in interventions.items():
+        prefix = intervention_key.split('_', 1)[0]  # Get the prefix (e.g., 'Intervention1', 'Intervention2')
+        intervention_id = int(prefix[12:])  # Get id
+        intervention_name = int_descripts[intervention_id - 1]
+        treatment_name = intervention_key.split('_')[1]  # Get the treatment name
+
+        intervention.insert(0, treatment_name)
+        if intervention_name not in intervention_dicts:
+            intervention_dicts[intervention_name] = []
+        intervention_dicts[intervention_name].append(intervention)
+
+    return intervention_dicts
+
+
+def error_catch(obs_data, id_name, time_points, interventions, intervention_dicts, int_descripts, custom_histvars,
+                custom_histories, covfits_custom, covpredict_custom, time_name, outcome_name, censor_name, censor_model,
+                ipw_cutoff_quantile, ipw_cutoff_value, outcome_type, ref_int, covnames = None, covtypes = None,
+                covmodels=None, outcome_model=None, compevent_name=None, compevent_model=None, intcomp=None,
+                trunc_params=None, basecovs=None, time_thresholds=None):
 
     """
     This is an internal function to catch various potential errors in the user input.
@@ -28,17 +45,17 @@ def error_catch(obs_data, id_name, time_points, interventions, int_descripts, in
         An integer indicating the number of time points to simulate. It is set equal to the maximum number of records
         that obs_data contains for any individual plus 1, if not specified by users.
 
-    interventions: List, default is None
-        A list whose elements are lists of lists. Each list in interventions specifies a unique intervention on
-        the relevant variable(s) in intvars. Each inner list contains a function implementing a particular intervention
-        on a single variable, and required values for the specific treatment strategy.
+    interventions: Dict, default is None
+        A dictionary whose key is the treatment name in the intervention with the format Intervention{id}_{treatment_name},
+        value is a list that contains the intervention function, values required by the function, and a list of time
+        points in which the intervention is applied.
+
+    intervention_dicts: Dict, default is None
+        A dictionary whose key is the intervention decription and the value is the intervention list for all treatment
+        variables in this intervention.
 
     int_descripts: List, default is None
         A list of strings, each of which describes a user-specified intervention.
-
-    intvars: List, default is None
-        A list, each element is a list of strings. The kth element in intvars specifies the name(s) of the variable(s) to
-        be intervened on under the kth intervention in interventions.
 
     custom_histvars: List, default is None
         A list of strings, each of which describes the names of the time-varying covariates with user-specified custom histories.
@@ -217,9 +234,13 @@ def error_catch(obs_data, id_name, time_points, interventions, int_descripts, in
         if compevent_name not in obs_data.columns:
             raise ValueError('Missing competing name in the observational data.')
 
+    for intervention_id, intervention in interventions.items():
+        if not intervention_id.startswith('Intervention'):
+            raise ValueError('The name {0} is not recognized, please specify it as the correct format'.format(intervention_id))
+
     if int_descripts is not None:
-        if not len(interventions) == len(int_descripts) == len(intvars):
-            raise ValueError('interventions, int_descripts and intvars are unequal lengths.')
+        if not len(int_descripts) == len(intervention_dicts.items()):
+            raise ValueError('The number of specified interventions in argument int_descripts and interventions is different.')
 
     if intcomp is not None:
         if not isinstance(intcomp[0], int):
@@ -231,7 +252,7 @@ def error_catch(obs_data, id_name, time_points, interventions, int_descripts, in
         raise ValueError('Parameter ref_int should be an integer that indicates the desired reference intervention.')
 
 
-def get_output(ref_int, all_int_descripts, censor, obs_res, g_results, time_points, ci_method, time_name, obs_means,
+def get_output(ref_int, int_descripts, censor, obs_res, g_results, time_points, ci_method, time_name, obs_means,
                outcome_type, nsamples, boot_results=None):
     """
 
@@ -242,7 +263,7 @@ def get_output(ref_int, all_int_descripts, censor, obs_res, g_results, time_poin
         ratio and mean difference. 0 denotes the natural course, while subsequent integers denote user-specified
         interventions in the order that they are named in interventions. It is set to 0 if not specified by users.
 
-    all_int_descripts: List
+    int_descripts: List
         A list of strings, describing the natural course intervention (in the first) and user-specified intervention(s).
 
     censor: Bool
@@ -303,41 +324,41 @@ def get_output(ref_int, all_int_descripts, censor, obs_res, g_results, time_poin
                  'Risk Ratio': all_result_ratio.transpose((1, 0)).flatten(),
                  'Risk Difference': all_result_diff.transpose((1, 0)).flatten()})
 
-            table.insert(0, time_name, value=np.array([[int(t) for k in range(len(all_int_descripts))]
+            table.insert(0, time_name, value=np.array([[int(t) for k in range(len(int_descripts))]
                                                        for t in range(time_points)]).flatten())
             table.insert(1, 'Intervention',
-                         value=np.array([[name for name in all_int_descripts] for t in range(time_points)]).flatten())
+                         value=np.array([[name for name in int_descripts] for t in range(time_points)]).flatten())
             table.insert(2, 'IP weighted risk' if censor else 'NP risk',
                          value=np.array(
-                             [[obs_means['risk'][t] if i == 0 else 'NA' for i in range(len(all_int_descripts))]
+                             [[obs_means['risk'][t] if i == 0 else 'NA' for i in range(len(int_descripts))]
                               for t in range(time_points)]).flatten())
             res_table = table
 
             # output nonparametric and parametric risks at the specified final time point
             output = pt.PrettyTable()
             output.add_column('Intervention', [int_name if i != ref_int else ''.join([int_name, '(ref)'])
-                                               for i, int_name in enumerate(all_int_descripts)])
+                                               for i, int_name in enumerate(int_descripts)])
             output.add_column('IP weighted risk' if censor else 'NP risk',
                               ['{:.5f}'.format(obs_res) if int_name == 'Natural course' else 'NA'
-                               for i, int_name in enumerate(all_int_descripts)])
+                               for i, int_name in enumerate(int_descripts)])
             output.add_column('g-formula risk (NICE-parametric)',
-                              ['{:.5f}'.format(simulate_results[i]) for i in range(len(all_int_descripts))])
+                              ['{:.5f}'.format(simulate_results[i]) for i in range(len(int_descripts))])
             output.add_column('Risk Ratio(RR)',
-                              ['{:.5f}'.format(result_ratio[i]) for i in range(len(all_int_descripts))])
+                              ['{:.5f}'.format(result_ratio[i]) for i in range(len(int_descripts))])
             output.add_column('Risk Difference(RD)',
-                              ['{:.5f}'.format(result_diff[i]) for i in range(len(all_int_descripts))])
+                              ['{:.5f}'.format(result_diff[i]) for i in range(len(int_descripts))])
             print(output)
 
         else:
             all_boot_risk_std = np.std(np.array(boot_results), ddof=1, axis=0)
             all_boot_risk_difference = \
                 np.array([np.array(boot_results)[:, i, :] - np.array(boot_results)[:, ref_int, :]
-                          for i in range(len(all_int_descripts))])
+                          for i in range(len(int_descripts))])
             all_boot_rd_std = np.std(all_boot_risk_difference, ddof=1, axis=1)
 
             all_boot_risk_ratio = \
                 np.array([np.array(boot_results)[:, i, :] / np.array(boot_results)[:, ref_int, :]
-                          for i in range(len(all_int_descripts))])
+                          for i in range(len(int_descripts))])
             all_boot_rr_std = np.std(all_boot_risk_ratio, ddof=1, axis=1)
 
             boot_risk_std = all_boot_risk_std[:, time_points - 1]
@@ -363,7 +384,7 @@ def get_output(ref_int, all_int_descripts, censor, obs_res, g_results, time_poin
             elif ci_method == 'normal':
                 all_boot_risk_ci = \
                     np.array([stats.norm.interval(0.95, loc=all_simulate_results[i, :], scale=all_boot_risk_std[i, :])
-                              for i in range(len(all_int_descripts))])
+                              for i in range(len(int_descripts))])
                 all_risk_lb = all_boot_risk_ci[:, 0, :]
                 all_risk_ub = all_boot_risk_ci[:, 1, :]
                 risk_lb = all_risk_lb[:, time_points - 1]
@@ -373,7 +394,7 @@ def get_output(ref_int, all_int_descripts, censor, obs_res, g_results, time_poin
                 all_boot_rd_ci = \
                     np.array([stats.norm.interval(0.95, loc=all_result_diff[i, :], scale=all_boot_rd_std[i, :])
                               if i != ref_int else [np.zeros(time_points), np.zeros(time_points)]
-                              for i in range(len(all_int_descripts))])
+                              for i in range(len(int_descripts))])
 
                 all_boot_rd_lb = all_boot_rd_ci[:, 0, :]
                 all_boot_rd_ub = all_boot_rd_ci[:, 1, :]
@@ -384,7 +405,7 @@ def get_output(ref_int, all_int_descripts, censor, obs_res, g_results, time_poin
                 all_boot_rr_ci = \
                     np.array([stats.norm.interval(0.95, loc=all_result_ratio[i, :], scale=all_boot_rr_std[i, :])
                               if i != ref_int else [np.ones(time_points), np.ones(time_points)]
-                              for i in range(len(all_int_descripts))])
+                              for i in range(len(int_descripts))])
 
                 all_boot_rr_lb = all_boot_rr_ci[:, 0, :]
                 all_boot_rr_ub = all_boot_rr_ci[:, 1, :]
@@ -410,12 +431,12 @@ def get_output(ref_int, all_int_descripts, censor, obs_res, g_results, time_poin
                  'RD 95% lower bound': all_boot_rd_lb.transpose((1, 0)).flatten(),
                  'RD 95% upper bound': all_boot_rd_ub.transpose((1, 0)).flatten()})
             boot_table.insert(0, time_name, value=np.array(
-                [[int(t) for k in range(len(all_int_descripts))] for t in
+                [[int(t) for k in range(len(int_descripts))] for t in
                  range(time_points)]).flatten())
             boot_table.insert(1, 'Intervention', value=np.array(
-                [[name for name in all_int_descripts] for t in range(time_points)]).flatten())
+                [[name for name in int_descripts] for t in range(time_points)]).flatten())
             boot_table.insert(2, 'IP weighted mean' if censor else 'NP mean', value=np.array(
-                [[obs_means['risk'][t] if i == 0 else 'NA' for i in range(len(all_int_descripts))]
+                [[obs_means['risk'][t] if i == 0 else 'NA' for i in range(len(int_descripts))]
                  for t in range(time_points)]).flatten())
             res_table = boot_table
 
@@ -423,35 +444,35 @@ def get_output(ref_int, all_int_descripts, censor, obs_res, g_results, time_poin
             output = pt.PrettyTable()
             output.add_column('Intervention',
                               [intervention_name if i != ref_int else ''.join([intervention_name, '(ref)'])
-                               for i, intervention_name in enumerate(all_int_descripts)])
+                               for i, intervention_name in enumerate(int_descripts)])
 
             output.add_column('IP weighted risk' if censor else 'NP risk',
                               ['{:.5f}'.format(obs_res) if int_name == 'Natural course' else 'NA'
-                               for i, int_name in enumerate(all_int_descripts)])
+                               for i, int_name in enumerate(int_descripts)])
             output.add_column('g-formula risk (NICE-parametric)',
-                              ['{:.5f}'.format(simulate_results[i]) for i in range(len(all_int_descripts))])
+                              ['{:.5f}'.format(simulate_results[i]) for i in range(len(int_descripts))])
             output.add_column('Risk Standard Error',
-                              ['{:.5f}'.format(boot_risk_std[i]) for i in range(len(all_int_descripts))])
+                              ['{:.5f}'.format(boot_risk_std[i]) for i in range(len(int_descripts))])
             output.add_column('Risk 95% lower bound',
-                              ['{:.5f}'.format(risk_lb[i]) for i in range(len(all_int_descripts))])
+                              ['{:.5f}'.format(risk_lb[i]) for i in range(len(int_descripts))])
             output.add_column('Risk 95% upper bound',
-                              ['{:.5f}'.format(risk_ub[i]) for i in range(len(all_int_descripts))])
+                              ['{:.5f}'.format(risk_ub[i]) for i in range(len(int_descripts))])
             output.add_column('Risk Ratio(RR)',
-                              ['{:.5f}'.format(result_ratio[i]) for i in range(len(all_int_descripts))])
+                              ['{:.5f}'.format(result_ratio[i]) for i in range(len(int_descripts))])
             output.add_column('RR SE',
-                              ['{:.5f}'.format(boot_rr_std[i]) for i in range(len(all_int_descripts))])
+                              ['{:.5f}'.format(boot_rr_std[i]) for i in range(len(int_descripts))])
             output.add_column('RR 95% lower bound',
-                              ['{:.5f}'.format(boot_rr_lb[i]) for i in range(len(all_int_descripts))])
+                              ['{:.5f}'.format(boot_rr_lb[i]) for i in range(len(int_descripts))])
             output.add_column('RR 95% upper bound',
-                              ['{:.5f}'.format(boot_rr_ub[i]) for i in range(len(all_int_descripts))])
+                              ['{:.5f}'.format(boot_rr_ub[i]) for i in range(len(int_descripts))])
             output.add_column('Risk Difference(RD)',
-                              ['{:.5f}'.format(result_diff[i]) for i in range(len(all_int_descripts))])
+                              ['{:.5f}'.format(result_diff[i]) for i in range(len(int_descripts))])
             output.add_column('RD SE',
-                              ['{:.5f}'.format(boot_rd_std[i]) for i in range(len(all_int_descripts))])
+                              ['{:.5f}'.format(boot_rd_std[i]) for i in range(len(int_descripts))])
             output.add_column('RD 95% lower bound',
-                              ['{:.5f}'.format(boot_rd_lb[i]) for i in range(len(all_int_descripts))])
+                              ['{:.5f}'.format(boot_rd_lb[i]) for i in range(len(int_descripts))])
             output.add_column('RD 95% upper bound',
-                              ['{:.5f}'.format(boot_rd_ub[i]) for i in range(len(all_int_descripts))])
+                              ['{:.5f}'.format(boot_rd_ub[i]) for i in range(len(int_descripts))])
 
             output_res = output.get_string(
                 fields=['Intervention', 'IP weighted risk' if censor else 'NP risk', 'g-formula risk (NICE-parametric)',
@@ -473,24 +494,24 @@ def get_output(ref_int, all_int_descripts, censor, obs_res, g_results, time_poin
             table = pd.DataFrame(
                 {'g-form mean (NICE)': simulate_results, 'Mean ratio': result_ratio, 'Mean difference': result_diff})
             table.insert(0, time_name, value=time_points - 1)
-            table.insert(1, 'Intervention', value=np.array(all_int_descripts))
+            table.insert(1, 'Intervention', value=np.array(int_descripts))
             table.insert(2, 'IP weighted mean' if censor else 'NP mean',
-                         value=np.array([obs_res if i == 0 else 'NA' for i in range(len(all_int_descripts))]))
+                         value=np.array([obs_res if i == 0 else 'NA' for i in range(len(int_descripts))]))
             res_table = table
 
             # output nonparametric and parametric estimate at final time point
             output = pt.PrettyTable()
             output.add_column('Intervention', [int_name if i != ref_int else ''.join([int_name, '(ref)'])
-                                               for i, int_name in enumerate(all_int_descripts)])
+                                               for i, int_name in enumerate(int_descripts)])
             output.add_column('IP weighted mean' if censor else 'NP mean',
                               ['{:.5f}'.format(obs_res) if int_name == 'Natural course' else 'NA'
-                               for i, int_name in enumerate(all_int_descripts)])
+                               for i, int_name in enumerate(int_descripts)])
             output.add_column('g-formula mean (NICE-parametric)',
-                              ['{:.5f}'.format(simulate_results[i]) for i in range(len(all_int_descripts))])
+                              ['{:.5f}'.format(simulate_results[i]) for i in range(len(int_descripts))])
             output.add_column('Mean Ratio(MR)',
-                              ['{:.5f}'.format(result_ratio[i]) for i in range(len(all_int_descripts))])
+                              ['{:.5f}'.format(result_ratio[i]) for i in range(len(int_descripts))])
             output.add_column('Mean Difference(MD)',
-                              ['{:.5f}'.format(result_diff[i]) for i in range(len(all_int_descripts))])
+                              ['{:.5f}'.format(result_diff[i]) for i in range(len(int_descripts))])
             print(output)
 
         else:
@@ -498,11 +519,11 @@ def get_output(ref_int, all_int_descripts, censor, obs_res, g_results, time_poin
             boot_mean_std = np.std(boot_mean_results, ddof=1, axis=0)
 
             boot_mean_difference = np.array([boot_mean_results[:, i] - boot_mean_results[:, ref_int]
-                                             for i in range(len(all_int_descripts))])
+                                             for i in range(len(int_descripts))])
             boot_md_std = np.std(boot_mean_difference, ddof=1, axis=1)
 
             boot_mean_ratio = np.array([boot_mean_results[:, i] / boot_mean_results[:, ref_int]
-                                        for i in range(len(all_int_descripts))])
+                                        for i in range(len(int_descripts))])
             boot_mr_std = np.std(boot_mean_ratio, ddof=1, axis=1)
 
             if ci_method == 'percentile':
@@ -518,19 +539,19 @@ def get_output(ref_int, all_int_descripts, censor, obs_res, g_results, time_poin
             elif ci_method == 'normal':
                 boot_mean_ci = \
                     np.array([stats.norm.interval(0.95, loc=simulate_results[i], scale=boot_mean_std[i])
-                              for i in range(len(all_int_descripts))])
+                              for i in range(len(int_descripts))])
                 mean_lb, mean_ub = boot_mean_ci[:, 0], boot_mean_ci[:, 1]
 
                 boot_md_std = np.std(boot_mean_difference, ddof=1, axis=1)
                 boot_md_ci = \
                     np.array([stats.norm.interval(0.95, loc=result_diff[i], scale=boot_md_std[i])
-                              if i != ref_int else (0.0, 0.0) for i in range(len(all_int_descripts))])
+                              if i != ref_int else (0.0, 0.0) for i in range(len(int_descripts))])
                 boot_md_lb, boot_md_ub = boot_md_ci[:, 0], boot_md_ci[:, 1]
 
                 boot_mr_std = np.std(boot_mean_ratio, ddof=1, axis=1)
                 boot_mr_ci = \
                     np.array([stats.norm.interval(0.95, loc=result_ratio[i], scale=boot_mr_std[i])
-                              if i != ref_int else (1.0, 1.0) for i in range(len(all_int_descripts))])
+                              if i != ref_int else (1.0, 1.0) for i in range(len(int_descripts))])
                 boot_mr_lb, boot_mr_ub = boot_mr_ci[:, 0], boot_mr_ci[:, 1]
 
             else:
@@ -552,44 +573,44 @@ def get_output(ref_int, all_int_descripts, censor, obs_res, g_results, time_poin
                  'MD 95% upper bound': boot_md_ub
                  })
             boot_table.insert(0, time_name, value=time_points - 1)
-            boot_table.insert(1, 'Intervention', value=all_int_descripts)
+            boot_table.insert(1, 'Intervention', value=int_descripts)
             boot_table.insert(2, 'IP weighted mean' if censor else 'NP mean', value=np.array(
-                [obs_res if i == 0 else 'NA' for i in range(len(all_int_descripts))]))
+                [obs_res if i == 0 else 'NA' for i in range(len(int_descripts))]))
             res_table = boot_table
 
             # output nonparametric and parametric estimate with bootstrap confidence intervals at final time point
             output = pt.PrettyTable()
             output.add_column('Intervention',
                               [intervention_name if i != ref_int else ''.join([intervention_name, '(ref)'])
-                               for i, intervention_name in enumerate(all_int_descripts)])
+                               for i, intervention_name in enumerate(int_descripts)])
 
             output.add_column('IP weighted mean' if censor else 'NP mean',
                               ['{:.5f}'.format(obs_res) if int_name == 'Natural course' else 'NA'
-                               for i, int_name in enumerate(all_int_descripts)])
+                               for i, int_name in enumerate(int_descripts)])
             output.add_column('g-formula mean (NICE-parametric)',
-                              ['{:.5f}'.format(simulate_results[i]) for i in range(len(all_int_descripts))])
+                              ['{:.5f}'.format(simulate_results[i]) for i in range(len(int_descripts))])
             output.add_column('Mean Standard Error',
-                              ['{:.5f}'.format(boot_mean_std[i]) for i in range(len(all_int_descripts))])
+                              ['{:.5f}'.format(boot_mean_std[i]) for i in range(len(int_descripts))])
             output.add_column('Mean 95% lower bound',
-                              ['{:.5f}'.format(mean_lb[i]) for i in range(len(all_int_descripts))])
+                              ['{:.5f}'.format(mean_lb[i]) for i in range(len(int_descripts))])
             output.add_column('Mean 95% upper bound',
-                              ['{:.5f}'.format(mean_ub[i]) for i in range(len(all_int_descripts))])
+                              ['{:.5f}'.format(mean_ub[i]) for i in range(len(int_descripts))])
             output.add_column('Mean Ratio(MR)',
-                              ['{:.5f}'.format(result_ratio[i]) for i in range(len(all_int_descripts))])
+                              ['{:.5f}'.format(result_ratio[i]) for i in range(len(int_descripts))])
             output.add_column('MR SE',
-                              ['{:.5f}'.format(boot_mr_std[i]) for i in range(len(all_int_descripts))])
+                              ['{:.5f}'.format(boot_mr_std[i]) for i in range(len(int_descripts))])
             output.add_column('MR 95% lower bound',
-                              ['{:.5f}'.format(boot_mr_lb[i]) for i in range(len(all_int_descripts))])
+                              ['{:.5f}'.format(boot_mr_lb[i]) for i in range(len(int_descripts))])
             output.add_column('MR 95% upper bound',
-                              ['{:.5f}'.format(boot_mr_ub[i]) for i in range(len(all_int_descripts))])
+                              ['{:.5f}'.format(boot_mr_ub[i]) for i in range(len(int_descripts))])
             output.add_column('Mean Difference(MD)',
-                              ['{:.5f}'.format(result_diff[i]) for i in range(len(all_int_descripts))])
+                              ['{:.5f}'.format(result_diff[i]) for i in range(len(int_descripts))])
             output.add_column('MD SE',
-                              ['{:.5f}'.format(boot_md_std[i]) for i in range(len(all_int_descripts))])
+                              ['{:.5f}'.format(boot_md_std[i]) for i in range(len(int_descripts))])
             output.add_column('MD 95% lower bound',
-                              ['{:.5f}'.format(boot_md_lb[i]) for i in range(len(all_int_descripts))])
+                              ['{:.5f}'.format(boot_md_lb[i]) for i in range(len(int_descripts))])
             output.add_column('MD 95% upper bound',
-                              ['{:.5f}'.format(boot_md_ub[i]) for i in range(len(all_int_descripts))])
+                              ['{:.5f}'.format(boot_md_ub[i]) for i in range(len(int_descripts))])
 
             output_res = output.get_string(
                 fields=['Intervention', 'IP weighted mean' if censor else 'NP mean',

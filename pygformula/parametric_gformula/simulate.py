@@ -22,12 +22,13 @@ def truc_sample(mean, rmse, a, b):
 
 
 def simulate(seed, time_points, time_name, id_name, obs_data, basecovs,
-             outcome_type, rmses, bounds, intervention, intvar, int_time,
+             outcome_type, rmses, bounds, intervention,
              custom_histvars, custom_histories, covpredict_custom, outcome_fit, outcome_name,
              competing, compevent_name, compevent_model, compevent_fit, compevent_cens, trunc_params,
              visit_names, visit_covs, ts_visit_names, max_visits, time_thresholds, baselags, below_zero_indicator,
              restrictions, yrestrictions, compevent_restrictions, covnames, covtypes, covmodels,
              covariate_fits, cov_hist):
+
     """
     This is an internal function to perform Monte Carlo simulation of the parametric g-formula.
 
@@ -88,14 +89,10 @@ def simulate(seed, time_points, time_name, id_name, obs_data, basecovs,
         A list that contains the bound for all time-varying covariates in the obs_data.
 
     intervention: List
-        A list of lists, the inner list contains a function implementing a particular intervention on a single variable,
-        and required values for specific treatment strategy.
-
-    intvar: List
-        A list contains strings of treatment names to be intervened in a particular intervention.
-
-    int_time: List
-        A list specifies the time points in which the relevant intervention is applied on the corresponding variable in intvar.
+        A list of lists, the k-th list contains the intervention list on k-th treatment name in the intervention.
+        The intervention list contains a function implementing a particular intervention on the treatment variable,
+        required values for the intervention function and a list of time points in which the intervention
+        is applied.
 
     custom_histvars: List
         A list of strings, each specifying the names of the time-varying covariates with user-specified custom histories.
@@ -203,8 +200,7 @@ def simulate(seed, time_points, time_name, id_name, obs_data, basecovs,
             pool = pool[pool[time_name] <= t].copy()
             new_df = pool[pool[time_name] == t]
 
-            intervention_func(new_df=new_df, pool=pool, intervention=intervention, intvar=intvar, int_time=int_time,
-                                                                                          time_name=time_name, t=t)
+            intervention_func(new_df=new_df, pool=pool, intervention=intervention, time_name=time_name, t=t)
 
             pool.loc[pool[time_name] == t] = new_df
             if covnames is not None:
@@ -366,7 +362,7 @@ def simulate(seed, time_points, time_name, id_name, obs_data, basecovs,
                         update_custom_history(pool, custom_histvars, custom_histories, time_name, t, id_name)
                     new_df = pool[pool[time_name] == t].copy()
 
-            intervention_func(new_df=new_df, pool=pool, intervention=intervention, intvar=intvar, int_time=int_time, time_name=time_name, t=t)
+            intervention_func(new_df=new_df, pool=pool, intervention=intervention, time_name=time_name, t=t)
 
             pool.loc[pool[time_name] == t] = new_df
             if covnames is not None:

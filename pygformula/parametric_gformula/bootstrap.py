@@ -8,7 +8,7 @@ from .fit import fit_covariate_model, fit_outcome_model, fit_compevent_model
 from ..utils.helper import hr_data_helper, hr_comp_data_helper
 
 
-def Bootstrap(obs_data, boot_id, boot_seeds, interventions, int_descripts, intvars, int_times, covnames,
+def Bootstrap(obs_data, boot_id, boot_seeds, int_descripts, intervention_dicts, covnames,
               basecovs, cov_hist, time_points, n_simul, time_name, id_name, custom_histvars, custom_histories,
               covmodels, hazardratio, intcomp, covtypes, covfits_custom, covpredict_custom,
               outcome_model, outcome_type, outcome_name, competing, compevent_name, compevent_model, compevent_cens,
@@ -28,22 +28,12 @@ def Bootstrap(obs_data, boot_id, boot_seeds, interventions, int_descripts, intva
     boot_seeds: List
         A list that stores the random seeds of all bootstrap samples.
 
-    interventions: List
-        A list whose elements are lists of vectors. Each list in interventions specifies a unique intervention on the
-        relevant variable(s) in intvars. Each vector contains a function implementing a particular intervention on a
-        single variable, and required values for specific treatment strategy.
-
     int_descripts: List
         A list of strings, each of which describes a user-specified intervention.
 
-    intvars: List
-        A list, each element is a list of strings. The kth element in intvars specifies the name(s) of the variable(s) to
-        be intervened on under the kth intervention in interventions.
-
-    int_times: List
-        A list, each element is a list. The kth list in int_times corresponds to the kth intervention in interventions.
-        Each inner list specifies the time points in which the relevant intervention is applied on the corresponding
-        variable in intvars. By default, this argument is set so that all interventions are applied in all the time points.
+    intervention_dicts: Dict
+        A dictionary whose key is the intervention decription and the value is the intervention list for all treatment
+        variables in this intervention.
 
     covnames: List
         A list of strings specifying the names of the time-varying covariates in obs_data.
@@ -248,13 +238,13 @@ def Bootstrap(obs_data, boot_id, boot_seeds, interventions, int_descripts, intva
 
         boot_results = []
         boot_pools = []
-        for i in range(len(int_descripts)):
+        for intervention_name in int_descripts:
             boot_result = simulate(seed=boot_seeds[boot_id], time_points=time_points, time_name=time_name,
                                        id_name=id_name, covnames=covnames, basecovs=basecovs,
                                        covmodels=covmodels,  covtypes=covtypes, cov_hist=cov_hist,
                                        covariate_fits=covariate_fits, rmses=rmses, bounds=bounds, outcome_type=outcome_type,
-                                       obs_data=resample_data, intervention=interventions[i],
-                                       intvar=intvars[i], int_time=int_times[i],
+                                       obs_data=resample_data,
+                                       intervention=intervention_dicts[intervention_name],
                                        custom_histvars = custom_histvars, custom_histories=custom_histories,
                                        covpredict_custom=covpredict_custom,
                                        outcome_fit=outcome_fit, outcome_name=outcome_name,
