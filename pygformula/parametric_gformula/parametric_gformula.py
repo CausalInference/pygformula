@@ -156,7 +156,7 @@ class ParametricGformula:
             A string specifying the "type" of outcome. The possible "types" are: "survival", "continuous_eof", and "binary_eof".
 
         trunc_params: List, default is None
-            A list, at the index where the covtype is set to "truncated normal", the element contains two elements.
+            A list, at the index where the covtype is set to "truncated normal", the list contains two elements.
             The first element specifies the truncated value and the second element specifies the truncated direction
             (‘left’ or ‘right’). The values at remaining indexes are set to 'NA'. The list must be the same length as
             covnames and in the same order.

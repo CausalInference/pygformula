@@ -127,7 +127,7 @@ def simulate(seed, time_points, time_name, id_name, obs_data, basecovs,
         A boolean value indicating whether to treat competing events as censoring events.
 
     trunc_params: List, default is None
-        A list, at the index where the covtype is set to "truncated normal", the element contains two elements.
+        A list, at the index where the covtype is set to "truncated normal", the list contains two elements.
         The first element specifies the truncated value and the second element specifies the truncated direction
         (‘left’ or ‘right’). The values at remaining indexes are set to 'NA'. The list must be the same length as
         covnames and in the same order.
@@ -321,7 +321,22 @@ def simulate(seed, time_points, time_name, id_name, obs_data, basecovs,
                             new_df[cov] = prediction
 
                         elif covtypes[k] == 'truncated normal':
-                            pass
+                            fit_coefficients = covariate_fits[cov]
+                            _, covmodel = re.split('~', covmodels[k].replace(' ', ''))
+                            var_names = re.split('\+', covmodel)
+                            new_data = np.concatenate((np.ones((new_df.shape[0], 1)), new_df[var_names].to_numpy()), axis=1)
+                            estimated_mean = np.dot(new_data, fit_coefficients['x'][:-1])
+
+                            if trunc_params[k][1] == 'left':
+                                trunc_bounds = [trunc_params[k][0], float('inf')]
+                            else:
+                                trunc_bounds = [-float('inf'), trunc_params[k][0]]
+
+                            prediction = pd.Series(estimated_mean).apply(truc_sample, rmse=rmses[cov], a=trunc_bounds[0],
+                                                                     b=trunc_bounds[1])
+                            prediction = np.where(prediction < bounds[cov][0], bounds[cov][0], prediction)
+                            prediction = np.where(prediction > bounds[cov][1], bounds[cov][1], prediction)
+                            new_df[cov] = prediction
 
                         elif covtypes[k] == 'absorbing':
                             predict_prob = covariate_fits[cov].predict(new_df)

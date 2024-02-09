@@ -4,6 +4,7 @@ import math
 import re
 import statsmodels.api as sm
 import statsmodels.formula.api as smf
+from .truncreg import truncreg # todo: import package
 
 
 def fit_covariate_model(covmodels, covnames, covtypes, covfits_custom, time_name, obs_data, return_fits,
@@ -43,7 +44,7 @@ def fit_covariate_model(covmodels, covnames, covtypes, covfits_custom, time_name
         fitted model.
 
     trunc_params: List, default is None
-        A list, at the index where the covtype is set to "truncated normal", the element contains two elements.
+        A list, at the index where the covtype is set to "truncated normal", the list contains two elements.
         The first element specifies the truncated value and the second element specifies the truncated direction
         (‘left’ or ‘right’). The values at remaining indexes are set to 'NA'. The list must be the same length as
         covnames and in the same order.
@@ -201,7 +202,20 @@ def fit_covariate_model(covmodels, covnames, covtypes, covfits_custom, time_name
                     model_fits_summary[cov] = [indicator_fit.summary(), non_zero_fit.summary()]
 
             elif covtypes[k] == 'truncated normal':
-                pass
+                truncation_value = trunc_params[k][0]
+                truncation_direction = trunc_params[k][1]
+                fit_coefficients = truncreg(formula=covmodels[k], data=fit_data, point=truncation_value, direction=truncation_direction)
+                covariate_fits[cov] = fit_coefficients
+
+                _, covmodel = re.split('~', covmodels[k].replace(' ', ''))
+                var_names = re.split('\+', covmodel)
+                new_data = np.concatenate((np.ones((fit_data.shape[0], 1)), fit_data[var_names].to_numpy()), axis=1)
+                fitted_values = np.dot(new_data, fit_coefficients['x'][:-1])
+                rmse = np.sqrt(np.mean((fitted_values - fit_data[cov]) ** 2))
+                rmses[cov] = rmse
+                bounds[cov] = [fit_data[cov].min(), fit_data[cov].max()]
+                if return_fits:
+                    model_coeffs[cov] = fit_coefficients
 
             elif covtypes[k] == 'absorbing':
                 fit_data = fit_data[fit_data[time_name] > 0]

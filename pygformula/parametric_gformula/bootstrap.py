@@ -118,7 +118,7 @@ def Bootstrap(obs_data, boot_id, boot_seeds, int_descripts, intervention_dicts, 
         standard errors, and variance-covariance matrices of the parameters of the fitted models in the bootstrap samples.
 
     trunc_params: List
-        A list, at the index where the covtype is set to "truncated normal", the element contains two elements.
+        A list, at the index where the covtype is set to "truncated normal", the list contains two elements.
         The first element specifies the truncated value and the second element specifies the truncated direction
         (‘left’ or ‘right’). The values at remaining indexes are set to 'NA'. The list must be the same length as
         covnames and in the same order.
