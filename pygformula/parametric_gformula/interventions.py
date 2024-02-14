@@ -306,7 +306,12 @@ def intervention_func(new_df, pool, intervention, time_name, t):
                         int_func(new_df, pool, int_var, nperiod, conditions, time_name, t)
 
             else:  # dynamic or custom intervention
-                int_func(new_df, pool, int_var, time_name, t)
+                if len(intervention[i]) == 2:
+                    int_func(new_df, pool, int_var, time_name, t)
+                else:
+                    int_times = intervention[i][2]
+                    if t in int_times:
+                        int_func(new_df, pool, int_var, time_name, t)
 
 
 
