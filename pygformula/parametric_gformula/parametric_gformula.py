@@ -622,6 +622,7 @@ class ParametricGformula:
                        obs_res=self.obs_res, g_results=self.g_results,  time_points=self.time_points,
                        ci_method=self.ci_method, time_name=self.time_name, obs_means=self.obs_means,
                        outcome_type=self.outcome_type, nsamples=self.nsamples)
+            self.boot_table = None
 
             if self.hazardratio:
                 print('Hazardratio value is', '{:.5f}'.format(self.hazard_ratio))
@@ -702,6 +703,7 @@ class ParametricGformula:
                                    time_points=self.time_points, ci_method=self.ci_method, time_name=self.time_name,
                                    obs_means=self.obs_means, outcome_type=self.outcome_type, nsamples=self.nsamples,
                                    boot_results=self.boot_results)
+            self.boot_table = res_table
 
         # build results dictionary
         if self.boot_diag:
@@ -742,10 +744,10 @@ class ParametricGformula:
                            est_means=self.est_means, censor=self.censor,
                            outcome_type=self.outcome_type, plot_name=plot_name, colors=colors,
                            marker=marker, markersize=markersize, linewidth=linewidth, save_path=self.save_path,
-                           save_figure=save_figure)
+                           save_figure=save_figure, boot_table=self.boot_table)
 
     def plot_interventions(self, colors=None, marker='o', markersize=4, linewidth=0.5, save_figure=False):
         plot_interventions(time_points=self.time_points, time_name=self.time_name, risk_results=self.g_results,
                            int_descripts=self.int_descripts, outcome_type=self.outcome_type,
                            colors=colors, marker=marker, markersize=markersize, linewidth=linewidth,
-                           save_path=self.save_path, save_figure=save_figure)
+                           save_path=self.save_path, save_figure=save_figure, boot_table=self.boot_table)
