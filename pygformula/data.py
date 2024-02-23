@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 
 
 def load_basicdata():
@@ -19,7 +20,7 @@ def load_basicdata():
     -------
     A pandas dataframe
     """
-    data = pd.read_csv(r"..\datasets\example_data_basicdata.csv")
+    data = pd.read_csv(os.path.join('..', 'datasets', 'example_data_basicdata.csv'))
     return data
 
 def load_basicdata_nocomp():
@@ -43,7 +44,7 @@ def load_basicdata_nocomp():
     -------
     A pandas dataframe
     """
-    data = pd.read_csv(r"..\datasets\example_data_basicdata_nocomp.csv")
+    data = pd.read_csv(os.path.join('..', 'datasets', 'example_data_basicdata_nocomp.csv'))
     return data
 
 def load_absorbing_data():
@@ -61,7 +62,7 @@ def load_absorbing_data():
     -------
     A pandas dataframe
     """
-    data = pd.read_csv(r"..\datasets\example_data_absorbing.csv")
+    data = pd.read_csv(os.path.join('..', 'datasets', 'example_data_absorbing.csv'))
     return data
 
 def load_binary_eof():
@@ -82,7 +83,7 @@ def load_binary_eof():
     -------
     A pandas dataframe
     """
-    data = pd.read_csv(r"..\datasets\example_data_binary_eof.csv")
+    data = pd.read_csv(os.path.join('..', 'datasets', 'example_data_binary_eof.csv'))
     return data
 
 def load_categorical():
@@ -100,7 +101,7 @@ def load_categorical():
     -------
     A pandas dataframe
     """
-    data = pd.read_csv(r"..\datasets\example_data_categorical.csv")
+    data = pd.read_csv(os.path.join('..', 'datasets', 'example_data_categorical.csv'))
     return data
 
 def load_censor_data():
@@ -120,7 +121,7 @@ def load_censor_data():
     -------
     A pandas dataframe
     """
-    data = pd.read_csv(r"..\datasets\example_data_censor.csv")
+    data = pd.read_csv(os.path.join('..', 'datasets', 'example_data_censor.csv'))
     return data
 
 def load_continuous_eof():
@@ -141,7 +142,7 @@ def load_continuous_eof():
     -------
     A pandas dataframe
     """
-    data = pd.read_csv(r"..\datasets\example_data_continuous_eof.csv")
+    data = pd.read_csv(os.path.join('..', 'datasets', 'example_data_continuous_eof.csv'))
     return data
 
 def load_visit_process():
@@ -165,7 +166,7 @@ def load_visit_process():
     -------
     A pandas dataframe
     """
-    data = pd.read_csv(r"..\datasets\example_data_visit_process.csv")
+    data = pd.read_csv(os.path.join('..', 'datasets', 'example_data_visit_process.csv'))
     return data
 
 def load_truncated_normal():
@@ -183,7 +184,7 @@ def load_truncated_normal():
     -------
     A pandas dataframe
     """
-    data = pd.read_csv(r"..\datasets\example_data_truncated_normal.csv")
+    data = pd.read_csv(os.path.join('..', 'datasets', 'example_data_truncated_normal.csv'))
     return data
 
 def load_zero_inflated_normal():
@@ -201,7 +202,7 @@ def load_zero_inflated_normal():
     -------
 
     """
-    data = pd.read_csv(r"..\datasets\example_data_zero_inflated_normal.csv")
+    data = pd.read_csv(os.path.join('..', 'datasets', 'example_data_zero_inflated_normal.csv'))
     return data
 
 
@@ -222,7 +223,7 @@ def load_multiple_treatments_data():
     -------
 
     """
-    data = pd.read_csv(r"..\datasets\example_data_multiple_treatments.csv")
+    data = pd.read_csv(os.path.join('..', 'datasets', 'example_data_multiple_treatments.csv'))
     return data
 
 
@@ -242,5 +243,5 @@ def load_threshold_data():
     -------
 
     """
-    data = pd.read_csv(r"..\datasets\example_threshold_data.csv")
+    data = pd.read_csv(os.path.join('..', 'datasets', 'example_threshold_data.csv'))
     return data
