@@ -1,4 +1,6 @@
 import numpy as np
+import pandas as pd
+import seaborn as sns
 import math
 import os
 import matplotlib.pyplot as plt
@@ -106,7 +108,7 @@ def plot_categorical(plot_name, cov_name, categorical_obs_mean, categorical_est_
 
 
 def plot_nc_comparison(time_points, covnames, covtypes, time_name, obs_data, obs_means, est_means, censor, outcome_type, plot_name,
-                       marker, markersize, linewidth, colors, save_path, save_figure):
+                       marker, markersize, linewidth, colors, save_path, save_figure, boot_table):
 
     """
     This is an internal function that plots the results comparison of covariate means and risks between non-parametric
@@ -168,6 +170,9 @@ def plot_nc_comparison(time_points, covnames, covtypes, time_name, obs_data, obs
     save_figure: Bool
         A boolean value indicating whether to save the figure or not.
 
+    boot_table: DataFrame
+        A DataFrame with nonparametric risk and parametric risks of all interventions.
+
     Returns
     -------
     Nothing is returned, the figure will be shown.
@@ -200,11 +205,24 @@ def plot_nc_comparison(time_points, covnames, covtypes, time_name, obs_data, obs
             est_mean = [0] + est_mean
             plt.plot(range(time_points + 1), obs_mean, color=obs_color, marker=marker, markersize=markersize,
                     linewidth=linewidth, label='IP weighted estimates' if censor else 'nonparametric estimates')
+            label = 'parametric g-formula estimates (NICE) with 95% CI' if boot_table is not None else \
+                'parametric g-formula estimates (NICE)'
             plt.plot(range(time_points + 1), est_mean, color=est_color, marker=marker, markersize=markersize,
-                    linewidth=linewidth, label='parametric g-formula estimates (NICE)')
+                    linewidth=linewidth, label=label)
             plt.xlabel(time_name)
             plt.ylabel(plot_name)
             plt.legend()
+            if boot_table is not None:
+                boot_table_copy = boot_table.copy(deep=True)
+                new_row = {time_name: 0, 'Intervention': 'Natural course', 'g-form risk (NICE-parametric)': 0,
+                           'Risk 95% lower bound': 0, 'Risk 95% upper bound': 0}
+                boot_table_copy[time_name] = boot_table_copy[time_name] + 1
+                new_boot_table = pd.concat([pd.DataFrame([new_row]), boot_table_copy], ignore_index=True)
+                int_df = new_boot_table[new_boot_table['Intervention'] == 'Natural course']
+                sns.lineplot(data=int_df, x=time_name, y='g-form risk (NICE-parametric)', marker='o',
+                             color=est_color)
+                plt.fill_between(int_df[time_name], int_df['Risk 95% lower bound'], int_df['Risk 95% upper bound'],
+                                 alpha=0.2, color=est_color)
             if save_figure:
                 if save_path is None:
                     save_path = os.path.join(os.getcwd(), 'results')
@@ -311,7 +329,7 @@ def plot_nc_comparison(time_points, covnames, covtypes, time_name, obs_data, obs
 
 
 def plot_interventions(time_points, time_name, risk_results, int_descripts, outcome_type,
-                       colors, marker, markersize, linewidth, save_path, save_figure):
+                       colors, marker, markersize, linewidth, save_path, save_figure, boot_table):
     """
     An internal function to plot the risk results comparison of all interventions and the natural course.
 
@@ -353,6 +371,9 @@ def plot_interventions(time_points, time_name, risk_results, int_descripts, outc
     save_figure: Bool
         A boolean value indicating whether to save the figure or not.
 
+    boot_table: DataFrame
+        A DataFrame with nonparametric risk and parametric risks of all interventions.
+
     Returns
     -------
     Nothing is returned, the figure will be shown.
@@ -369,12 +390,13 @@ def plot_interventions(time_points, time_name, risk_results, int_descripts, outc
     plt.grid(linestyle="--")
     plt.gca().spines['top'].set_visible(False)
     plt.gca().spines['right'].set_visible(False)
-    for index, int_descript in enumerate(int_descripts):
+    for index, intervention_name in enumerate(int_descripts):
         risk_result = risk_results[index]
         risk_result = risk_result.copy()
         risk_result.insert(0, 0)
+        label = intervention_name + ' with 95% CI' if boot_table is not None else intervention_name
         plt.plot(range(time_points + 1), risk_result, marker=marker, markersize=markersize,
-                 color=colors[index], label=int_descript, linewidth=linewidth)
+                 color=colors[index], label=label, linewidth=linewidth)
         plt.xlabel(time_name, fontsize=15)
         plt.ylabel("risk", fontsize=15)
         plt.legend(loc=0, numpoints=1, frameon=False)
@@ -387,6 +409,16 @@ def plot_interventions(time_points, time_name, risk_results, int_descripts, outc
         leg = plt.gca().get_legend()
         ltext = leg.get_texts()
         plt.setp(ltext, fontsize=12)
+        if boot_table is not None:
+            boot_table_copy = boot_table.copy(deep=True)
+            new_row = {time_name: 0, 'Intervention': intervention_name, 'g-form risk (NICE-parametric)': 0,
+                       'Risk 95% lower bound': 0, 'Risk 95% upper bound': 0}
+            boot_table_copy[time_name] = boot_table_copy[time_name] + 1
+            new_boot_table = pd.concat([pd.DataFrame([new_row]), boot_table_copy], ignore_index=True)
+            int_df = new_boot_table[new_boot_table['Intervention'] == intervention_name]
+            sns.lineplot(data=int_df, x=time_name, y='g-form risk (NICE-parametric)', marker='o', color=colors[index])
+            plt.fill_between(int_df[time_name], int_df['Risk 95% lower bound'], int_df['Risk 95% upper bound'],
+                             alpha=0.2, color=colors[index])
     if save_figure:
         if save_path is None:
             save_path = os.path.join(os.getcwd(), 'results')
