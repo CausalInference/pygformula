@@ -12,7 +12,7 @@ from .simulate import simulate
 from .bootstrap import Bootstrap
 from .interventions import natural
 from ..utils.helper import get_cov_hist_info, visit_func, hr_data_helper, hr_comp_data_helper, categorical_func
-from ..utils.util import read_intervention_input, error_catch, save_config, save_results, get_output, get_hr_output
+from ..utils.util import read_intervention_input, error_catch, keywords_check, save_config, save_results, get_output, get_hr_output
 from ..comparisons import comparison_calculate
 from ..plot import plot_natural_course, plot_interventions
 
@@ -331,8 +331,8 @@ class ParametricGformula:
         else:
             self.cov_hist = None
 
+        keywords_check(self.interventions)
         self.intervention_dicts = read_intervention_input(self.interventions, self.int_descript)
-
 
         error_catch(obs_data=self.obs_data, id_name=self.id_name, time_points=self.time_points, time_name=self.time_name,
                     interventions=self.interventions, intervention_dicts=self.intervention_dicts,

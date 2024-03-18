@@ -252,6 +252,17 @@ def error_catch(obs_data, id_name, time_points, interventions, intervention_dict
         raise ValueError('Parameter ref_int should be an integer that indicates the desired reference intervention.')
 
 
+def keywords_check(interventions):
+    for key in interventions.keys():
+        if 'Intervention' in key:
+            pattern = r'^Intervention\d+_.+$'
+            if not bool(re.match(pattern, key)):
+                raise ValueError('The key {0} for specifying intervention is not found, please specify the name'
+                                 ' following the correct format.'.format(key))
+        else:
+            raise ValueError('The key {0} for specifying intervention is invalid, please specify the intervention'
+                             ' following the correct format'.format(key))
+
 def get_output(ref_int, int_descript, censor, obs_res, g_results, time_points, ci_method, time_name, obs_means,
                outcome_type, nsamples, boot_results=None):
     """
