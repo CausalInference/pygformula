@@ -216,6 +216,7 @@ def fit_covariate_model(covmodels, covnames, covtypes, covfits_custom, time_name
                 bounds[cov] = [fit_data[cov].min(), fit_data[cov].max()]
                 if return_fits:
                     model_coeffs[cov] = fit_results['result']['x']
+                    model_stderrs[cov] = fit_results['SE']
                     model_vcovs[cov] = fit_results['vcov']
 
             elif covtypes[k] == 'absorbing':
