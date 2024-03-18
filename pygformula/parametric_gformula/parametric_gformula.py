@@ -14,10 +14,183 @@ from .interventions import natural
 from ..utils.helper import get_cov_hist_info, visit_func, hr_data_helper, hr_comp_data_helper, categorical_func
 from ..utils.util import read_intervention_input, error_catch, save_config, save_results, get_output, get_hr_output
 from ..comparisons import comparison_calculate
-from ..plot import plot_nc_comparison, plot_interventions
+from ..plot import plot_natural_course, plot_interventions
 
 
 class ParametricGformula:
+    """
+    G-formula estimation under parametric models.
+
+    Parameters
+    ----------
+    obs_data: DataFrame
+        A data frame containing the observed data.
+
+    id_name: Str
+        A string specifying the name of the id variable in obs_data.
+
+    time_name: Str
+        A string specifying the name of the time variable in obs_data.
+
+    outcome_name: Str
+         A string specifying the name of the outcome variable in obs_data.
+
+    outcome_model: Str
+        A string specifying the model statement for the outcome variable.
+
+    covnames: List, default is None
+         A list of strings specifying the names of the time-varying covariates in obs_data.
+
+    covtypes: List, default is None
+        A list of strings specifying the “type” of each time-varying covariate included in covnames.
+        The supported types: "binary", "normal", "categorical", "bounded normal", "zero-inflated normal",
+        "truncated normal", "absorbing", "categorical time", "square time" and "custom". The list must be the same
+        length as covnames and in the same order.
+
+    covmodels: List, default is None
+        A list of strings, where each string is the model statement of the time-varying covariate. The list
+        must be the same length as covnames and in the same order. If a model is not required for a certain covariate,
+        it should be set to 'NA' at that index.
+
+    int_descript: List, default is None
+        A list of strings, each of which describes a user-specified intervention.
+
+    custom_histvars: List, default is None
+        A list of strings, each of which specifies the names of the time-varying covariates with user-specified custom histories.
+
+    custom_histories: List, default is None
+        A list of function, each function is the user-specified custom history functions for covariates. The list
+        must be the same length as custom_histvars and in the same order.
+
+    covfits_custom: List, default is None
+        A list, at the index where the covtype is set to "custom", the element is a user-specified fit function,
+        otherwise it should be set to 'NA'. The list must be the same length as covnames and in the same order.
+
+    covpredict_custom: List, default is None
+        A list, at the index where the covtype is set to "custom", the element is a user-specified predict function,
+        otherwise it should be set to 'NA'.
+
+    nsamples: Int, default is 0.
+        An integer specifying the number of bootstrap samples to generate.
+
+    compevent_name: Str, default is None
+        A string specifying the name of the competing event variable in obs_data. Only applicable for survival outcomes.
+
+    compevent_model: Str, default is None
+        A string specifying the model statement for the competing event variable. Only applicable for survival outcomes.
+
+    compevent_cens: Bool, default is False
+        A boolean value indicating whether to treat competing events as censoring events.
+
+    intcomp: List, default is None
+        List of two numbers indicating a pair of interventions to be compared by a hazard ratio.
+
+    censor_name: Str, default is None
+        A string specifying the name of the censoring variable in obs_data. Only applicable when using inverse
+        probability weights to estimate the natural course means / risk from the observed data.
+
+    censor_model: Str, default is None
+        A string specifying the model statement for the censoring variable. Only applicable when using inverse
+        probability weights to estimate the natural course means / risk from the observed data.
+
+    model_fits: Bool, default is False
+        A boolean value indicating whether to return the fitted models.
+
+    boot_diag: Bool, default is False
+        A boolean value indicating whether to return the parametric g-formula estimates as well as the coefficients,
+        standard errors, and variance-covariance matrices of the parameters of the fitted models in the bootstrap samples.
+
+    ipw_cutoff_quantile: Float, default is None
+        A percentile by which to truncate inverse probability weights.
+
+    ipw_cutoff_value: Float, default is None
+        A cutoff value by which to truncate inverse probability weights.
+
+    outcome_type: Str, default is None
+        A string specifying the "type" of outcome. The possible "types" are: "survival", "continuous_eof", and "binary_eof".
+
+    trunc_params: List, default is None
+        A list, at the index where the covtype is set to "truncated normal", the list contains two elements.
+        The first element specifies the truncated value and the second element specifies the truncated direction
+        (‘left’ or ‘right’). The values at remaining indexes are set to 'NA'. The list must be the same length as
+        covnames and in the same order.
+
+    time_thresholds: List, default is None
+        A list of integers that splits the time points into different intervals. It is used to create the time variable
+        of "categorical time".
+
+    time_points: Int, default is None
+        An integer indicating the number of time points to simulate. It is set equal to the maximum number of records
+        that obs_data contains for any individual plus 1, if not specified by users.
+
+    n_simul: Int, default is None
+        An integer indicating the number of subjects for whom to simulate data. It is set equal to the number of
+        subjects in obs_data, if not specified by users.
+
+    baselags: Bool, default is False
+        A boolean value specifying the convention used for lagi and lag_cumavgi terms in the model statements when
+        pre-baseline times are not included in obs_data and when the current time index, t, is such that t < i. If this
+        argument is set to False, the value of all lagi and lag_cumavgi terms in this context are set to 0 (for
+        non-categorical covariates) or the reference level (for categorical covariates). If this argument is set to
+        True, the value of lagi and lag_cumavgi terms are set to their values at time 0. The default is False.
+
+    visitprocess: List, default is None
+        List of lists. Each inner list contains its first entry the covariate name of a visit process; its second entry
+        the name of a covariate whose modeling depends on the visit process; and its third entry the maximum number
+        of consecutive visits that can be missed before an individual is censored.
+
+    restrictions: List, default is None
+        A list with lists, each inner list contains its first entry the covariate name of that its deterministic knowledge
+        is known; its second entry is a dictionary whose key is the conditions which should be True when the covariate
+        is modeled, the third entry is the value that is set to the covariate during simulation when the conditions
+        in the second entry are not True.
+
+    yrestrictions: List, default is None
+        A list with lists, for each inner list, its first entry is a dictionary whose key is the conditions which
+        should be True when the outcome is modeled, the second entry is the value that is set to the outcome during
+        simulation when the conditions in the first entry are not True.
+
+    compevent_restrictions: List, default is None
+        A list with lists, for each inner list, its first entry is a dictionary whose key is the conditions which
+        should be True when the competing event is modeled, the second entry is the value that is set to the competing
+        event during simulation when the conditions in the first entry are not True. Only applicable for survival outcomes.
+
+    basecovs: List, default is None
+        A vector of strings specifying the names of baseline covariates in obs_data. These covariates are not
+        simulated using a model but keep the same value at all time points. These covariates should not be included
+        in covnames.
+
+    parallel: Bool, default is False
+        A boolean value indicating whether to parallelize simulations of different interventions to multiple cores.
+
+    ncores: Int, default is None
+        An integer indicating the number of cores used in parallelization. It is set to 1 if not specified by users.
+
+    ref_int: Int, default is None
+        An integer indicating the intervention to be used as the reference for calculating the end-of-follow-up mean
+        ratio and mean difference. 0 denotes the natural course, while subsequent integers denote user-specified
+        interventions in the order that they are named in interventions. It is set to 0 if not specified by users.
+
+    ci_method: Str, default is None
+        A string specifying the method for calculating the bootstrap 95% confidence intervals, if applicable.
+        The options are "percentile" and "normal". It is set to "percentile" if not specified by users.
+
+    seed: Int, default is None
+        An integar indicating the starting seed for simulations and bootstrapping. It is set to 1234 if not specified by users.
+
+    save_path: Path, default is None
+        A path to save all the returned results. A folder will be created automatically in the current working directory
+        if the save_path is not specified by users.
+
+    save_results: Bool, default is False
+        A boolean value indicating whether to save all the returned results to the save_path.
+
+    **interventions: Dict, default is None
+        A dictionary whose key is the treatment name in the intervention with the format Intervention{id}_{treatment_name},
+        value is a list that contains the intervention function, values required by the function, and a list of time
+        points in which the intervention is applied.
+
+            """
     def __init__(self,
                  obs_data,
                  id_name,
@@ -27,7 +200,7 @@ class ParametricGformula:
                  covnames = None,
                  covtypes = None,
                  covmodels=None,
-                 int_descripts=None,
+                 int_descript=None,
                  custom_histvars=None,
                  custom_histories=None,
                  covfits_custom=None,
@@ -64,180 +237,6 @@ class ParametricGformula:
                  **interventions
                  ):
 
-        """
-        G-formula estimation under parametric models.
-
-        Parameters
-        ----------
-        obs_data: DataFrame
-            A data frame containing the observed data.
-
-        id_name: Str
-            A string specifying the name of the id variable in obs_data.
-
-        time_name: Str
-            A string specifying the name of the time variable in obs_data.
-
-        outcome_name: Str
-             A string specifying the name of the outcome variable in obs_data.
-
-        outcome_model: Str
-            A string specifying the model statement for the outcome variable.
-
-        covnames: List, default is None
-             A list of strings specifying the names of the time-varying covariates in obs_data.
-
-        covtypes: List, default is None
-            A list of strings specifying the “type” of each time-varying covariate included in covnames.
-            The supported types: "binary", "normal", "categorical", "bounded normal", "zero-inflated normal",
-            "truncated normal", "absorbing", "categorical time", "square time" and "custom". The list must be the same
-            length as covnames and in the same order.
-
-        covmodels: List, default is None
-            A list of strings, where each string is the model statement of the time-varying covariate. The list
-            must be the same length as covnames and in the same order. If a model is not required for a certain covariate,
-            it should be set to 'NA' at that index.
-
-        int_descripts: List, default is None
-            A list of strings, each of which describes a user-specified intervention.
-
-        custom_histvars: List, default is None
-            A list of strings, each of which specifies the names of the time-varying covariates with user-specified custom histories.
-
-        custom_histories: List, default is None
-            A list of function, each function is the user-specified custom history functions for covariates. The list
-            must be the same length as custom_histvars and in the same order.
-
-        covfits_custom: List, default is None
-            A list, at the index where the covtype is set to "custom", the element is a user-specified fit function,
-            otherwise it should be set to 'NA'. The list must be the same length as covnames and in the same order.
-
-        covpredict_custom: List, default is None
-            A list, at the index where the covtype is set to "custom", the element is a user-specified predict function,
-            otherwise it should be set to 'NA'.
-
-        nsamples: Int, default is 0.
-            An integer specifying the number of bootstrap samples to generate.
-
-        compevent_name: Str, default is None
-            A string specifying the name of the competing event variable in obs_data. Only applicable for survival outcomes.
-
-        compevent_model: Str, default is None
-            A string specifying the model statement for the competing event variable. Only applicable for survival outcomes.
-
-        compevent_cens: Bool, default is False
-            A boolean value indicating whether to treat competing events as censoring events.
-
-        intcomp: List, default is None
-            List of two numbers indicating a pair of interventions to be compared by a hazard ratio.
-
-        censor_name: Str, default is None
-            A string specifying the name of the censoring variable in obs_data. Only applicable when using inverse
-            probability weights to estimate the natural course means / risk from the observed data.
-
-        censor_model: Str, default is None
-            A string specifying the model statement for the censoring variable. Only applicable when using inverse
-            probability weights to estimate the natural course means / risk from the observed data.
-
-        model_fits: Bool, default is False
-            A boolean value indicating whether to return the fitted models.
-
-        boot_diag: Bool, default is False
-            A boolean value indicating whether to return the parametric g-formula estimates as well as the coefficients,
-            standard errors, and variance-covariance matrices of the parameters of the fitted models in the bootstrap samples.
-
-        ipw_cutoff_quantile: Float, default is None
-            A percentile by which to truncate inverse probability weights.
-
-        ipw_cutoff_value: Float, default is None
-            A cutoff value by which to truncate inverse probability weights.
-
-        outcome_type: Str, default is None
-            A string specifying the "type" of outcome. The possible "types" are: "survival", "continuous_eof", and "binary_eof".
-
-        trunc_params: List, default is None
-            A list, at the index where the covtype is set to "truncated normal", the list contains two elements.
-            The first element specifies the truncated value and the second element specifies the truncated direction
-            (‘left’ or ‘right’). The values at remaining indexes are set to 'NA'. The list must be the same length as
-            covnames and in the same order.
-
-        time_thresholds: List, default is None
-            A list of integers that splits the time points into different intervals. It is used to create the time variable
-            of "categorical time".
-
-        time_points: Int, default is None
-            An integer indicating the number of time points to simulate. It is set equal to the maximum number of records
-            that obs_data contains for any individual plus 1, if not specified by users.
-
-        n_simul: Int, default is None
-            An integer indicating the number of subjects for whom to simulate data. It is set equal to the number of
-            subjects in obs_data, if not specified by users.
-
-        baselags: Bool, default is False
-            A boolean value specifying the convention used for lagi and lag_cumavgi terms in the model statements when
-            pre-baseline times are not included in obs_data and when the current time index, t, is such that t < i. If this
-            argument is set to False, the value of all lagi and lag_cumavgi terms in this context are set to 0 (for
-            non-categorical covariates) or the reference level (for categorical covariates). If this argument is set to
-            True, the value of lagi and lag_cumavgi terms are set to their values at time 0. The default is False.
-
-        visitprocess: List, default is None
-            List of lists. Each inner list contains its first entry the covariate name of a visit process; its second entry
-            the name of a covariate whose modeling depends on the visit process; and its third entry the maximum number
-            of consecutive visits that can be missed before an individual is censored.
-
-        restrictions: List, default is None
-            A list with lists, each inner list contains its first entry the covariate name of that its deterministic knowledge
-            is known; its second entry is a dictionary whose key is the conditions which should be True when the covariate
-            is modeled, the third entry is the value that is set to the covariate during simulation when the conditions
-            in the second entry are not True.
-
-        yrestrictions: List, default is None
-            A list with lists, for each inner list, its first entry is a dictionary whose key is the conditions which
-            should be True when the outcome is modeled, the second entry is the value that is set to the outcome during
-            simulation when the conditions in the first entry are not True.
-
-        compevent_restrictions: List, default is None
-            A list with lists, for each inner list, its first entry is a dictionary whose key is the conditions which
-            should be True when the competing event is modeled, the second entry is the value that is set to the competing
-            event during simulation when the conditions in the first entry are not True. Only applicable for survival outcomes.
-
-        basecovs: List, default is None
-            A vector of strings specifying the names of baseline covariates in obs_data. These covariates are not
-            simulated using a model but keep the same value at all time points. These covariates should not be included
-            in covnames.
-
-        parallel: Bool, default is False
-            A boolean value indicating whether to parallelize simulations of different interventions to multiple cores.
-
-        ncores: Int, default is None
-            An integer indicating the number of cores used in parallelization. It is set to 1 if not specified by users.
-
-        ref_int: Int, default is None
-            An integer indicating the intervention to be used as the reference for calculating the end-of-follow-up mean
-            ratio and mean difference. 0 denotes the natural course, while subsequent integers denote user-specified
-            interventions in the order that they are named in interventions. It is set to 0 if not specified by users.
-
-        ci_method: Str, default is None
-            A string specifying the method for calculating the bootstrap 95% confidence intervals, if applicable.
-            The options are "percentile" and "normal". It is set to "percentile" if not specified by users.
-
-        seed: Int, default is None
-            An integar indicating the starting seed for simulations and bootstrapping. It is set to 1234 if not specified by users.
-
-        save_path: Path, default is None
-            A path to save all the returned results. A folder will be created automatically in the current working directory
-            if the save_path is not specified by users.
-
-        save_results: Bool, default is False
-            A boolean value indicating whether to save all the returned results to the save_path.
-
-        **interventions: Dict, default is None
-            A dictionary whose key is the treatment name in the intervention with the format Intervention{id}_{treatment_name},
-            value is a list that contains the intervention function, values required by the function, and a list of time
-            points in which the intervention is applied.
-
-        """
-
         self.obs_data = obs_data
         self.id_name = id_name
         self.time_name = time_name
@@ -246,7 +245,7 @@ class ParametricGformula:
         self.covtypes = covtypes
         self.covmodels = covmodels
         self.outcome_model = outcome_model
-        self.int_descripts = int_descripts
+        self.int_descript = int_descript
         self.interventions = interventions
         self.custom_histvars = custom_histvars
         self.custom_histories = custom_histories
@@ -332,12 +331,12 @@ class ParametricGformula:
         else:
             self.cov_hist = None
 
-        self.intervention_dicts = read_intervention_input(self.interventions, self.int_descripts)
+        self.intervention_dicts = read_intervention_input(self.interventions, self.int_descript)
 
 
         error_catch(obs_data=self.obs_data, id_name=self.id_name, time_points=self.time_points, time_name=self.time_name,
                     interventions=self.interventions, intervention_dicts=self.intervention_dicts,
-                    int_descripts=self.int_descripts, custom_histvars = self.custom_histvars,
+                    int_descript=self.int_descript, custom_histvars = self.custom_histvars,
                     custom_histories = self.custom_histories,
                     covfits_custom = self.covfits_custom, covpredict_custom = covpredict_custom,
                     outcome_name=self.outcome_name, covnames=self.covnames, covtypes=self.covtypes,
@@ -352,7 +351,7 @@ class ParametricGformula:
         if self.outcome_type == 'binary_eof' or self.outcome_type == 'continuous_eof':
             self.time_points = np.max(np.unique(self.obs_data[self.time_name])) + 1
 
-        self.int_descripts = ['Natural course'] + self.int_descripts if self.int_descripts is not None else ['Natural course']
+        self.int_descript = ['Natural course'] + self.int_descript if self.int_descript is not None else ['Natural course']
         self.intervention_dicts.update({'Natural course': natural})
 
         if self.covtypes is not None:
@@ -394,7 +393,7 @@ class ParametricGformula:
                 'covtypes': self.covtypes,
                 'covmodels': self.covmodels,
                 'outcome_model': self.outcome_model,
-                'int_descripts': self.int_descripts,
+                'int_descript': self.int_descript,
                 'nsamples': self.nsamples,
                 'competing': self.competing,
                 'compevent_name': self.compevent_name,
@@ -534,11 +533,11 @@ class ParametricGformula:
                                    baselags=self.baselags, below_zero_indicator=self.below_zero_indicator,
                                    restrictions = self.restrictions, yrestrictions=self.yrestrictions,
                                    compevent_restrictions = self.compevent_restrictions)
-                 for intervention_name in self.int_descripts)
+                 for intervention_name in self.int_descript)
             )
         else:
             self.all_simulate_results = []
-            for intervention_name in self.int_descripts:
+            for intervention_name in self.int_descript:
                 simulate_result = simulate(seed=self.simul_seed, time_points=self.time_points, time_name=self.time_name,
                                    id_name=self.id_name, covnames=self.covnames, basecovs=self.basecovs,
                                    covmodels=self.covmodels,  covtypes=self.covtypes, cov_hist=self.cov_hist,
@@ -568,8 +567,8 @@ class ParametricGformula:
 
         self.pools = [res['pool'] for i, res in enumerate(self.all_simulate_results)]
         self.pool_dict = {}
-        for i in range(len(self.int_descripts)):
-            self.pool_dict[self.int_descripts[i]] = self.pools[i]
+        for i in range(len(self.int_descript)):
+            self.pool_dict[self.int_descript[i]] = self.pools[i]
         self.natural_course_pool = self.pool_dict['Natural course']
 
         # compute non-parametric and parametric covariates means and risks
@@ -618,7 +617,7 @@ class ParametricGformula:
                 self.hazard_ratio = cph.hazard_ratios_.values[0]
 
         if self.nsamples == 0:
-            res_table = get_output(ref_int=self.ref_int, int_descripts=self.int_descripts, censor=self.censor,
+            res_table = get_output(ref_int=self.ref_int, int_descript=self.int_descript, censor=self.censor,
                        obs_res=self.obs_res, g_results=self.g_results,  time_points=self.time_points,
                        ci_method=self.ci_method, time_name=self.time_name, obs_means=self.obs_means,
                        outcome_type=self.outcome_type, nsamples=self.nsamples)
@@ -632,7 +631,7 @@ class ParametricGformula:
                 boot_results_dicts = (
                     Parallel(n_jobs=self.ncores)
                     (delayed(Bootstrap)(obs_data=self.origin_obs_data, boot_id=i, boot_seeds=self.boot_seeds,
-                                                 int_descripts=self.int_descripts,
+                                                 int_descript=self.int_descript,
                                                  intervention_dicts = self.intervention_dicts,
                                                  covnames=self.covnames, basecovs=self.basecovs, cov_hist=self.cov_hist,
                                                  time_points=self.time_points, n_simul=self.n_simul,
@@ -659,7 +658,7 @@ class ParametricGformula:
                 boot_results_dicts = []
                 for i in tqdm(range(self.nsamples), desc='Bootstrap progress'):
                     boot_result_dict = Bootstrap(obs_data=self.origin_obs_data, boot_id=i, boot_seeds=self.boot_seeds,
-                                                 int_descripts=self.int_descripts,
+                                                 int_descript=self.int_descript,
                                                  intervention_dicts=self.intervention_dicts,
                                                  covnames=self.covnames, basecovs=self.basecovs, cov_hist=self.cov_hist,
                                                  time_points=self.time_points, n_simul=self.n_simul,
@@ -685,8 +684,8 @@ class ParametricGformula:
 
             self.boot_results = [boot_results_dicts[i]['boot_results'] for i in range(self.nsamples) if boot_results_dicts[i]['boot_results'] is not None]
 
-            self.bootests = {'sample_{0}_estimates'.format(i): {self.int_descripts[j]:
-                             boot_results_dicts[i]['boot_results'][j] for j in range(len(self.int_descripts))}
+            self.bootests = {'sample_{0}_estimates'.format(i): {self.int_descript[j]:
+                             boot_results_dicts[i]['boot_results'][j] for j in range(len(self.int_descript))}
                              for i in range(self.nsamples)}
             self.bootcoeffs = {'sample_{0}_coeffs'.format(i): boot_results_dicts[i]['bootcoeffs'] for i in
                                range(self.nsamples)}
@@ -698,7 +697,7 @@ class ParametricGformula:
                 get_hr_output(boot_results_dicts=boot_results_dicts, nsamples=self.nsamples, ci_method=self.ci_method,
                               hazard_ratio=self.hazard_ratio)
 
-            res_table = get_output(ref_int=self.ref_int, int_descripts=self.int_descripts,
+            res_table = get_output(ref_int=self.ref_int, int_descript=self.int_descript,
                                    censor=self.censor, obs_res=self.obs_res, g_results=self.g_results,
                                    time_points=self.time_points, ci_method=self.ci_method, time_name=self.time_name,
                                    obs_means=self.obs_means, outcome_type=self.outcome_type, nsamples=self.nsamples,
@@ -739,7 +738,7 @@ class ParametricGformula:
 
     def plot_natural_course(self, plot_name='all', colors=None, marker='o', markersize=4, linewidth=0.5,
                             save_figure=False):
-        plot_nc_comparison(time_points=self.time_points, covnames=self.covnames, covtypes=self.covtypes,
+        plot_natural_course(time_points=self.time_points, covnames=self.covnames, covtypes=self.covtypes,
                            time_name=self.time_name, obs_data=self.obs_data, obs_means=self.obs_means,
                            est_means=self.est_means, censor=self.censor,
                            outcome_type=self.outcome_type, plot_name=plot_name, colors=colors,
@@ -748,6 +747,6 @@ class ParametricGformula:
 
     def plot_interventions(self, colors=None, marker='o', markersize=4, linewidth=0.5, save_figure=False):
         plot_interventions(time_points=self.time_points, time_name=self.time_name, risk_results=self.g_results,
-                           int_descripts=self.int_descripts, outcome_type=self.outcome_type,
+                           int_descript=self.int_descript, outcome_type=self.outcome_type,
                            colors=colors, marker=marker, markersize=markersize, linewidth=linewidth,
                            save_path=self.save_path, save_figure=save_figure, boot_table=self.boot_table)
