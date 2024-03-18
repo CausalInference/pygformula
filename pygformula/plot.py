@@ -107,7 +107,7 @@ def plot_categorical(plot_name, cov_name, categorical_obs_mean, categorical_est_
     plt.show()
 
 
-def plot_nc_comparison(time_points, covnames, covtypes, time_name, obs_data, obs_means, est_means, censor, outcome_type, plot_name,
+def plot_natural_course(time_points, covnames, covtypes, time_name, obs_data, obs_means, est_means, censor, outcome_type, plot_name,
                        marker, markersize, linewidth, colors, save_path, save_figure, boot_table):
 
     """
@@ -328,7 +328,7 @@ def plot_nc_comparison(time_points, covnames, covtypes, time_name, obs_data, obs
         plt.show()
 
 
-def plot_interventions(time_points, time_name, risk_results, int_descripts, outcome_type,
+def plot_interventions(time_points, time_name, risk_results, int_descript, outcome_type,
                        colors, marker, markersize, linewidth, save_path, save_figure, boot_table):
     """
     An internal function to plot the risk results comparison of all interventions and the natural course.
@@ -345,7 +345,7 @@ def plot_interventions(time_points, time_name, risk_results, int_descripts, outc
     risk_results: List
         A list contains the risk estimates at all the time points of all interventions.
 
-    int_descripts: List
+    int_descript: List
         A list of strings, each describing a user-specified intervention.
 
     outcome_type: Str
@@ -385,12 +385,12 @@ def plot_interventions(time_points, time_name, risk_results, int_descripts, outc
         raise ValueError('The plot_interventions function is only applicable when the outcome_type is survival.')
 
     if colors is None:
-        colors = list(mcolors.XKCD_COLORS)[:len(int_descripts)]
+        colors = list(mcolors.XKCD_COLORS)[:len(int_descript)]
 
     plt.grid(linestyle="--")
     plt.gca().spines['top'].set_visible(False)
     plt.gca().spines['right'].set_visible(False)
-    for index, intervention_name in enumerate(int_descripts):
+    for index, intervention_name in enumerate(int_descript):
         risk_result = risk_results[index]
         risk_result = risk_result.copy()
         risk_result.insert(0, 0)

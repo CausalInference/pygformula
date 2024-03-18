@@ -8,7 +8,7 @@ from .fit import fit_covariate_model, fit_outcome_model, fit_compevent_model
 from ..utils.helper import hr_data_helper, hr_comp_data_helper
 
 
-def Bootstrap(obs_data, boot_id, boot_seeds, int_descripts, intervention_dicts, covnames,
+def Bootstrap(obs_data, boot_id, boot_seeds, int_descript, intervention_dicts, covnames,
               basecovs, cov_hist, time_points, n_simul, time_name, id_name, custom_histvars, custom_histories,
               covmodels, hazardratio, intcomp, covtypes, covfits_custom, covpredict_custom,
               outcome_model, outcome_type, outcome_name, competing, compevent_name, compevent_model, compevent_cens,
@@ -28,7 +28,7 @@ def Bootstrap(obs_data, boot_id, boot_seeds, int_descripts, intervention_dicts, 
     boot_seeds: List
         A list that stores the random seeds of all bootstrap samples.
 
-    int_descripts: List
+    int_descript: List
         A list of strings, each of which describes a user-specified intervention.
 
     intervention_dicts: Dict
@@ -238,7 +238,7 @@ def Bootstrap(obs_data, boot_id, boot_seeds, int_descripts, intervention_dicts, 
 
         boot_results = []
         boot_pools = []
-        for intervention_name in int_descripts:
+        for intervention_name in int_descript:
             boot_result = simulate(seed=boot_seeds[boot_id], time_points=time_points, time_name=time_name,
                                        id_name=id_name, covnames=covnames, basecovs=basecovs,
                                        covmodels=covmodels,  covtypes=covtypes, cov_hist=cov_hist,
