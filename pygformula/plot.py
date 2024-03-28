@@ -352,8 +352,7 @@ def plot_interventions(time_points, time_name, risk_results, int_descript, outco
         A string specifying the "type" of outcome. The possible "types" are: "survival", "continuous_eof", and "binary_eof".
 
     colors: List
-        A list that contains two strings, the first specifies the color for plotting nonparametric estimates, the second
-        specifies the color for plotting the parametric estimates.
+        A list that contains strings, each of which specifies the color for plotting the risk curve of the intervention.
 
     marker: Str
         A string used to customize the appearance of points in plotting.
