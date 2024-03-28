@@ -1,0 +1,9 @@
+# Fdb version 4
+["pdflatex"] 0 "pygformula.tex" "pygformula.pdf" "pygformula" 0 -1
+  "pygformula.aux" 0 -1 0 "pdflatex"
+  "pygformula.tex" 0 -1 0 ""
+  (generated)
+  "pygformula.aux"
+  "pygformula.log"
+  "pygformula.pdf"
+  (rewritten before read)
