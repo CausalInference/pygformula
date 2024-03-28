@@ -26,11 +26,11 @@ outcome_model = 'event ~ cd4_v + rna_v + everhaart + sex + race + month'
 
 time_points = np.max(np.unique(obs_data[time_name])) + 1
 
-int_descripts = ['Never treat', 'Always treat']
+int_descript = ['Never treat', 'Always treat']
 
 
 g = ParametricGformula(obs_data = obs_data, id_name = id_name,  time_name = time_name, visitprocess = visitprocess,
-                  int_descripts = int_descripts,
+                  int_descript = int_descript,
                   Intervention1_everhaart = [static, np.zeros(time_points)],
                   Intervention2_everhaart = [static, np.ones(time_points)],
                   covnames=covnames,  covtypes=covtypes, covmodels=covmodels, basecovs = basecovs,

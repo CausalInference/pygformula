@@ -5,9 +5,9 @@ Competing event
 
 In the presence of competing events, users may choose whether to treat competing
 events as censoring events. When competing events are treated as censoring events,
-risks under different treatment strategies are calculated under elimination of
+risks under different interventions are calculated under elimination of
 competing events, and are obtained by the Kaplan–Meier estimator.
-When competing events are not treated as censoring events, risks under different treatment strategies are calculated without elimination of
+When competing events are not treated as censoring events, risks under different interventions are calculated without elimination of
 competing events, and are obtained by using an estimate of the subdistribution cumulative incidence function [1]_ [2]_.
 
 The arguments for competing events:
@@ -16,16 +16,12 @@ The arguments for competing events:
     :header-rows: 1
 
     * - Arguments
-      - Default
       - Description
     * - compevent_name
-      - False
       - (Optional) A string specifying the name of the competing event variable in obs_data. Only applicable for survival outcomes..
     * - compevent_model
-      - None
       - (Optional) A string specifying the model statement for the competing event variable. Only applicable for survival outcomes.
     * - compevent_cens
-      - False
       - (Optional) A boolean value indicating whether to treat competing events as censoring events.
 
 
@@ -45,7 +41,7 @@ Users should also specify the argument ‘‘compevent_cens’’ as True or Fal
 event as censoring event.
 
 
-**Running example**:
+**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_competing_event.py>`_:
 
 .. code-block::
 
@@ -74,17 +70,20 @@ event as censoring event.
         compevent_cens = False
 
         time_points = np.max(np.unique(obs_data[time_name])) + 1
-        int_descripts = ['Never treat', 'Always treat']
-        interventions = [[[static, np.zeros(time_points)]], [[static, np.ones(time_points)]]]
-        intvars = [['A'], ['A']]
+        int_descript = ['Never treat', 'Always treat']
 
 
-        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_points = time_points, time_name=time_name,
-                          int_descripts = int_descripts, interventions=interventions, intvars=intvars,
-                          basecovs =basecovs, covnames=covnames,  covtypes=covtypes, covmodels=covmodels,
-                          compevent_cens= compevent_cens, compevent_name = compevent_name, compevent_model=compevent_model,
-                          outcome_name=outcome_name, outcome_type='survival', outcome_model=outcome_model)
+        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_points = time_points,
+            time_name=time_name,
+            int_descript = int_descript,
+            Intervention1_A = [static, np.zeros(time_points)],
+            Intervention2_A = [static, np.ones(time_points)],
+            basecovs =basecovs, covnames=covnames,  covtypes=covtypes, covmodels=covmodels,
+            compevent_cens= compevent_cens, compevent_name = compevent_name,
+            compevent_model=compevent_model,
+            outcome_name=outcome_name, outcome_type='survival', outcome_model=outcome_model)
         g.fit()
+
 
 **Output**:
 

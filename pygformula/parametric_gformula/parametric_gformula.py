@@ -167,8 +167,8 @@ class ParametricGformula:
         An integer indicating the number of cores used in parallelization. It is set to 1 if not specified by users.
 
     ref_int: Int, default is None
-        An integer indicating the intervention to be used as the reference for calculating the end-of-follow-up mean
-        ratio and mean difference. 0 denotes the natural course, while subsequent integers denote user-specified
+        An integer indicating the intervention to be used as the reference for calculating the end-of-follow-up mean/risk
+        ratio and mean/risk difference. 0 denotes the natural course, while subsequent integers denote user-specified
         interventions in the order that they are named in interventions. It is set to 0 if not specified by users.
 
     ci_method: Str, default is None

@@ -94,36 +94,30 @@
 <span id="id1"></span><h1>Censoring event<a class="headerlink" href="#censoring-event" title="Permalink to this headline"></a></h1>
 <p>In the presence of censoring, the name of the censoring variable in the input data should be specified,
 users also need to specify a censor model.
-Here the censor model is used for nonparametric estimate of natural course which applies inverse probability weighting method <a class="footnote-reference brackets" href="#id3" id="id2">1</a> in estimation.
+Here the censor model is used for nonparametric estimate of natural course which applies inverse probability weighting method <a class="footnote-reference brackets" href="#id3" id="id2">1</a>.
 Meanwhile, the compared parametric g-formula involves a hypothetical intervention to abolish censoring.</p>
 <p>The arguments for censoring events:</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 33%" />
-<col style="width: 33%" />
-<col style="width: 33%" />
+<col style="width: 50%" />
+<col style="width: 50%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Arguments</p></th>
-<th class="head"><p>Default</p></th>
 <th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>censor_name</p></td>
-<td><p>None</p></td>
 <td><p>(Optional) A string specifying the name of the censoring variable in obs_data.</p></td>
 </tr>
 <tr class="row-odd"><td><p>censor_model</p></td>
-<td><p>None</p></td>
 <td><p>(Optional) A string specifying the model statement for the censoring variable.</p></td>
 </tr>
 <tr class="row-even"><td><p>ipw_cutoff_quantile</p></td>
-<td><p>None</p></td>
 <td><p>(Optional) A percentile by which to truncate inverse probability weights.</p></td>
 </tr>
 <tr class="row-odd"><td><p>ipw_cutoff_value</p></td>
-<td><p>None</p></td>
 <td><p>(Optional) A cutoff value by which to truncate inverse probability weights.</p></td>
 </tr>
 </tbody>
@@ -142,7 +136,7 @@ Meanwhile, the compared parametric g-formula involves a hypothetical interventio
 <p>When there are categorical covariates (which are assigned a ‘C’ symbol) in the model statement of censoring variable,
 please name the censoring variable any name except ‘C’ to avoild name confusion.</p>
 </div>
-<p><strong>Running example</strong>:</p>
+<p><strong>Running example</strong> <a class="reference external" href="https://github.com/CausalInference/pygformula/blob/main/running_examples/test_censor.py">[code]</a>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pygformula</span>
 <span class="kn">from</span> <span class="nn">pygformula</span> <span class="kn">import</span> <span class="n">ParametricGformula</span>
@@ -166,16 +160,17 @@ please name the censoring variable any name except ‘C’ to avoild name confus
 <span class="n">censor_model</span> <span class="o">=</span> <span class="s1">&#39;C ~ A + L&#39;</span>
 
 <span class="n">time_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">obs_data</span><span class="p">[</span><span class="n">time_name</span><span class="p">]))</span> <span class="o">+</span> <span class="mi">1</span>
-<span class="n">int_descripts</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Never treat&#39;</span><span class="p">,</span> <span class="s1">&#39;Always treat&#39;</span><span class="p">]</span>
-<span class="n">interventions</span> <span class="o">=</span> <span class="p">[[[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">time_points</span><span class="p">)]],</span> <span class="p">[[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">time_points</span><span class="p">)]]]</span>
-<span class="n">intvars</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;A&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">]]</span>
+<span class="n">int_descript</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Never treat&#39;</span><span class="p">,</span> <span class="s1">&#39;Always treat&#39;</span><span class="p">]</span>
 
 
-<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="n">obs_data</span> <span class="o">=</span> <span class="n">obs_data</span><span class="p">,</span> <span class="n">id_name</span> <span class="o">=</span> <span class="n">id_name</span><span class="p">,</span> <span class="n">time_name</span><span class="o">=</span><span class="n">time_name</span><span class="p">,</span> <span class="n">time_points</span> <span class="o">=</span> <span class="n">time_points</span><span class="p">,</span>
-             <span class="n">int_descripts</span><span class="o">=</span><span class="n">int_descripts</span><span class="p">,</span> <span class="n">interventions</span><span class="o">=</span><span class="n">interventions</span><span class="p">,</span> <span class="n">intvars</span><span class="o">=</span><span class="n">intvars</span><span class="p">,</span>
-             <span class="n">censor_name</span><span class="o">=</span> <span class="n">censor_name</span><span class="p">,</span> <span class="n">censor_model</span><span class="o">=</span><span class="n">censor_model</span><span class="p">,</span>
-             <span class="n">covnames</span> <span class="o">=</span> <span class="n">covnames</span><span class="p">,</span> <span class="n">covtypes</span> <span class="o">=</span> <span class="n">covtypes</span><span class="p">,</span> <span class="n">covmodels</span> <span class="o">=</span> <span class="n">covmodels</span><span class="p">,</span>
-             <span class="n">outcome_name</span><span class="o">=</span><span class="n">outcome_name</span><span class="p">,</span> <span class="n">outcome_model</span><span class="o">=</span><span class="n">outcome_model</span><span class="p">,</span> <span class="n">outcome_type</span><span class="o">=</span><span class="s1">&#39;survival&#39;</span><span class="p">)</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="n">obs_data</span> <span class="o">=</span> <span class="n">obs_data</span><span class="p">,</span> <span class="n">id_name</span> <span class="o">=</span> <span class="n">id_name</span><span class="p">,</span> <span class="n">time_name</span><span class="o">=</span><span class="n">time_name</span><span class="p">,</span>
+    <span class="n">time_points</span> <span class="o">=</span> <span class="n">time_points</span><span class="p">,</span>
+    <span class="n">int_descript</span><span class="o">=</span><span class="n">int_descript</span><span class="p">,</span>
+    <span class="n">Intervention1_A</span> <span class="o">=</span> <span class="p">[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">time_points</span><span class="p">)],</span>
+    <span class="n">Intervention2_A</span> <span class="o">=</span> <span class="p">[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">time_points</span><span class="p">)],</span>
+    <span class="n">censor_name</span><span class="o">=</span> <span class="n">censor_name</span><span class="p">,</span> <span class="n">censor_model</span><span class="o">=</span><span class="n">censor_model</span><span class="p">,</span>
+    <span class="n">covnames</span> <span class="o">=</span> <span class="n">covnames</span><span class="p">,</span> <span class="n">covtypes</span> <span class="o">=</span> <span class="n">covtypes</span><span class="p">,</span> <span class="n">covmodels</span> <span class="o">=</span> <span class="n">covmodels</span><span class="p">,</span>
+    <span class="n">outcome_name</span><span class="o">=</span><span class="n">outcome_name</span><span class="p">,</span> <span class="n">outcome_model</span><span class="o">=</span><span class="n">outcome_model</span><span class="p">,</span> <span class="n">outcome_type</span><span class="o">=</span><span class="s1">&#39;survival&#39;</span><span class="p">)</span>
 <span class="n">g</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -201,7 +196,7 @@ please name the censoring variable any name except ‘C’ to avoild name confus
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023, CAUSALab.</p>
+    <p>&#169; Copyright 2024, CAUSALab.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

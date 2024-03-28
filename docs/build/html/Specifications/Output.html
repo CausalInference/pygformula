@@ -58,7 +58,7 @@
 <li class="toctree-l2"><a class="reference internal" href="Deterministic%20knowledge.html">Deterministic knowledge</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Output</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#numerical-results">Numerical results</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#graphical-results">Graphical results</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pygformula.plot">Graphical results</a></li>
 </ul>
 </li>
 </ul>
@@ -114,6 +114,13 @@ each specified intervention, which can be obtained by:</p>
 <p>To get the simulated data under a particular intervention:</p>
 <blockquote>
 <div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sim_data</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">summary_dict</span><span class="p">[</span><span class="s1">&#39;sim_data&#39;</span><span class="p">][</span><span class="n">intervention_name</span><span class="p">]</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p><strong>The IP weights</strong>: To get the inverse probability weights when there is censoring event:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ip_weights</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">summary_dict</span><span class="p">[</span><span class="s1">&#39;IP_weights&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -315,131 +322,202 @@ argument ‘‘save_path’’:</p>
 <p><strong>Arguments</strong>:</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 33%" />
-<col style="width: 33%" />
-<col style="width: 33%" />
+<col style="width: 50%" />
+<col style="width: 50%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Arguments</p></th>
-<th class="head"><p>Default</p></th>
 <th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>n_simul</p></td>
-<td><p>The number of subjects in the input data</p></td>
-<td><p>(Optional) An integer indicating the number of subjects for whom to simulate data.</p></td>
+<td><p>(Optional) An integer indicating the number of subjects for whom to simulate data. The default is the number of subjects in the input data.</p></td>
 </tr>
 <tr class="row-odd"><td><p>ref_int</p></td>
-<td><p>0</p></td>
 <td><p>(Optional) An integer indicating the intervention to be used as the reference for calculating the end-of-follow-up mean
 ratio and mean difference. 0 denotes the natural course, while subsequent integers denote user-specified
 interventions in the order that they are named in interventions.</p></td>
 </tr>
 <tr class="row-even"><td><p>nsamples</p></td>
-<td><p>None</p></td>
 <td><p>(Optional) An integer specifying the number of bootstrap samples to generate.</p></td>
 </tr>
 <tr class="row-odd"><td><p>parallel</p></td>
-<td><p>False</p></td>
 <td><p>(Optional) A boolean value indicating whether to parallelize simulations of different interventions to multiple cores.</p></td>
 </tr>
 <tr class="row-even"><td><p>ncores</p></td>
-<td><p>1</p></td>
 <td><p>(Optional) An integer indicating the number of cores used in parallelization. It is set to 1 if not specified by users.</p></td>
 </tr>
 <tr class="row-odd"><td><p>model_fits</p></td>
-<td><p>False</p></td>
 <td><p>(Optional) A boolean value indicating whether to return the fitted models.</p></td>
 </tr>
 <tr class="row-even"><td><p>ci_method</p></td>
-<td><p>“percentile”</p></td>
 <td><p>(Optional) A string specifying the method for calculating the bootstrap 95% confidence intervals, if applicable.
 The options are “percentile” and “normal”.</p></td>
 </tr>
 <tr class="row-odd"><td><p>boot_diag</p></td>
-<td><p>False</p></td>
 <td><p>(Optional) A boolean value indicating whether to return the parametric g-formula estimates as well as the coefficients,
 standard errors, and variance-covariance matrices of the parameters of the fitted models in the bootstrap samples.</p></td>
 </tr>
 <tr class="row-even"><td><p>save_results</p></td>
-<td><p>False</p></td>
 <td><p>(Optional) A boolean value indicating whether to save all the returned results to the save_path.</p></td>
 </tr>
 <tr class="row-odd"><td><p>save_path</p></td>
-<td><p>None</p></td>
 <td><p>(Optional) A path to save all the returned results. A folder will be created automatically in the current working directory
 if the save_path is not specified by users.</p></td>
 </tr>
 <tr class="row-even"><td><p>seed</p></td>
-<td><p>1234</p></td>
 <td><p>(Optional) An integar indicating the starting seed for simulations and bootstrapping.</p></td>
 </tr>
 </tbody>
 </table>
 </section>
-<section id="graphical-results">
-<h2>Graphical results<a class="headerlink" href="#graphical-results" title="Permalink to this headline"></a></h2>
+<section id="module-pygformula.plot">
+<span id="graphical-results"></span><h2>Graphical results<a class="headerlink" href="#module-pygformula.plot" title="Permalink to this headline"></a></h2>
 <p>The package also provides two plotting functions: “plot_natural_course” and “plot_interventions”.
 The plot_natural_course function plots the curves of each covariate mean (for all types of outcome) and risk (for survival outcomes only) under g-formula parametric and
-non-parametric estimation, which is called by:</p>
-<blockquote>
-<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">g</span><span class="o">.</span><span class="n">plot_natural_course</span><span class="p">()</span>
-</pre></div>
-</div>
-</div></blockquote>
-<p>The plot_interventions fucntion plots the curves of risk under interventions of interest (for survival outcomes only), which is called by:</p>
-<blockquote>
-<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">g</span><span class="o">.</span><span class="n">plot_interventions</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>Users can also specify the following arguments to customize the graph:</p>
+non-parametric estimation.</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pygformula.plot.plot_natural_course" title="pygformula.plot.plot_natural_course"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_natural_course</span></code></a>(time_points, covnames, ...)</p></td>
+<td><p>This is an internal function that plots the results comparison of covariate means and risks between non-parametric estimates and g-formula parametric estimates.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py function">
+<dt class="sig sig-object py" id="pygformula.plot.plot_natural_course">
+<span class="sig-prename descclassname"><span class="pre">pygformula.plot.</span></span><span class="sig-name descname"><span class="pre">plot_natural_course</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_points</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">covnames</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">covtypes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obs_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obs_means</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">est_means</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">censor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outcome_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marker</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">markersize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linewidth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_figure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boot_table</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygformula.plot.plot_natural_course" title="Permalink to this definition"></a></dt>
+<dd><p>This is an internal function that plots the results comparison of covariate means and risks between non-parametric
+estimates and g-formula parametric estimates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>time_points</strong> (<em>Int</em>) – An integer indicating the number of time points to simulate. It is set equal to the maximum number of records
+that obs_data contains for any individual plus 1, if not specified by users.</p></li>
+<li><p><strong>covnames</strong> (<em>List</em>) – A list of strings specifying the names of the time-varying covariates in obs_data.</p></li>
+<li><p><strong>covtypes</strong> (<em>List</em>) – A list of strings specifying the “type” of each time-varying covariate included in covnames.
+The supported types: “binary”, “normal”, “categorical”, “bounded normal”, “zero-inflated normal”,
+“truncated normal”, “absorbing”, “categorical time”, “square time” and “custom”. The list must be the same length
+as covnames and in the same order.</p></li>
+<li><p><strong>time_name</strong> (<em>Str</em>) – A string specifying the name of the time variable in obs_data.</p></li>
+<li><p><strong>obs_data</strong> (<em>DataFrame</em>) – A data frame containing the observed data.</p></li>
+<li><p><strong>obs_means</strong> (<em>Dict</em>) – A dictionary, where the key is the covariate / risk name and the value is its observational mean at all the time points.</p></li>
+<li><p><strong>est_means</strong> (<em>Dict</em>) – A dictionary, where the key is the covariate / risk name and the value is its parametric mean at all the time points.</p></li>
+<li><p><strong>censor</strong> (<em>Bool</em>) – A boolean value indicating the if there is a censoring event.</p></li>
+<li><p><strong>outcome_type</strong> (<em>Str</em>) – A string specifying the “type” of outcome. The possible “types” are: “survival”, “continuous_eof”, and “binary_eof”.</p></li>
+<li><p><strong>plot_name</strong> (<em>Str</em>) – A string specifying the name for plotting, which is set to “all”, “risk” or one specific covariate name.</p></li>
+<li><p><strong>marker</strong> (<em>Str</em>) – A string used to customize the appearance of points in plotting.</p></li>
+<li><p><strong>markersize</strong> (<em>Int</em>) – An integer specifies the size of the markers in plotting.</p></li>
+<li><p><strong>linewidth</strong> (<em>Float</em>) – A number that specifies the width of the line in plotting.</p></li>
+<li><p><strong>colors</strong> (<em>List</em>) – A list that contains two strings, the first specifies the color for plotting nonparametric estimates, the second
+specifies the color for plotting the parametric estimates.</p></li>
+<li><p><strong>save_path</strong> (<em>Path</em>) – A path to save all the figure results. A folder will be created automatically in the current working directory
+if the save_path is not specified by users.</p></li>
+<li><p><strong>save_figure</strong> (<em>Bool</em>) – A boolean value indicating whether to save the figure or not.</p></li>
+<li><p><strong>boot_table</strong> (<em>DataFrame</em>) – A DataFrame with nonparametric risk and parametric risks of all interventions.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Nothing is returned, the figure will be shown.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>The plot_interventions fucntion plots the curves of risk under interventions of interest (for survival outcomes only).</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pygformula.plot.plot_interventions" title="pygformula.plot.plot_interventions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_interventions</span></code></a>(time_points, time_name, ...)</p></td>
+<td><p>An internal function to plot the risk results comparison of all interventions and the natural course.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py function">
+<dt class="sig sig-object py" id="pygformula.plot.plot_interventions">
+<span class="sig-prename descclassname"><span class="pre">pygformula.plot.</span></span><span class="sig-name descname"><span class="pre">plot_interventions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_points</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">risk_results</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">int_descript</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outcome_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marker</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">markersize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linewidth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_figure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boot_table</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygformula.plot.plot_interventions" title="Permalink to this definition"></a></dt>
+<dd><p>An internal function to plot the risk results comparison of all interventions and the natural course.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>time_points</strong> (<em>Int</em>) – An integer indicating the number of time points to simulate. It is set equal to the maximum number of records
+that obs_data contains for any individual plus 1, if not specified by users.</p></li>
+<li><p><strong>time_name</strong> (<em>Str</em>) – A string specifying the name of the time variable in obs_data.</p></li>
+<li><p><strong>risk_results</strong> (<em>List</em>) – A list contains the risk estimates at all the time points of all interventions.</p></li>
+<li><p><strong>int_descript</strong> (<em>List</em>) – A list of strings, each describing a user-specified intervention.</p></li>
+<li><p><strong>outcome_type</strong> (<em>Str</em>) – A string specifying the “type” of outcome. The possible “types” are: “survival”, “continuous_eof”, and “binary_eof”.</p></li>
+<li><p><strong>colors</strong> (<em>List</em>) – A list that contains strings, each of which specifies the color for plotting the risk curve of the intervention.</p></li>
+<li><p><strong>marker</strong> (<em>Str</em>) – A string used to customize the appearance of points in plotting.</p></li>
+<li><p><strong>markersize</strong> (<em>Int</em>) – An integar specifies the size of the markers in plotting.</p></li>
+<li><p><strong>linewidth</strong> (<em>Float</em>) – A number that specifies the width of the line in plotting.</p></li>
+<li><p><strong>save_path</strong> (<em>Path</em>) – A path to save all the figure results. A folder will be created automatically in the current working directory
+if the save_path is not specified by users.</p></li>
+<li><p><strong>save_figure</strong> (<em>Bool</em>) – A boolean value indicating whether to save the figure or not.</p></li>
+<li><p><strong>boot_table</strong> (<em>DataFrame</em>) – A DataFrame with nonparametric risk and parametric risks of all interventions.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Nothing is returned, the figure will be shown.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Arguments for plotting:</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 33%" />
-<col style="width: 33%" />
-<col style="width: 33%" />
+<col style="width: 50%" />
+<col style="width: 50%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Arguments</p></th>
-<th class="head"><p>Default</p></th>
 <th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>plot_name</p></td>
-<td><p>‘all’</p></td>
-<td><p>(Optional) This argument is only applicable for plot_natural_course function. Users can specify the plotting variable of interest. If not specified, the function
-will return plotting results of all covariates and risks.</p></td>
+<td><p>A string specifying the name for plotting, which is set to “all”, “risk” or one specific covariate name. Only
+applicable for the plot_natural_course function. The default is “all”.</p></td>
 </tr>
 <tr class="row-odd"><td><p>colors</p></td>
-<td><p>None</p></td>
-<td><p>(Optional) For plot_natural_course function, it is a list wth two elements, specifying the non-parametric estimate curve and parametric curve respectively.
+<td><p>For plot_natural_course function, it is a list wth two elements, specifying the non-parametric estimate curve and parametric curve respectively.
 Users can choose colors from <a class="reference external" href="https://matplotlib.org/stable/gallery/color/named_colors.html">matplotlib colors</a>.
-For plot_natural_course function, it is a list wth m elements with m the number of interventions plus 1,
+For plot_interventions function, it is a list wth m elements with m the number of interventions plus 1,
 specifying all intervention curves. If not specified, the function will use default colors.</p></td>
 </tr>
 <tr class="row-even"><td><p>marker</p></td>
-<td><p>‘o’</p></td>
-<td><p>(Optional) Marker style at each data point. Users can also choose markers from
+<td><p>A string used to customize the appearance of points in plotting. Users can also choose markers from
 <a class="reference external" href="https://matplotlib.org/stable/api/markers_api.html">matplotlib markers</a> library.</p></td>
 </tr>
 <tr class="row-odd"><td><p>markersize</p></td>
-<td><p>4</p></td>
-<td><p>(Optional) Float, specifying the area of the marker.</p></td>
+<td><p>An integer specifies the size of the markers in plotting.</p></td>
 </tr>
 <tr class="row-even"><td><p>linewidth</p></td>
-<td><p>0.5</p></td>
-<td><p>(Optional) Float, specifying the thickness of lines.</p></td>
+<td><p>A number that specifies the width of the line in plotting.</p></td>
 </tr>
 <tr class="row-odd"><td><p>save_figure</p></td>
-<td><p>False</p></td>
-<td><p>(Optional) Bool value, specifying whether to save the plotting graph to the save_path folder.</p></td>
+<td><p>A boolean value indicating whether to save the figure or not.</p></td>
 </tr>
 </tbody>
 </table>
+<p>Users can call the ‘plot_natural_course’ function by:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">g</span><span class="o">.</span><span class="n">plot_natural_course</span><span class="p">()</span>
+</pre></div>
+</div>
 </div></blockquote>
-<p>Note that the plotting functions can only be applied after calling the ‘fit’ function.</p>
+<p>Users can call the ‘plot_interventions’ function by:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">g</span><span class="o">.</span><span class="n">plot_interventions</span><span class="p">()</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Note that the plotting functions can only be applied after calling the ‘g.fit’ function.</p>
 <p>The figures can be saved by the argument ‘‘save_figure’’, once it is set to True,
 results will be saved locally by creating a folder automatically. If the argument ‘‘save_path’’ is specified, the figure will be saved to the corresponding folder.</p>
 <p><strong>Sample syntax</strong>:</p>
@@ -466,7 +544,7 @@ when running the package on Linux system.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023, CAUSALab.</p>
+    <p>&#169; Copyright 2024, CAUSALab.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

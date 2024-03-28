@@ -99,8 +99,8 @@ def threshold(new_df, pool, int_var, threshold_values, time_name, t):
 
 def natural_grace_period(new_df, pool, int_var, nperiod, conditions, time_name, t):
     """
-    This is a pre-coded function to perform a natural grace period intervention. Once a conditional covariate (cond_var)
-    meets a threshold level, the treatment (intvar) is initiated within m (nperiod) time intervals which is the duration
+    This is a pre-coded function to perform a natural grace period intervention. Once a conditional covariate
+    meets a threshold level, the treatment (int_var) is initiated within m (nperiod) time intervals which is the duration
     of the grace period. During grace period, the treatment takes its natural value.
 
     Parameters
@@ -111,8 +111,8 @@ def natural_grace_period(new_df, pool, int_var, nperiod, conditions, time_name, 
     pool: DataFrame
         A DataFrame that contains data frame up to time t.
 
-    int_var: List
-        A list contains strings of treatment names to be intervened in a particular intervention.
+    int_var: Str
+        A string specifying the treatment variable to be intervened.
 
     nperiod: Int
         An integar indicating the duration of the grace period.
@@ -157,8 +157,8 @@ def natural_grace_period(new_df, pool, int_var, nperiod, conditions, time_name, 
 
 def uniform_grace_period(new_df, pool, int_var, nperiod, conditions, time_name, t):
     """
-    This is a pre-coded function to perform a uniform grace period intervention. Once a conditional covariate (cond_var)
-    meets a threshold level, the treatment (intvar) is initiated within m (nperiod) time intervals which is the duration
+    This is a pre-coded function to perform a uniform grace period intervention. Once a conditional covariate
+    meets a threshold level, the treatment (int_var) is initiated within m (nperiod) time intervals which is the duration
     of the grace period. During grace period, treatment initiation is randomly allocated with a uniform probability of
     starting treatment in each time interval of the grace period.
 
@@ -170,8 +170,8 @@ def uniform_grace_period(new_df, pool, int_var, nperiod, conditions, time_name, 
     pool: DataFrame
         A DataFrame that contains data frame up to time t.
 
-    int_var: List
-        A list contains strings of treatment names to be intervened in a particular intervention.
+    int_var: Str
+        A string specifying the treatment variable to be intervened.
 
     nperiod: Int
         An integar indicating the duration of the grace period.

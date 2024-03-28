@@ -9,7 +9,7 @@ end of follow-up outcomes and continuous end of follow-up outcomes.
 
 For all types of outcomes, users should specify the name of outcome in the argument ‘‘outcome_name’’, and the model
 statement for outcome variable in the argument ‘‘outcome_model’’. If users are interested in the probability of failing of an event by
-a specified follow-up time k under different treatment strategies, they need to specify the type of outcome as
+a specified follow-up time k under different interventions, they need to specify the type of outcome as
 'survival' in the argument ‘‘outcome_type’’. If users are interested in the outcome mean at a fixed time point,
 and the outcome distribution is binary, they need to specify the type of outcome as
 'binary_eof'. Similarly, they need to specify the type of outcome as 'continuous_eof' when the distribution of the outcome is continuous.
@@ -20,16 +20,12 @@ and the outcome distribution is binary, they need to specify the type of outcome
     :header-rows: 1
 
     * - Arguments
-      - Default
       - Description
     * - outcome_name
-      - User specified
       - (Required) A string specifying the name of the outcome variable in obs_data.
     * - outcome_model
-      - User specified
       - (Required) A string specifying the model statement for the outcome variable.
     * - outcome_type
-      - User specified
       - (Required) A string specifying the "type" of outcome. The possible "types" are: "survival", "continuous_eof", and "binary_eof".
 
 
@@ -37,7 +33,7 @@ Survival outcome
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 For survival outcomes, the package will output estimates of contrasts in failure risks by a specified follow-up time k
-under different user-specified treatment strategies.
+under different user-specified interventions.
 
 
 **Sample syntax**:
@@ -54,48 +50,48 @@ under different user-specified treatment strategies.
 Users can also specify the follow-up time of interest for survival outcome by the argument ‘‘time_points’’.
 
 
-**Running example**:
+**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/get_started_example.py>`_:
 
 .. code-block::
 
-      import numpy as np
-      import pygformula
-      from pygformula import ParametricGformula
-      from pygformula.parametric_gformula.interventions import static
-      from pygformula.data import load_basicdata_nocomp
+        import numpy as np
+        import pygformula
+        from pygformula import ParametricGformula
+        from pygformula.parametric_gformula.interventions import static
+        from pygformula.data import load_basicdata_nocomp
 
-      obs_data = load_basicdata_nocomp()
-      time_name = 't0'
-      id_name = 'id'
+        obs_data = load_basicdata_nocomp()
+        time_name = 't0'
+        id_name = 'id'
 
-      covnames = ['L1', 'L2', 'A']
-      covtypes = ['binary', 'bounded normal', 'binary']
-      covmodels = ['L1 ~ lag1_A + lag2_A + lag_cumavg1_L1 + lag_cumavg1_L2 + L3 + t0',
+        covnames = ['L1', 'L2', 'A']
+        covtypes = ['binary', 'bounded normal', 'binary']
+        covmodels = ['L1 ~ lag1_A + lag2_A + lag_cumavg1_L1 + lag_cumavg1_L2 + L3 + t0',
                    'L2 ~ lag1_A + L1 + lag_cumavg1_L1 + lag_cumavg1_L2 + L3 + t0',
                    'A ~ lag1_A + L1 + L2 + lag_cumavg1_L1 + lag_cumavg1_L2 + L3 + t0']
 
-      basecovs = ['L3']
+        basecovs = ['L3']
 
-      outcome_name = 'Y'
-      outcome_model = 'Y ~ L1 + L2 + L3 + A + lag1_A + lag1_L1 + lag1_L2 + t0'
-      outcome_type = 'survival'
+        outcome_name = 'Y'
+        outcome_model = 'Y ~ L1 + L2 + L3 + A + lag1_A + lag1_L1 + lag1_L2 + t0'
+        outcome_type = 'survival'
 
-      time_points = 5
-      int_descripts = ['Never treat', 'Always treat']
-      interventions = [[[static, np.zeros(time_points)]], [[static, np.ones(time_points)]]]
-      intvars = [['A'], ['A']]
+        time_points = np.max(np.unique(obs_data[time_name])) + 1
+        int_descript = ['Never treat', 'Always treat']
 
-      g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name, time_points = time_points,
-                     interventions=interventions, int_descripts = int_descripts, intvars=intvars,
-                     covnames=covnames, covtypes=covtypes, covmodels=covmodels, basecovs=basecovs,
-                     outcome_name=outcome_name, outcome_model=outcome_model, outcome_type=outcome_type
-                     )
-      g.fit()
+
+        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name,
+            time_points = time_points, int_descript = int_descript,
+            covnames=covnames, covtypes=covtypes, covmodels=covmodels, basecovs=basecovs,
+            outcome_name=outcome_name, outcome_model=outcome_model, outcome_type=outcome_type,
+            Intervention1_A = [static, np.zeros(time_points)],
+            Intervention2_A = [static, np.ones(time_points)])
+        g.fit()
 
 
 **Output**:
 
-    .. image:: ../media/survival_example_output.png
+    .. image:: ../media/get_started_example.png
          :align: center
 
 
@@ -141,15 +137,13 @@ under different user-specified treatment strategies.
         outcome_model = 'Y ~ L1 + A + lag1_A + lag1_L1 + L3 + t0'
         outcome_type = 'binary_eof'
 
-        int_descripts = ['Threshold intervention']
-        interventions = [[[threshold, [0.5, float('inf')]]]]
-        intvars = [['A']]
+        int_descript = ['Threshold intervention']
 
         g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name,
-                     interventions=interventions, int_descripts = int_descripts, intvars=intvars,
-                     covnames=covnames, covtypes=covtypes, covmodels=covmodels, basecovs=basecovs,
-                     outcome_name=outcome_name, outcome_model=outcome_model, outcome_type=outcome_type
-                     )
+            int_descript = int_descript,
+            Intervention1_A = [threshold, [0.5, float('inf')]],
+            covnames=covnames, covtypes=covtypes, covmodels=covmodels, basecovs=basecovs,
+            outcome_name=outcome_name, outcome_model=outcome_model, outcome_type=outcome_type)
         g.fit()
 
 **Output**:
@@ -203,15 +197,15 @@ under different user-specified treatment strategies.
         outcome_type = 'continuous_eof'
 
         time_points = np.max(np.unique(obs_data[time_name])) + 1
-        int_descripts = ['Never treat', 'Always treat']
-        interventions = [[[static, np.zeros(time_points)]], [[static, np.ones(time_points)]]]
-        intvars = [['A'], ['A']]
+        int_descript = ['Never treat', 'Always treat']
+
 
         g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name,
-                     interventions=interventions, int_descripts = int_descripts, intvars=intvars,
-                     covnames=covnames, covtypes=covtypes, covmodels=covmodels, basecovs=basecovs,
-                     outcome_name=outcome_name, outcome_model=outcome_model, outcome_type=outcome_type
-                     )
+            int_descript=int_descript,
+            Intervention1_A = [static, np.zeros(time_points)],
+            Intervention2_A = [static, np.ones(time_points)],
+            covnames=covnames, covtypes=covtypes, covmodels=covmodels, basecovs=basecovs,
+            outcome_name=outcome_name, outcome_model=outcome_model, outcome_type=outcome_type)
         g.fit()
 
 

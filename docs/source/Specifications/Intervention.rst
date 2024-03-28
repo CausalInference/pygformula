@@ -5,16 +5,16 @@ Intervention
 =========================
 
 The package supports natural course intervention, static and dynamic interventions, as well as
-threshold interventions [1]_ [2]_ . The package provides pre-coded intervention functions and options for users
+threshold interventions [1]_ [2]_ . It provides pre-coded intervention functions and options for users
 to define other custom interventions that are beyond the interventions
 provided.
 
-    * **Natural course**: no intervention on any treatment variables..
+    * **Natural course**: no intervention on any treatment variables.
     * **Static intervention**:  intervention wherein the rule for assigning treatment at each time point does not depend on past covariates.
     * **Dynamic intervention**: intervention wherein the rule for assigning treatment depends on past covariates.
     * **Threshold intervention**: intervention wherein the rule for assigning treatment at each time point depends on the natural value of treatment at the time point.
 
-The following is the arguments for specifying the intervention of interest. If not specified, the package will
+The following are the arguments for specifying the intervention of interest. If not specified, the package will
 return the result without intervention, i.e., natural course result. This section introduces how to
 specify different types of intervention with these arguments.
 
@@ -23,37 +23,76 @@ specify different types of intervention with these arguments.
     :header-rows: 1
 
     * - Arguments
-      - Default
       - Description
-    * - int_descripts
-      - None
+    * - int_descript
       - (Required) A list of strings, each of which describes a user-specified intervention.
-    * - intvars
-      - None
-      - (Required) A list, each element is a list of strings. The kth element in intvars specifies the name(s)
-        of the variable(s) to be intervened on under the kth intervention in interventions.
     * - interventions
-      - None
-      - (Required) A list whose elements are lists of lists. Each list in interventions specifies a unique intervention on
-        the relevant variable(s) in intvars. Each inner list contains a function implementing a particular intervention
-        on a single variable, and required values for the specific treatment strategy. (e.g., intervention values for static strategy; threshold values for threshold strategy.)
-    * - int_times
-      - None
-      - (Optional) A list, each element is a list. The kth list in int_times corresponds to the kth intervention in interventions.
-        Each inner list specifies the time points in which the relevant intervention is applied on the corresponding
-        variable in intvars. By default, this argument is set so that all interventions are applied in all the time points.
+      - (Required) A dictionary whose key is the treatment name in the intervention with the format Intervention{id}_{treatment_name},
+        value is a list that contains the intervention function, values required by the function, and a list of time
+        points in which the intervention is applied.
 
+The package uses keyword arguments to implement the intervention and allows any number of interventions.
+When users specify each intervention, they should specify the intervention id (means the id-th intervention in all interventions,
+and the id should start from 1) and treatment name in the argument name.
+
+For static interventions, the value of the argument name is a list where the first element is the static intervention function, the second element
+is the intervened values, the third element is a list specifying the time points to apply the intervention
+(if not specified, the default is intervening on all time points);
+
+An example of intervening on ‘‘A’’ in the first three time points with ‘‘Never treat’’ intervention:
+
+.. code-block::
+
+      Intervention1_A = [static, np.zeros(time_points), [0, 1, 2]]
+
+For dynamic interventions, the value of the argument name is a list where the first element is the dynamic intervention function, the second element
+is the intervened values, the second element is a list specifying the time points to apply the intervention.
+
+An example of intervening on ‘‘A’’ in the first three time points with a dynamic intervention:
+
+.. code-block::
+
+      Intervention1_A = [dynamic, [0, 1, 2]]
+
+For threshold interventions, the value of the argument name is a list where the first element is the threshold intervention function, the second element
+is the threshold values, the third element is a list specifying the time points to apply the intervention.
+
+An example of intervening on ‘‘A’’ in the first three time points with threshold intervention:
+
+.. code-block::
+
+      Intervention1_A = [threshold, [0.5, float('inf')], [0, 1, 2]]
+
+If users want to specify multiple interventions, they should use different id for different interventions.
+
+An example of intervening on ‘‘A’’ with different interventions:
+
+.. code-block::
+
+      Intervention1_A = [static, np.zeros(time_points)]
+      Intervention2_A = [dynamic]
+      Intervention3_A = [threshold, [0.5, float('inf')]]
+
+If users want to specify joint intervention where there are multiple treatment variables,
+they should specify different treatment name with the same intervention id.
+
+An example of intervening on ‘‘A1’’ and ‘‘A2’’ within a static intervention:
+
+.. code-block::
+
+      Intervention1_A1 = [static, np.zeros(time_points)]
+      Intervention1_A2 = [static, np.ones(time_points)]
 
 
 Natural course intervention
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 If no intervention is specified, the package will return the result of natural course, containing
-parametric and nonparametric natural course risk/mean outcome of g-formula. The user may assess model misspecification in
-the parametric g-formula by comparing the two estimates.
+parametric and nonparametric natural course risk/mean outcome of g-formula. Users may assess model misspecification in
+the parametric g-formula by comparing the two estimates [3]_.
 
 
 
-**Running example**:
+**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_natural_course.py>`_:
 
 .. code-block::
 
@@ -80,10 +119,10 @@ the parametric g-formula by comparing the two estimates.
 
       time_points = np.max(np.unique(obs_data[time_name])) + 1
 
-      g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name, time_points = time_points,
-                 covnames=covnames, covtypes=covtypes, covmodels=covmodels, basecovs=basecovs,
-                 outcome_name=outcome_name, outcome_model=outcome_model, outcome_type=outcome_type
-                 )
+      g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name,
+          time_points = time_points, covnames=covnames, covtypes=covtypes,
+          covmodels=covmodels, basecovs=basecovs, outcome_name=outcome_name,
+          outcome_model=outcome_model, outcome_type=outcome_type)
       g.fit()
 
 
@@ -97,36 +136,30 @@ the parametric g-formula by comparing the two estimates.
 Static interventions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Users can specify multiple interventions as well as multiple treatment variables for each intervention. For each
-intervention, users should specify its name or description in ‘‘int_descripts’’. For each treatment variable,
-users should specify the treatment name in ‘‘intvars’’, and specify corresponding
-intervention function and intervened values in ‘interventions’’. If the intervention type is defined as static,
-the treatment value at each time step k will be replaced by the kth value in the intervened values list.
+The package has pre-coded static intervention.
+
+.. automodule:: pygformula.parametric_gformula.interventions
+.. autosummary:: static
+.. autofunction:: static
+
+which can be called by:
+
+    .. code-block::
+
+        from pygformula.parametric_gformula.interventions import static
+
+When specifying the static intervention for one treatment,
+the treatment value at each time step k will be replaced by the kth value in the list of intervened values.
 
 
-**Sample syntax of static intervention on one treatment variable**:
-
-.. code-block::
-
-      int_descripts = ['Always treat']
-      interventions = [[[static, np.ones(time_points)]]]
-      intvars = [['A']]
-      int_times = [[0, 1, 4]]
-
-      g = ParametricGformula(..., int_descripts = int_descripts, interventions = interventions,
-                        intvars = intvars, int_times = int_times, ...)
-
-For ‘‘int_times’’ argument, the corresponding intervention is not applied for the unspecified time points, the simulated natural course
-value is used in this case.
-
-
-**Running example**:
+**Running example of static intervention on one treatment variable** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_static_one_treatment.py>`_:
 
 .. code-block::
 
     import numpy as np
     import pygformula
     from pygformula import ParametricGformula
+    from pygformula.parametric_gformula.interventions import static
     from pygformula.data import load_basicdata_nocomp
 
     obs_data = load_basicdata_nocomp()
@@ -142,7 +175,7 @@ value is used in this case.
     basecovs = ['L3']
 
     time_points = np.max(np.unique(obs_data[time_name])) + 1
-    int_descripts = ['Always treat']
+    int_descript = ['Always treat']
     interventions = [[[static, np.ones(time_points)]]]
     intvars = [['A']]
     int_times = [[0, 1, 4]]
@@ -150,10 +183,11 @@ value is used in this case.
     outcome_name = 'Y'
     outcome_model = 'Y ~ L1 + L2 + L3 + A + lag1_A + lag1_L1 + lag1_L2 + t0'
 
-    g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name, time_points = time_points,
-                 covnames=covnames,  covtypes=covtypes, covmodels=covmodels, basecovs=basecovs,
-                 int_descripts = int_descripts, interventions = interventions, intvars = intvars, int_times = int_times,
-                 outcome_name=outcome_name, outcome_model=outcome_model, outcome_type='survival')
+    g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name,
+        time_points = time_points, covnames=covnames, covtypes=covtypes,
+        covmodels=covmodels, basecovs=basecovs, int_descript = int_descript,
+        Intervention1_A = [static, np.ones(time_points), [0, 1, 4]],
+        outcome_name=outcome_name, outcome_model=outcome_model, outcome_type='survival')
     g.fit()
 
 
@@ -163,19 +197,7 @@ value is used in this case.
          :align: center
 
 
-**Sample syntax of a static intervention on multiple treatment variables**:
-
-.. code-block::
-
-       int_descripts = ['Always treat']
-       interventions = [[[static, np.ones(time_points)], [static, np.ones(time_points)]]]
-       intvars = [['A1', 'A2']]
-
-       g = ParametricGformula(..., int_descripts = int_descripts, interventions = interventions,
-                        intvars = intvars, ...)
-
-
-**Running example**:
+**Running example of a static intervention on multiple treatment variables** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_static_multiple_treatments.py>`_:
 
 .. code-block::
 
@@ -197,17 +219,19 @@ value is used in this case.
                  'A2 ~ lag1_A1']
 
     time_points = np.max(np.unique(obs_data[time_name])) + 1
-    int_descripts = ['Always treat on A1 & A2']
+    int_descript = ['Always treat on A1 & A2']
     interventions = [[[static, np.ones(time_points)], [static, np.ones(time_points)]]]
     intvars = [['A1', 'A2']]
 
     outcome_name = 'Y'
     outcome_model = 'Y ~ L1 + L2 + A1 + A2'
 
-    g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name, time_points = time_points,
-                 covnames=covnames,  covtypes=covtypes, covmodels=covmodels,
-                 int_descripts = int_descripts, interventions = interventions, intvars = intvars,
-                 outcome_name=outcome_name, outcome_model=outcome_model, outcome_type='survival')
+    g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name,
+        time_points = time_points, covnames=covnames, covtypes=covtypes,
+        covmodels=covmodels, int_descript = int_descript,
+        Intervention1_A1 = [static, np.ones(time_points)],
+        Intervention1_A2 = [static, np.ones(time_points)],
+        outcome_name=outcome_name, outcome_model=outcome_model, outcome_type='survival')
     g.fit()
 
 
@@ -217,17 +241,7 @@ value is used in this case.
          :align: center
 
 
-**Sample syntax of multiple interventions**:
-
-.. code-block::
-
-        time_points = np.max(np.unique(obs_data[time_name])) + 1
-        intervention_names = ['Never treat', 'Always treat']
-        interventions = [[[static, np.zeros(time_points)]], [[static, np.ones(time_points)]]]
-        intvars = [['A'], ['A']]
-
-
-**Running example**:
+**Running example of multiple static interventions** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/get_started_example.py>`_:
 
 .. code-block::
 
@@ -254,14 +268,14 @@ value is used in this case.
       outcome_type = 'survival'
 
       time_points = np.max(np.unique(obs_data[time_name])) + 1
-      int_descripts = ['Never treat', 'Always treat']
-      interventions = [[[static, np.zeros(time_points)]], [[static, np.ones(time_points)]]]
-      intvars = [['A'], ['A']]
+      int_descript = ['Never treat', 'Always treat']
 
-      g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name, time_points = time_points,
-                     interventions=interventions, int_descripts = int_descripts, intvars=intvars,
-                     covnames=covnames, covtypes=covtypes, covmodels=covmodels, basecovs=basecovs,
-                     outcome_name=outcome_name, outcome_model=outcome_model, outcome_type=outcome_type)
+      g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name,
+        time_points = time_points, covnames=covnames, covtypes=covtypes,
+        covmodels=covmodels, int_descript = int_descript,
+        Intervention1_A1 = [static, np.ones(time_points)],
+        Intervention1_A2 = [static, np.ones(time_points)],
+        outcome_name=outcome_name, outcome_model=outcome_model, outcome_type='survival')
       g.fit()
 
 
@@ -275,14 +289,14 @@ value is used in this case.
 Dynamic interventions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-For dynamic intervention, users need to define a custom function which encodes the dynamic strategy for
-one treatment variable and then pass it into the g-formula method by the ‘‘interventions’’ argument.
+For dynamic intervention, users need to define a dynamic function which encodes the dynamic strategy for
+one treatment variable and then pass it into the g-formula method by the intervention argument.
 
 Example dynamic intervention: treatment is assgined (A = 1) for individuals where the covariate L2 is above a certain threshold 0.75.
 Otherwise, the treatment is assigned 0.
 
 
-**Sample syntax of a dynamic intervention example**:
+**Sample syntax of a dynamic function example**:
 
 .. code-block::
 
@@ -290,28 +304,24 @@ Otherwise, the treatment is assigned 0.
           new_df.loc[new_df[time_name] == t, intvar] = 0
           new_df.loc[new_df['L2'] > 0.75, intvar] = 1
 
-      intervention_names = ['Dynamic intervention']
-      interventions = [[[dynamic_intervention, None]]]
-      intvars = [['A']]
+      int_descript = ['Dynamic intervention']
+      Intervention1_A = [dynamic_intervention]
 
-      g = ParametricGformula(..., intervention_names = intervention_names, interventions = interventions,
-                        intvars = intvars, ...)
+      g = ParametricGformula(..., int_descript = int_descript,
+                            Intervention1_A = [dynamic_intervention], ...)
+
 
 The dynamic intervention function should contain the following input parameters (these parameters are not all need to be specified in the function).
-The function should modify the data table ‘‘new_df’’ in place, no output is required.
+The function should modify the data table ‘‘new_df’’ in place, no output is returned.
 
 + new_df: data table of the simulated data at current time t.
-+ pool: data table of the simulated data from time 0 to current time t.
-+ intvar: the name of treatment variable to be intervened.
-+ int_type: the distribution type of the treatment variable to be intervened.
-+ int_values: user-specified threshold values for an intervention (only applicable for Threshold interventions).
++ pool: data table of the simulated data up to current time t.
++ int_var: the name of treatment variable to be intervened.
 + time_name: the name of time variable.
 + t: current time index.
 
-Note that in the argument ‘‘interventions’’, the list that contains the custom dynamic function should also contain a
-‘‘None’’ value although no specific value is specified here.
 
-**Running example**:
+**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_dynamic_intervention.py>`_:
 
 .. code-block::
 
@@ -334,21 +344,21 @@ Note that in the argument ‘‘interventions’’, the list that contains the 
 
         time_points = np.max(np.unique(obs_data[time_name])) + 1
 
-        def dynamic_intervention(new_df, pool, intvar, int_values, time_name, t):
-            new_df.loc[new_df[time_name] == t, intvar] = 0
-            new_df.loc[new_df['L2'] > 0.75, intvar] = 1
+        def dynamic_intervention(new_df, pool, int_var, time_name, t):
+            new_df.loc[new_df[time_name] == t, int_var] = 0
+            new_df.loc[new_df['L2'] > 0.75, int_var] = 1
 
-        int_descripts = ['Dynamic intervention']
-        interventions = [[[dynamic_intervention, None]]]
-        intvars = [['A']]
+        int_descript = ['Dynamic intervention']
+
 
         outcome_name = 'Y'
         outcome_model = 'Y ~ L1 + L2 + L3 + A + lag1_A + lag1_L1 + lag1_L2 + t0'
 
-        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name, time_points = time_points,
-                     covnames=covnames,  covtypes=covtypes, covmodels=covmodels, basecovs=basecovs,
-                     int_descripts = int_descripts, interventions = interventions, intvars = intvars,
-                     outcome_name=outcome_name, outcome_model=outcome_model, outcome_type='survival')
+        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name,
+            time_points = time_points, covnames=covnames, covtypes=covtypes,
+            covmodels=covmodels, basecovs=basecovs, int_descript = int_descript,
+            Intervention1_A = [dynamic_intervention],
+            outcome_name=outcome_name, outcome_model=outcome_model, outcome_type='survival')
         g.fit()
 
 
@@ -357,16 +367,30 @@ Note that in the argument ‘‘interventions’’, the list that contains the 
     .. image:: ../media/dynamic_example_output.png
          :align: center
 
-The package also provides two pre-coded dynamic interventions with grace period: natural grace period intervention
-and uniform grace period intervention.
 
-**Natural grace period intervention**:  once a conditional covariate meets a threshold level, the treatment
+The package also provides two pre-coded dynamic interventions with grace period: natural grace period intervention
+and uniform grace period intervention. When specifying intervention with grace period, the list of the intervention
+argument should contain the grace period intervention function in the first element, a two-element list with the
+duration of grace period and conditions in the second element. (If users want to intervene on particular
+time points, the third element should be specified.)
+
+
+**Natural grace period intervention**: once a conditional covariate meets a threshold level, the treatment
 is initiated within a duration of the grace period. During the grace period, the treatment takes its natural value.
 
+.. automodule:: pygformula.parametric_gformula.interventions
+.. autosummary:: natural_grace_period
+.. autofunction:: natural_grace_period
+
+which can be called by:
+
+.. code-block::
+
+        from pygformula.parametric_gformula.interventions import natural_grace_period
 
 **Sample syntax of an example**:
 
-When the covariate ‘‘L1’’ equals 1, start a treatment initiation within 3 time points. The ‘‘natural_grace_period’’
+When the covariate ‘‘L1’’ equals 1, start a treatment initiation in a grace period with duration 3. The ‘‘natural_grace_period’’
 specifies the type of the grace period intervention, the two-element list specifies the duration of the grace period
 in the first entry and the condition of the covariate in the second entry.
 
@@ -374,15 +398,25 @@ in the first entry and the condition of the covariate in the second entry.
 
       from pygformula.parametric_gformula.interventions import natural_grace_period
 
-      int_descripts = ['natural grace period intervention']
-      conditions = {'L1': lambda x: x == 1}
-      interventions = [[[natural_grace_period, [3, conditions]]]]
-      intvars = [['A']]
+      int_descript = ['natural grace period intervention']
 
-      g = ParametricGformula(..., int_descripts = int_descripts, interventions = interventions,
-                        intvars = intvars, ...)
+      g = ParametricGformula(..., int_descript = int_descript,
+          Intervention1_A = [natural_grace_period, [3, {'L1': lambda x: x == 1}]], ...)
 
-**Running example**:
+An examle of grace period intervention where the treatment is initiated when multiple conditions are met:
+
+.. code-block::
+
+      from pygformula.parametric_gformula.interventions import natural_grace_period
+
+      int_descript = ['natural grace period intervention']
+
+      g = ParametricGformula(..., int_descript = int_descript,
+                  Intervention1_A = [natural_grace_period, [natural_grace_period, [3, {'L1': lambda x: x == 1, 'L2': lambda x: x >= 2}]], ...)
+
+
+
+**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_natural_grace_period.py>`_:
 
 .. code-block::
 
@@ -406,28 +440,43 @@ in the first entry and the condition of the covariate in the second entry.
 
         time_points = np.max(np.unique(obs_data[time_name])) + 1
 
-        int_descripts = ['natural grace period intervention']
-        conditions = {'L1': lambda x: x == 1}
-        interventions = [[[natural_grace_period, [3, conditions]]]]
-        intvars = [['A']]
+        int_descript = ['natural grace period intervention']
+
 
         outcome_name = 'Y'
         outcome_model = 'Y ~ L1 + L2 + L3 + A + lag1_A + lag1_L1 + lag1_L2 + t0'
 
-        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name, time_points = time_points,
-                     covnames=covnames,  covtypes=covtypes, covmodels=covmodels, basecovs=basecovs,
-                     int_descripts = int_descripts, interventions = interventions, intvars = intvars,
-                     outcome_name=outcome_name, outcome_model=outcome_model, outcome_type='survival')
+        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name,
+            time_points = time_points, covnames=covnames, covtypes=covtypes,
+            covmodels=covmodels, basecovs=basecovs, int_descript = int_descript,
+            Intervention1_A = [natural_grace_period, [3, {'L1': lambda x: x == 1}]],
+            outcome_name=outcome_name, outcome_model=outcome_model, outcome_type='survival')
         g.fit()
+
+**Output**:
+
+    .. image:: ../media/natural_grace_period.png
+         :align: center
+
 
 
 **Uniform grace period intervention**  Once a conditional covariate meets a threshold level, the treatment
 is initiated within a duration of the grace period. During grace period, treatment initiation is
 randomly allocated with a uniform probability of starting treatment in each time interval of the grace period.
 
+.. automodule:: pygformula.parametric_gformula.interventions
+.. autosummary:: uniform_grace_period
+.. autofunction:: uniform_grace_period
+
+which can be called by:
+
+.. code-block::
+
+        from pygformula.parametric_gformula.interventions import uniform_grace_period
+
 **Sample syntax of an example**:
 
-When the covariate ‘‘L1’’ equals 1, start a treatment initiation within 3 time points. The ‘‘uniform_grace_period’’
+When the covariate ‘‘L1’’ equals 1, start a treatment initiation in a grace period with duration 3. The ‘‘uniform_grace_period’’
 specifies the type of the grace period intervention, the two-element list specifies the duration of the grace period
 in the first entry and the condition of the covariate in the second entry.
 
@@ -435,16 +484,13 @@ in the first entry and the condition of the covariate in the second entry.
 
       from pygformula.parametric_gformula.interventions import uniform_grace_period
 
-      int_descripts = ['uniform grace period intervention']
-      conditions = {'L1': lambda x: x == 1}
-      interventions = [[[uniform_grace_period, [3, conditions]]]]
-      intvars = [['A']]
+      int_descript = ['uniform grace period intervention']
 
-      g = ParametricGformula(..., int_descripts = int_descripts, interventions = interventions,
-                        intvars = intvars, ...)
+      g = ParametricGformula(..., int_descript = int_descript,
+          Intervention1_A = [uniform_grace_period, [3, {'L1': lambda x: x == 1}]], ...)
 
 
-**Running example**:
+**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_uniform_grace_period.py>`_:
 
 .. code-block::
 
@@ -468,19 +514,24 @@ in the first entry and the condition of the covariate in the second entry.
 
         time_points = np.max(np.unique(obs_data[time_name])) + 1
 
-        int_descripts = ['uniform grace period intervention']
-        conditions = {'L1': lambda x: x == 1}
-        interventions = [[[uniform_grace_period, [3, conditions]]]]
-        intvars = [['A']]
+        int_descript = ['uniform grace period intervention']
 
         outcome_name = 'Y'
         outcome_model = 'Y ~ L1 + L2 + L3 + A + lag1_A + lag1_L1 + lag1_L2 + t0'
 
-        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name, time_points = time_points,
-                     covnames=covnames,  covtypes=covtypes, covmodels=covmodels, basecovs=basecovs,
-                     int_descripts = int_descripts, interventions = interventions, intvars = intvars,
-                     outcome_name=outcome_name, outcome_model=outcome_model, outcome_type='survival')
+        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name,
+            time_points = time_points, covnames=covnames, covtypes=covtypes,
+            covmodels=covmodels, basecovs=basecovs, int_descript = int_descript,
+            Intervention1_A = [uniform_grace_period, [3, {'L1': lambda x: x == 1}]],
+            outcome_name=outcome_name, outcome_model=outcome_model, outcome_type='survival')
         g.fit()
+
+
+**Output**:
+
+    .. image:: ../media/uniform_grace_period.png
+         :align: center
+
 
 Threshold interventions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -490,6 +541,21 @@ In a threshold intervention, if a subject’s natural value of treatment at time
 The natural value of treatment at time k is the value of treatment that would have been observed at
 time k were the intervention discontinued right before k.
 
+The package provides pre-coded threshold function.
+
+.. automodule:: pygformula.parametric_gformula.interventions
+.. autosummary:: threshold
+.. autofunction:: threshold
+
+which can be called by
+
+.. code-block::
+
+    from pygformula.parametric_gformula.interventions import threshold
+
+Users should specify a two-element list (containing minimum and maximum values) of threshold values after the threshold function
+in the argument.
+
 Example threshold intervention: if the subject’s natural value of treatment L2 falls outside the interval [0.5, inf],
 set the treatment the threshold value.
 
@@ -498,18 +564,13 @@ set the treatment the threshold value.
 
 .. code-block::
 
-       int_descripts = ['Threshold intervention']
-       interventions = [[[threshold, [0.5, float('inf')]]]]
-       intvars = [['A']]
+       int_descript = ['Threshold intervention']
 
-       g = ParametricGformula(..., int_descripts = int_descripts, interventions = interventions,
-                        intvars = intvars, ...)
-
-The user should specify a two-element list (containing minimum and maximum values) of int_values after the threshold function
-in the argument ‘‘interventions’’.
+       g = ParametricGformula(..., int_descript = int_descript,
+           Intervention1_A = [threshold, [0.5, float('inf')]], ...)
 
 
-**Running example**:
+**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_threshold_intervention.py>`_:
 
 .. code-block::
 
@@ -531,17 +592,16 @@ in the argument ‘‘interventions’’.
 
         time_points = np.max(np.unique(obs_data[time_name])) + 1
 
-        int_descripts = ['Threshold intervention']
-        interventions = [[[threshold, [0.5, float('inf')]]]]
-        intvars = [['A']]
+        int_descript = ['Threshold intervention']
 
         outcome_name = 'Y'
         outcome_model = 'Y ~ L1 + L2 + A'
 
-        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name, time_points = time_points,
-                     covnames=covnames,  covtypes=covtypes, covmodels=covmodels,
-                     int_descripts = int_descripts, interventions = interventions, intvars = intvars,
-                     outcome_name=outcome_name, outcome_model=outcome_model, outcome_type='survival')
+        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name,
+            time_points = time_points, covnames=covnames, covtypes=covtypes,
+            covmodels=covmodels, int_descript = int_descript,
+            Intervention1_A = [threshold, [0.5, float('inf')]],
+            outcome_name=outcome_name, outcome_model=outcome_model, outcome_type='survival')
         g.fit()
 
 
@@ -555,7 +615,8 @@ in the argument ‘‘interventions’’.
        application of the parametric g-formula. Int J Epidemiol 2009; 38(6):1599-611.
 .. [2] Young JG, Hernán MA, Robins JM. Identification, estimation and approximation of risk under interventions that
        depend on the natural value of treatment using observational data. Epidemiologic Methods 2014; 3(1):1-19.
-
+.. [3] Yu-Han Chiu, Lan Wen, Sean McGrath, Roger Logan, Issa J Dahabreh, Miguel A Hernán, Evaluating Model Specification
+       When Using the Parametric G-Formula in the Presence of Censoring, American Journal of Epidemiology, Volume 192, Issue 11, November 2023, Pages 1887–1895
 
 
 

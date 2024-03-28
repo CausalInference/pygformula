@@ -47,10 +47,8 @@ The argument for calculating the hazard ratio:
     :header-rows: 1
 
     * - Arguments
-      - Default
       - Description
     * - intcomp
-      - None
       - (Optional) List of two numbers indicating a pair of interventions to be compared by a hazard ratio.
 
 Users can specify the two interventions by:
@@ -62,7 +60,8 @@ Users can specify the two interventions by:
 The integer i in ‘‘intcomp’’ denotes the i-th intervention in the user-specified interventions. 0 denotes the natural course intervention.
 
 
-**Running example**:
+**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_bounded_normal_cov.py>`_:
+
 
 .. code-block::
 
@@ -75,33 +74,33 @@ The integer i in ‘‘intcomp’’ denotes the i-th intervention in the user-s
     time_name = 't0'
     id_name = 'id'
 
-    covnames = ['L1', 'L2', 'A']
-    covtypes = ['binary', 'bounded normal', 'binary']
-    covmodels = ['L1 ~ lag1_A + lag2_A + lag_cumavg1_L1 + lag_cumavg1_L2 + L3 + t0',
-               'L2 ~ lag1_A + L1 + lag_cumavg1_L1 + lag_cumavg1_L2 + L3 + t0',
-               'A ~ lag1_A + L1 + L2 + lag_cumavg1_L1 + lag_cumavg1_L2 + L3 + t0']
+    covnames = ['L2', 'A']
+    covtypes = ['bounded normal', 'binary']
+    covmodels = ['L2 ~ lag1_A + lag_cumavg1_L2 + L3 + t0',
+               'A ~ lag1_A + L2 + lag_cumavg1_L2 + L3 + t0']
 
     basecovs = ['L3']
 
     outcome_name = 'Y'
-    outcome_model = 'Y ~ L1 + L2 + L3 + A + lag1_A + lag1_L1 + lag1_L2 + t0'
+    outcome_model = 'Y ~ L2 + A + lag1_A + L3 + t0'
     outcome_type = 'survival'
 
     time_points = np.max(np.unique(obs_data[time_name])) + 1
-    int_descripts = ['Never treat', 'Always treat']
-    interventions = [[[static, np.zeros(time_points)]], [[static, np.ones(time_points)]]]
-    intvars = [['A'], ['A']]
+    int_descript = ['Never treat', 'Always treat']
 
-    g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name, time_points = time_points,
-                 interventions=interventions, int_descripts = int_descripts, intvars=intvars, intcomp=[1, 2],
-                 covnames=covnames, covtypes=covtypes, covmodels=covmodels, basecovs=basecovs,
-                 outcome_name=outcome_name, outcome_model=outcome_model, outcome_type=outcome_type,
-                 )
+    g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name,
+        time_points = time_points,
+        int_descript = int_descript, intcomp=[1, 2],
+        Intervention1_A = [static, np.zeros(time_points)],
+        Intervention2_A = [static, np.ones(time_points)],
+        covnames=covnames, covtypes=covtypes, covmodels=covmodels, basecovs=basecovs,
+        outcome_name=outcome_name, outcome_model=outcome_model, outcome_type=outcome_type)
     g.fit()
+
 
 **Output**:
 
-    .. image:: ../media/example_hazardratio_output.png
+    .. image:: ../media/test_hazard_ratio.png
          :align: center
 
 

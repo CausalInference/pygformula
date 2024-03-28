@@ -200,7 +200,7 @@ def load_zero_inflated_normal():
 
     Returns
     -------
-
+    A pandas dataframe
     """
     data = pd.read_csv(os.path.join('..', 'datasets', 'example_data_zero_inflated_normal.csv'))
     return data
@@ -221,7 +221,7 @@ def load_multiple_treatments_data():
 
     Returns
     -------
-
+    A pandas dataframe
     """
     data = pd.read_csv(os.path.join('..', 'datasets', 'example_data_multiple_treatments.csv'))
     return data
@@ -241,7 +241,7 @@ def load_threshold_data():
 
     Returns
     -------
-
+    A pandas dataframe
     """
     data = pd.read_csv(os.path.join('..', 'datasets', 'example_threshold_data.csv'))
     return data

@@ -5,7 +5,7 @@ Installation
 Requirements
 ^^^^^^^^^^^^
 
-The package supports python ≥ 3.8. It requires these necessary dependencies:
+The package is supported by python 3. It requires these necessary dependencies:
 
 
    * joblib
@@ -17,10 +17,6 @@ The package supports python ≥ 3.8. It requires these necessary dependencies:
    * scipy
    * statsmodels
    * tqdm
-
-and an optional dependency:
-
-   * cmprsk
 
 
 All the dependencies needed by the pygformula are listed in the file

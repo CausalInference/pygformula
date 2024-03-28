@@ -25,7 +25,7 @@ int_descripts = ['Never treat', 'Always treat']
 
 
 g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name, time_points = time_points,
-             int_descripts = int_descripts,
+             int_descript = int_descripts, intcomp=[1, 2],
              Intervention1_A = [static, np.zeros(time_points)],
              Intervention2_A = [static, np.ones(time_points)],
              covnames=covnames, covtypes=covtypes, covmodels=covmodels, basecovs=basecovs,

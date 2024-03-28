@@ -22,11 +22,11 @@ outcome_model = 'Y ~ C(L1) + L2 + A'
 outcome_type = 'continuous_eof'
 
 time_points = np.max(np.unique(obs_data[time_name])) + 1
-int_descripts = ['Never treat', 'Always treat']
+int_descript = ['Never treat', 'Always treat']
 
 
 g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name,
-             int_descripts=int_descripts,
+             int_descript=int_descript,
              Intervention1_A = [static, np.zeros(time_points)],
              Intervention2_A = [static, np.ones(time_points)],
              covnames=covnames, covtypes=covtypes, covmodels=covmodels, basecovs=basecovs,

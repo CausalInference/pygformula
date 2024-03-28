@@ -148,23 +148,19 @@ if there is no pre-baseline times.</p></li>
 covariates.</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 33%" />
-<col style="width: 33%" />
-<col style="width: 33%" />
+<col style="width: 50%" />
+<col style="width: 50%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Arguments</p></th>
-<th class="head"><p>Default</p></th>
 <th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>custom_histvars</p></td>
-<td><p>None</p></td>
 <td><p>(Optional) A list of strings, each of which specifies the names of the time-varying covariates with user-specified custom histories.</p></td>
 </tr>
 <tr class="row-odd"><td><p>custom_histories</p></td>
-<td><p>None</p></td>
 <td><p>(Optional) A list of function, each function is the user-specified custom history functions for covariates. The list
 must be the same length as custom_histvars and in the same order.</p></td>
 </tr>
@@ -179,7 +175,7 @@ must be the same length as custom_histvars and in the same order.</p></td>
 <li><p>id_name: A string specifying the name of the ID variable in the pool.</p></li>
 </ul>
 <p>The function output is a dataframe ‘‘pool’’ with the new column of the historical term created.</p>
-<p>The following is an example of creating historical functions for covariates ‘L1’, ‘L2’ and ‘A’ by the function
+<p>The following is an example of creating historical functions for covariates ‘’L1’’, ‘’L2’’ and ‘’A’’ by the function
 ‘ave_last3’. This function generates the average of the three most recent values of the covariate (when the
 t=0, it takes the current value of the covariate; when t=1, it takes the average of the current value).
 The new historical covariates are named as ave_last3_L1, ave_last3_L2, and ave_last3_A.</p>
@@ -205,7 +201,7 @@ The new historical covariates are named as ave_last3_L1, ave_last3_L2, and ave_l
 <span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">custom_histvars</span> <span class="o">=</span> <span class="n">custom_histvars</span><span class="p">,</span> <span class="n">custom_histories</span><span class="o">=</span><span class="n">custom_histories</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The ave_last3 function has been pre-coded in the package, users can also call this function by:</p>
+<p>The ave_last3 function has been included in the package, users can also call this function by:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pygformula.parametric_gformula.histories</span> <span class="kn">import</span> <span class="n">ave_last3</span>
 </pre></div>
 </div>
@@ -216,62 +212,62 @@ The new historical covariates are named as ave_last3_L1, ave_last3_L2, and ave_l
 <p>To specify a parametric model for each covariate in pygformula, users need to specify the following arguments:</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 33%" />
-<col style="width: 33%" />
-<col style="width: 33%" />
+<col style="width: 50%" />
+<col style="width: 50%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Arguments</p></th>
-<th class="head"><p>Default</p></th>
 <th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>covnames</p></td>
-<td><p>User specified</p></td>
 <td><p>(Required) A list of strings specifying the names of the time-varying covariates in obs_data.</p></td>
 </tr>
 <tr class="row-odd"><td><p>covtypes</p></td>
-<td><p>User specified</p></td>
 <td><p>(Required) A list of strings specifying the “type” of each time-varying covariate included in covnames.
 The supported types: “binary”, “normal”, “categorical”, “bounded normal”, “zero-inflated normal”,
 “truncated normal”, “absorbing”, “categorical time”, “square time” and “custom”. The list must be the same
 length as covnames and in the same order.</p></td>
 </tr>
 <tr class="row-even"><td><p>covmodels</p></td>
-<td><p>User specified</p></td>
 <td><p>(Required) A list of strings, where each string is the model statement of the time-varying covariate. The list
 must be the same length as covnames and in the same order. If a model is not required for a certain covariate,
 it should be set to ‘NA’ at that index.</p></td>
 </tr>
 <tr class="row-odd"><td><p>basecovs</p></td>
-<td><p>None</p></td>
 <td><p>(Optional) A vector of strings specifying the names of baseline covariates in obs_data. These covariates are not
 simulated using a model but keep the same value at all time points. These covariates should not be included
 in covnames.</p></td>
 </tr>
 <tr class="row-even"><td><p>trunc_params</p></td>
-<td><p>None</p></td>
 <td><p>(Optional) A list, at the index where the covtype is set to “truncated normal”, the element contains two elements.
 The first element specifies the truncated value and the second element specifies the truncated direction
 (‘left’ or ‘right’). The values at remaining indexes are set to ‘NA’. The list must be the same length as
 covnames and in the same order.</p></td>
 </tr>
 <tr class="row-odd"><td><p>time_thresholds</p></td>
-<td><p>None</p></td>
 <td><p>(Optional) A list of integers that splits the time points into different intervals. It is used to create the time variable
 of “categorical time”.</p></td>
 </tr>
 </tbody>
 </table>
-<p>In the usage, users need to specify the names of time-varying covariates in ‘‘covnames’’, the distribution type
+<p>When there are confounders to be adjusted, users need to specify the names of time-varying covariates in ‘‘covnames’’, the distribution type
 of each covariate in ‘‘covtypes’’, as well as the model statement for each covariate in ‘‘covmodels’’.
-In addition, if there are time-fixed baseline covariates, they should be defined in the argument ‘‘basecovs’’.
+In addition, if there are time-fixed baseline covariates, they should be specified in the argument ‘‘basecovs’’.
 If the covariate type is ‘‘truncated normal’’, the ‘‘trunc_params’’ argument should be also defined which contains
-the required truncated direction and truncated value. If the covariate type is ‘‘categorical time’’, the user should
+the required truncated direction and truncated value. If the covariate type is ‘‘categorical time’’, users should
 also define the ‘‘time_thresholds’’ argument to create a desired categorization of time.
 In the following, this section shows examples for different covariate distributions to show how to specify the above arguments
-in specific examples during usage.</p>
+in specific examples during the usage.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For the ‘‘covmodels’’ argument which specifies the model statement for each covariate, users need to be careful to
+avoid the loop between covariates, i.e., in each covariate model statement, the independent variable and dependent
+variable should follow the direction in the DAG (directed acyclic graph). For example, if the covariate A is the
+dependent variable of the covariate B (A ~ B), then the covariate B should not be the dependent variable of the
+covariate A (B ~ A).</p>
+</div>
 <section id="binary">
 <h3>Binary<a class="headerlink" href="#binary" title="Permalink to this headline"></a></h3>
 <p>When the covariate is binary, in the fitting step, the input data is used to estimate a generalized linear model where
@@ -279,7 +275,7 @@ the family function is binomial. Then, in the simulation step, the mean of the c
 at each time step is estimated via the coefficients of the fitted model, the covariate values are simulated
 by sampling from a Bernoulli distribution with parameter the conditional probability.</p>
 <p><strong>Sample syntax</strong>:</p>
-<p>An example where the covariate ‘L1’ is binomial distribution</p>
+<p>An example where the covariate ‘’L1’’ is binomial distribution</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">covnames</span> <span class="o">=</span> <span class="p">[</span> <span class="s1">&#39;L1&#39;</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span><span class="p">]</span>
 <span class="n">covtypes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;binary&#39;</span><span class="p">,</span> <span class="s1">&#39;binary&#39;</span><span class="p">]</span>
 <span class="n">covmodels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L1 ~ lag1_A + lag2_A + lag_cumavg1_L1 + lag_cumavg1_L2 + L3 + t0&#39;</span><span class="p">,</span>
@@ -290,12 +286,11 @@ by sampling from a Bernoulli distribution with parameter the conditional probabi
 <span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">covnames</span> <span class="o">=</span> <span class="n">covnames</span><span class="p">,</span> <span class="n">covtypes</span> <span class="o">=</span> <span class="n">covtypes</span><span class="p">,</span> <span class="n">covmodels</span> <span class="o">=</span> <span class="n">covmodels</span><span class="p">,</span> <span class="n">basecovs</span> <span class="o">=</span> <span class="n">basecovs</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><strong>Running example</strong>:</p>
+<p><strong>Running example</strong> <a class="reference external" href="https://github.com/CausalInference/pygformula/blob/main/running_examples/test_binary_cov.py">[code]</a>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pygformula</span>
 <span class="kn">from</span> <span class="nn">pygformula</span> <span class="kn">import</span> <span class="n">ParametricGformula</span>
 <span class="kn">from</span> <span class="nn">pygformula.parametric_gformula.interventions</span> <span class="kn">import</span> <span class="n">static</span>
-<span class="kn">from</span> <span class="nn">pygformula</span> <span class="kn">import</span> <span class="n">ParametricGformula</span>
 <span class="kn">from</span> <span class="nn">pygformula.data</span> <span class="kn">import</span> <span class="n">load_basicdata_nocomp</span>
 
 <span class="n">obs_data</span> <span class="o">=</span> <span class="n">load_basicdata_nocomp</span><span class="p">()</span>
@@ -314,15 +309,15 @@ by sampling from a Bernoulli distribution with parameter the conditional probabi
 <span class="n">outcome_type</span> <span class="o">=</span> <span class="s1">&#39;survival&#39;</span>
 
 <span class="n">time_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">obs_data</span><span class="p">[</span><span class="n">time_name</span><span class="p">]))</span> <span class="o">+</span> <span class="mi">1</span>
-<span class="n">int_descripts</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Never treat&#39;</span><span class="p">,</span> <span class="s1">&#39;Always treat&#39;</span><span class="p">]</span>
-<span class="n">interventions</span> <span class="o">=</span> <span class="p">[[[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">time_points</span><span class="p">)]],</span> <span class="p">[[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">time_points</span><span class="p">)]]]</span>
-<span class="n">intvars</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;A&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">]]</span>
+<span class="n">int_descript</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Never treat&#39;</span><span class="p">,</span> <span class="s1">&#39;Always treat&#39;</span><span class="p">]</span>
 
-<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="n">obs_data</span> <span class="o">=</span> <span class="n">obs_data</span><span class="p">,</span> <span class="n">id_name</span> <span class="o">=</span> <span class="n">id_name</span><span class="p">,</span> <span class="n">time_name</span><span class="o">=</span><span class="n">time_name</span><span class="p">,</span> <span class="n">time_points</span> <span class="o">=</span> <span class="n">time_points</span><span class="p">,</span>
-             <span class="n">interventions</span><span class="o">=</span><span class="n">interventions</span><span class="p">,</span> <span class="n">int_descripts</span> <span class="o">=</span> <span class="n">int_descripts</span><span class="p">,</span> <span class="n">intvars</span><span class="o">=</span><span class="n">intvars</span><span class="p">,</span>
-             <span class="n">covnames</span><span class="o">=</span><span class="n">covnames</span><span class="p">,</span> <span class="n">covtypes</span><span class="o">=</span><span class="n">covtypes</span><span class="p">,</span> <span class="n">covmodels</span><span class="o">=</span><span class="n">covmodels</span><span class="p">,</span> <span class="n">basecovs</span><span class="o">=</span><span class="n">basecovs</span><span class="p">,</span>
-             <span class="n">outcome_name</span><span class="o">=</span><span class="n">outcome_name</span><span class="p">,</span> <span class="n">outcome_model</span><span class="o">=</span><span class="n">outcome_model</span><span class="p">,</span> <span class="n">outcome_type</span><span class="o">=</span><span class="n">outcome_type</span>
-             <span class="p">)</span>
+
+<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="n">obs_data</span> <span class="o">=</span> <span class="n">obs_data</span><span class="p">,</span> <span class="n">id_name</span> <span class="o">=</span> <span class="n">id_name</span><span class="p">,</span> <span class="n">time_name</span><span class="o">=</span><span class="n">time_name</span><span class="p">,</span>
+    <span class="n">time_points</span> <span class="o">=</span> <span class="n">time_points</span><span class="p">,</span> <span class="n">int_descript</span> <span class="o">=</span> <span class="n">int_descript</span><span class="p">,</span>
+    <span class="n">Intervention1_A</span> <span class="o">=</span> <span class="p">[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">time_points</span><span class="p">)],</span>
+    <span class="n">Intervention2_A</span> <span class="o">=</span> <span class="p">[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">time_points</span><span class="p">)],</span>
+    <span class="n">covnames</span><span class="o">=</span><span class="n">covnames</span><span class="p">,</span> <span class="n">covtypes</span><span class="o">=</span><span class="n">covtypes</span><span class="p">,</span> <span class="n">covmodels</span><span class="o">=</span><span class="n">covmodels</span><span class="p">,</span> <span class="n">basecovs</span><span class="o">=</span><span class="n">basecovs</span><span class="p">,</span>
+    <span class="n">outcome_name</span><span class="o">=</span><span class="n">outcome_name</span><span class="p">,</span> <span class="n">outcome_model</span><span class="o">=</span><span class="n">outcome_model</span><span class="p">,</span> <span class="n">outcome_type</span><span class="o">=</span><span class="n">outcome_type</span><span class="p">)</span>
 <span class="n">g</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -330,7 +325,7 @@ by sampling from a Bernoulli distribution with parameter the conditional probabi
 <blockquote>
 <div><img alt="../_images/binary_cov_example_output.png" class="align-center" src="../_images/binary_cov_example_output.png" />
 </div></blockquote>
-<p>Note that in this section, all demonstration examples use the same static treatment strategies
+<p>Note that in this section, all demonstration examples use the same static interventions
 (‘‘Never treat’’ and ‘‘Always treat’’), and are applied in the survival outcome case.
 Please refer to <a class="reference internal" href="Intervention.html"><span class="doc">Intervention</span></a> part for more types of intervention,
 and <a class="reference internal" href="Outcome%20model.html"><span class="doc">Outcome model</span></a> part for more types of outcome.</p>
@@ -353,12 +348,11 @@ from the fitted model. Values generated outside the observed range for the covar
 <span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">covnames</span> <span class="o">=</span> <span class="n">covnames</span><span class="p">,</span> <span class="n">covtypes</span> <span class="o">=</span> <span class="n">covtypes</span><span class="p">,</span> <span class="n">covmodels</span> <span class="o">=</span> <span class="n">covmodels</span><span class="p">,</span> <span class="n">basecovs</span> <span class="o">=</span> <span class="n">basecovs</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><strong>Running example</strong>:</p>
+<p><strong>Running example</strong> <a class="reference external" href="https://github.com/CausalInference/pygformula/blob/main/running_examples/test_normal_cov.py">[code]</a>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pygformula</span>
 <span class="kn">from</span> <span class="nn">pygformula</span> <span class="kn">import</span> <span class="n">ParametricGformula</span>
 <span class="kn">from</span> <span class="nn">pygformula.parametric_gformula.interventions</span> <span class="kn">import</span> <span class="n">static</span>
-<span class="kn">from</span> <span class="nn">pygformula</span> <span class="kn">import</span> <span class="n">ParametricGformula</span>
 <span class="kn">from</span> <span class="nn">pygformula.data</span> <span class="kn">import</span> <span class="n">load_basicdata_nocomp</span>
 
 <span class="n">obs_data</span> <span class="o">=</span> <span class="n">load_basicdata_nocomp</span><span class="p">()</span>
@@ -377,15 +371,15 @@ from the fitted model. Values generated outside the observed range for the covar
 <span class="n">outcome_type</span> <span class="o">=</span> <span class="s1">&#39;survival&#39;</span>
 
 <span class="n">time_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">obs_data</span><span class="p">[</span><span class="n">time_name</span><span class="p">]))</span> <span class="o">+</span> <span class="mi">1</span>
-<span class="n">int_descripts</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Never treat&#39;</span><span class="p">,</span> <span class="s1">&#39;Always treat&#39;</span><span class="p">]</span>
-<span class="n">interventions</span> <span class="o">=</span> <span class="p">[[[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">time_points</span><span class="p">)]],</span> <span class="p">[[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">time_points</span><span class="p">)]]]</span>
-<span class="n">intvars</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;A&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">]]</span>
+<span class="n">int_descript</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Never treat&#39;</span><span class="p">,</span> <span class="s1">&#39;Always treat&#39;</span><span class="p">]</span>
 
-<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="n">obs_data</span> <span class="o">=</span> <span class="n">obs_data</span><span class="p">,</span> <span class="n">id_name</span> <span class="o">=</span> <span class="n">id_name</span><span class="p">,</span> <span class="n">time_name</span><span class="o">=</span><span class="n">time_name</span><span class="p">,</span> <span class="n">time_points</span> <span class="o">=</span> <span class="n">time_points</span><span class="p">,</span>
-             <span class="n">interventions</span><span class="o">=</span><span class="n">interventions</span><span class="p">,</span> <span class="n">int_descripts</span> <span class="o">=</span> <span class="n">int_descripts</span><span class="p">,</span> <span class="n">intvars</span><span class="o">=</span><span class="n">intvars</span><span class="p">,</span>
-             <span class="n">covnames</span><span class="o">=</span><span class="n">covnames</span><span class="p">,</span> <span class="n">covtypes</span><span class="o">=</span><span class="n">covtypes</span><span class="p">,</span> <span class="n">covmodels</span><span class="o">=</span><span class="n">covmodels</span><span class="p">,</span> <span class="n">basecovs</span><span class="o">=</span><span class="n">basecovs</span><span class="p">,</span>
-             <span class="n">outcome_name</span><span class="o">=</span><span class="n">outcome_name</span><span class="p">,</span> <span class="n">outcome_model</span><span class="o">=</span><span class="n">outcome_model</span><span class="p">,</span> <span class="n">outcome_type</span><span class="o">=</span><span class="n">outcome_type</span>
-             <span class="p">)</span>
+
+<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="n">obs_data</span> <span class="o">=</span> <span class="n">obs_data</span><span class="p">,</span> <span class="n">id_name</span> <span class="o">=</span> <span class="n">id_name</span><span class="p">,</span> <span class="n">time_name</span><span class="o">=</span><span class="n">time_name</span><span class="p">,</span>
+    <span class="n">time_points</span> <span class="o">=</span> <span class="n">time_points</span><span class="p">,</span> <span class="n">int_descript</span> <span class="o">=</span> <span class="n">int_descript</span><span class="p">,</span>
+    <span class="n">Intervention1_A</span> <span class="o">=</span> <span class="p">[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">time_points</span><span class="p">)],</span>
+    <span class="n">Intervention2_A</span> <span class="o">=</span> <span class="p">[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">time_points</span><span class="p">)],</span>
+    <span class="n">covnames</span><span class="o">=</span><span class="n">covnames</span><span class="p">,</span> <span class="n">covtypes</span><span class="o">=</span><span class="n">covtypes</span><span class="p">,</span> <span class="n">covmodels</span><span class="o">=</span><span class="n">covmodels</span><span class="p">,</span> <span class="n">basecovs</span><span class="o">=</span><span class="n">basecovs</span><span class="p">,</span>
+    <span class="n">outcome_name</span><span class="o">=</span><span class="n">outcome_name</span><span class="p">,</span> <span class="n">outcome_model</span><span class="o">=</span><span class="n">outcome_model</span><span class="p">,</span> <span class="n">outcome_type</span><span class="o">=</span><span class="n">outcome_type</span><span class="p">)</span>
 <span class="n">g</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -411,8 +405,8 @@ conditional probabilities of the fitted model.</p>
 </pre></div>
 </div>
 <p>Note that when the covariate model statement contains any categorical variable, such as ‘‘lag1_L’’ or ‘‘L’’,
-e.g., in the example above, the user needs to add a ‘‘C( )’’ on the variable indicating it’s categorical.</p>
-<p><strong>Running example</strong>:</p>
+e.g., in the example above, users need to add a ‘‘C( )’’ on the variable indicating it’s categorical.</p>
+<p><strong>Running example</strong> <a class="reference external" href="https://github.com/CausalInference/pygformula/blob/main/running_examples/test_categorical_cov.py">[code]</a>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pygformula</span>
 <span class="kn">from</span> <span class="nn">pygformula</span> <span class="kn">import</span> <span class="n">ParametricGformula</span>
@@ -432,14 +426,15 @@ e.g., in the example above, the user needs to add a ‘‘C( )’’ on the vari
 <span class="n">outcome_model</span> <span class="o">=</span> <span class="s1">&#39;Y ~ C(lag1_L) + A&#39;</span>
 
 <span class="n">time_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">obs_data</span><span class="p">[</span><span class="n">time_name</span><span class="p">]))</span> <span class="o">+</span> <span class="mi">1</span>
-<span class="n">int_descripts</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Never treat&#39;</span><span class="p">,</span> <span class="s1">&#39;Always treat&#39;</span><span class="p">]</span>
-<span class="n">interventions</span> <span class="o">=</span> <span class="p">[[[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">time_points</span><span class="p">)]],</span> <span class="p">[[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">time_points</span><span class="p">)]]]</span>
-<span class="n">intvars</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;A&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">]]</span>
+<span class="n">int_descript</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Never treat&#39;</span><span class="p">,</span> <span class="s1">&#39;Always treat&#39;</span><span class="p">]</span>
 
-<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="n">obs_data</span> <span class="o">=</span> <span class="n">obs_data</span><span class="p">,</span> <span class="n">id_name</span> <span class="o">=</span> <span class="n">id_name</span><span class="p">,</span> <span class="n">time_name</span><span class="o">=</span><span class="n">time_name</span><span class="p">,</span> <span class="n">time_points</span> <span class="o">=</span> <span class="n">time_points</span><span class="p">,</span>
-               <span class="n">interventions</span><span class="o">=</span><span class="n">interventions</span><span class="p">,</span> <span class="n">int_descripts</span> <span class="o">=</span> <span class="n">int_descripts</span><span class="p">,</span> <span class="n">intvars</span><span class="o">=</span><span class="n">intvars</span><span class="p">,</span>
-               <span class="n">covnames</span><span class="o">=</span><span class="n">covnames</span><span class="p">,</span>  <span class="n">covtypes</span><span class="o">=</span><span class="n">covtypes</span><span class="p">,</span> <span class="n">covmodels</span><span class="o">=</span><span class="n">covmodels</span><span class="p">,</span> <span class="n">outcome_name</span><span class="o">=</span><span class="n">outcome_name</span><span class="p">,</span>
-               <span class="n">outcome_model</span><span class="o">=</span><span class="n">outcome_model</span><span class="p">,</span> <span class="n">outcome_type</span><span class="o">=</span><span class="s1">&#39;survival&#39;</span><span class="p">)</span>
+
+<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="n">obs_data</span> <span class="o">=</span> <span class="n">obs_data</span><span class="p">,</span> <span class="n">id_name</span> <span class="o">=</span> <span class="n">id_name</span><span class="p">,</span> <span class="n">time_name</span><span class="o">=</span><span class="n">time_name</span><span class="p">,</span>
+    <span class="n">time_points</span> <span class="o">=</span> <span class="n">time_points</span><span class="p">,</span> <span class="n">int_descript</span> <span class="o">=</span> <span class="n">int_descript</span><span class="p">,</span>
+    <span class="n">Intervention1_A</span> <span class="o">=</span> <span class="p">[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">time_points</span><span class="p">)],</span>
+    <span class="n">Intervention2_A</span> <span class="o">=</span> <span class="p">[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">time_points</span><span class="p">)],</span>
+    <span class="n">covnames</span><span class="o">=</span><span class="n">covnames</span><span class="p">,</span>  <span class="n">covtypes</span><span class="o">=</span><span class="n">covtypes</span><span class="p">,</span> <span class="n">covmodels</span><span class="o">=</span><span class="n">covmodels</span><span class="p">,</span>
+    <span class="n">outcome_name</span><span class="o">=</span><span class="n">outcome_name</span><span class="p">,</span> <span class="n">outcome_model</span><span class="o">=</span><span class="n">outcome_model</span><span class="p">,</span> <span class="n">outcome_type</span><span class="o">=</span><span class="s1">&#39;survival&#39;</span><span class="p">)</span>
 <span class="n">g</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -468,12 +463,11 @@ and values generated outside the observed range for the covariate are set to the
 <span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">covnames</span> <span class="o">=</span> <span class="n">covnames</span><span class="p">,</span> <span class="n">covtypes</span> <span class="o">=</span> <span class="n">covtypes</span><span class="p">,</span> <span class="n">covmodels</span> <span class="o">=</span> <span class="n">covmodels</span><span class="p">,</span> <span class="n">basecovs</span> <span class="o">=</span> <span class="n">basecovs</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><strong>Running example</strong>:</p>
+<p><strong>Running example</strong> <a class="reference external" href="https://github.com/CausalInference/pygformula/blob/main/running_examples/test_bounded_normal_cov.py">[code]</a>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pygformula</span>
 <span class="kn">from</span> <span class="nn">pygformula</span> <span class="kn">import</span> <span class="n">ParametricGformula</span>
 <span class="kn">from</span> <span class="nn">pygformula.parametric_gformula.interventions</span> <span class="kn">import</span> <span class="n">static</span>
-<span class="kn">from</span> <span class="nn">pygformula</span> <span class="kn">import</span> <span class="n">ParametricGformula</span>
 <span class="kn">from</span> <span class="nn">pygformula.data</span> <span class="kn">import</span> <span class="n">load_basicdata_nocomp</span>
 
 <span class="n">obs_data</span> <span class="o">=</span> <span class="n">load_basicdata_nocomp</span><span class="p">()</span>
@@ -481,7 +475,7 @@ and values generated outside the observed range for the covariate are set to the
 <span class="n">id_name</span> <span class="o">=</span> <span class="s1">&#39;id&#39;</span>
 
 <span class="n">covnames</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L2&#39;</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span><span class="p">]</span>
-<span class="n">covtypes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;normal&#39;</span><span class="p">,</span> <span class="s1">&#39;binary&#39;</span><span class="p">]</span>
+<span class="n">covtypes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;bounded normal&#39;</span><span class="p">,</span> <span class="s1">&#39;binary&#39;</span><span class="p">]</span>
 <span class="n">covmodels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L2 ~ lag1_A + lag_cumavg1_L2 + L3 + t0&#39;</span><span class="p">,</span>
            <span class="s1">&#39;A ~ lag1_A + L2 + lag_cumavg1_L2 + L3 + t0&#39;</span><span class="p">]</span>
 
@@ -492,15 +486,15 @@ and values generated outside the observed range for the covariate are set to the
 <span class="n">outcome_type</span> <span class="o">=</span> <span class="s1">&#39;survival&#39;</span>
 
 <span class="n">time_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">obs_data</span><span class="p">[</span><span class="n">time_name</span><span class="p">]))</span> <span class="o">+</span> <span class="mi">1</span>
-<span class="n">int_descripts</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Never treat&#39;</span><span class="p">,</span> <span class="s1">&#39;Always treat&#39;</span><span class="p">]</span>
-<span class="n">interventions</span> <span class="o">=</span> <span class="p">[[[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">time_points</span><span class="p">)]],</span> <span class="p">[[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">time_points</span><span class="p">)]]]</span>
-<span class="n">intvars</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;A&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">]]</span>
+<span class="n">int_descript</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Never treat&#39;</span><span class="p">,</span> <span class="s1">&#39;Always treat&#39;</span><span class="p">]</span>
 
-<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="n">obs_data</span> <span class="o">=</span> <span class="n">obs_data</span><span class="p">,</span> <span class="n">id_name</span> <span class="o">=</span> <span class="n">id_name</span><span class="p">,</span> <span class="n">time_name</span><span class="o">=</span><span class="n">time_name</span><span class="p">,</span> <span class="n">time_points</span> <span class="o">=</span> <span class="n">time_points</span><span class="p">,</span>
-             <span class="n">interventions</span><span class="o">=</span><span class="n">interventions</span><span class="p">,</span> <span class="n">int_descripts</span> <span class="o">=</span> <span class="n">int_descripts</span><span class="p">,</span> <span class="n">intvars</span><span class="o">=</span><span class="n">intvars</span><span class="p">,</span>
-             <span class="n">covnames</span><span class="o">=</span><span class="n">covnames</span><span class="p">,</span> <span class="n">covtypes</span><span class="o">=</span><span class="n">covtypes</span><span class="p">,</span> <span class="n">covmodels</span><span class="o">=</span><span class="n">covmodels</span><span class="p">,</span> <span class="n">basecovs</span><span class="o">=</span><span class="n">basecovs</span><span class="p">,</span>
-             <span class="n">outcome_name</span><span class="o">=</span><span class="n">outcome_name</span><span class="p">,</span> <span class="n">outcome_model</span><span class="o">=</span><span class="n">outcome_model</span><span class="p">,</span> <span class="n">outcome_type</span><span class="o">=</span><span class="n">outcome_type</span>
-             <span class="p">)</span>
+
+<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="n">obs_data</span> <span class="o">=</span> <span class="n">obs_data</span><span class="p">,</span> <span class="n">id_name</span> <span class="o">=</span> <span class="n">id_name</span><span class="p">,</span> <span class="n">time_name</span><span class="o">=</span><span class="n">time_name</span><span class="p">,</span>
+    <span class="n">time_points</span> <span class="o">=</span> <span class="n">time_points</span><span class="p">,</span> <span class="n">int_descript</span> <span class="o">=</span> <span class="n">int_descript</span><span class="p">,</span>
+    <span class="n">Intervention1_A</span> <span class="o">=</span> <span class="p">[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">time_points</span><span class="p">)],</span>
+    <span class="n">Intervention2_A</span> <span class="o">=</span> <span class="p">[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">time_points</span><span class="p">)],</span>
+    <span class="n">covnames</span><span class="o">=</span><span class="n">covnames</span><span class="p">,</span> <span class="n">covtypes</span><span class="o">=</span><span class="n">covtypes</span><span class="p">,</span> <span class="n">covmodels</span><span class="o">=</span><span class="n">covmodels</span><span class="p">,</span> <span class="n">basecovs</span><span class="o">=</span><span class="n">basecovs</span><span class="p">,</span>
+    <span class="n">outcome_name</span><span class="o">=</span><span class="n">outcome_name</span><span class="p">,</span> <span class="n">outcome_model</span><span class="o">=</span><span class="n">outcome_model</span><span class="p">,</span> <span class="n">outcome_type</span><span class="o">=</span><span class="n">outcome_type</span><span class="p">)</span>
 <span class="n">g</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -531,12 +525,11 @@ of the covariate.</p>
 <span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">covnames</span> <span class="o">=</span> <span class="n">covnames</span><span class="p">,</span> <span class="n">covtypes</span> <span class="o">=</span> <span class="n">covtypes</span><span class="p">,</span> <span class="n">covmodels</span> <span class="o">=</span> <span class="n">covmodels</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><strong>Running example</strong>:</p>
+<p><strong>Running example</strong> <a class="reference external" href="https://github.com/CausalInference/pygformula/blob/main/running_examples/test_zero_inflated_normal_cov.py">[code]</a>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pygformula</span>
 <span class="kn">from</span> <span class="nn">pygformula</span> <span class="kn">import</span> <span class="n">ParametricGformula</span>
 <span class="kn">from</span> <span class="nn">pygformula.parametric_gformula.interventions</span> <span class="kn">import</span> <span class="n">static</span>
-<span class="kn">from</span> <span class="nn">pygformula</span> <span class="kn">import</span> <span class="n">ParametricGformula</span>
 
 <span class="n">obs_data</span> <span class="o">=</span> <span class="n">load_zero_inflated_normal</span><span class="p">()</span>
 <span class="n">time_name</span> <span class="o">=</span> <span class="s1">&#39;t0&#39;</span>
@@ -552,15 +545,15 @@ of the covariate.</p>
 <span class="n">outcome_type</span> <span class="o">=</span> <span class="s1">&#39;survival&#39;</span>
 
 <span class="n">time_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">obs_data</span><span class="p">[</span><span class="n">time_name</span><span class="p">]))</span> <span class="o">+</span> <span class="mi">1</span>
-<span class="n">int_descripts</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Never treat&#39;</span><span class="p">,</span> <span class="s1">&#39;Always treat&#39;</span><span class="p">]</span>
-<span class="n">interventions</span> <span class="o">=</span> <span class="p">[[[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">time_points</span><span class="p">)]],</span> <span class="p">[[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">time_points</span><span class="p">)]]]</span>
-<span class="n">intvars</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;A&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">]]</span>
+<span class="n">int_descript</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Never treat&#39;</span><span class="p">,</span> <span class="s1">&#39;Always treat&#39;</span><span class="p">]</span>
 
-<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="n">obs_data</span> <span class="o">=</span> <span class="n">obs_data</span><span class="p">,</span> <span class="n">id_name</span> <span class="o">=</span> <span class="n">id_name</span><span class="p">,</span> <span class="n">time_name</span><span class="o">=</span><span class="n">time_name</span><span class="p">,</span> <span class="n">time_points</span> <span class="o">=</span> <span class="n">time_points</span><span class="p">,</span>
-             <span class="n">interventions</span><span class="o">=</span><span class="n">interventions</span><span class="p">,</span> <span class="n">int_descripts</span> <span class="o">=</span> <span class="n">int_descripts</span><span class="p">,</span> <span class="n">intvars</span><span class="o">=</span><span class="n">intvars</span><span class="p">,</span>
-             <span class="n">covnames</span><span class="o">=</span><span class="n">covnames</span><span class="p">,</span> <span class="n">covtypes</span><span class="o">=</span><span class="n">covtypes</span><span class="p">,</span> <span class="n">covmodels</span><span class="o">=</span><span class="n">covmodels</span><span class="p">,</span>
-             <span class="n">outcome_name</span><span class="o">=</span><span class="n">outcome_name</span><span class="p">,</span> <span class="n">outcome_model</span><span class="o">=</span><span class="n">outcome_model</span><span class="p">,</span> <span class="n">outcome_type</span><span class="o">=</span><span class="n">outcome_type</span>
-             <span class="p">)</span>
+
+<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="n">obs_data</span> <span class="o">=</span> <span class="n">obs_data</span><span class="p">,</span> <span class="n">id_name</span> <span class="o">=</span> <span class="n">id_name</span><span class="p">,</span> <span class="n">time_name</span><span class="o">=</span><span class="n">time_name</span><span class="p">,</span>
+    <span class="n">time_points</span> <span class="o">=</span> <span class="n">time_points</span><span class="p">,</span> <span class="n">int_descript</span> <span class="o">=</span> <span class="n">int_descript</span><span class="p">,</span>
+    <span class="n">Intervention1_A</span> <span class="o">=</span> <span class="p">[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">time_points</span><span class="p">)],</span>
+    <span class="n">Intervention2_A</span> <span class="o">=</span> <span class="p">[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">time_points</span><span class="p">)],</span>
+    <span class="n">covnames</span><span class="o">=</span><span class="n">covnames</span><span class="p">,</span> <span class="n">covtypes</span><span class="o">=</span><span class="n">covtypes</span><span class="p">,</span> <span class="n">covmodels</span><span class="o">=</span><span class="n">covmodels</span><span class="p">,</span>
+    <span class="n">outcome_name</span><span class="o">=</span><span class="n">outcome_name</span><span class="p">,</span> <span class="n">outcome_model</span><span class="o">=</span><span class="n">outcome_model</span><span class="p">,</span> <span class="n">outcome_type</span><span class="o">=</span><span class="n">outcome_type</span><span class="p">)</span>
 <span class="n">g</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -576,41 +569,11 @@ is used to fit a truncated normal regression model. In the simulation step, the 
 fitted model, then the simulated covariate values are generated by sampling from a truncated normal
 distribution with the covariate mean from the fitted model. The generated covariate values that fall outside the observed range
 are set to the minimum or maximum of the observed range.</p>
-<p><em>Prerequisite</em>: The pygformula calls R package ‘‘truncreg’’ to fit a truncated normal regression. In the case
-the covariate follows a truncated normal distribution, the user needs to have additional installation steps.
-Please install the R environment and the rpy2 interface in python environment as follows:</p>
-<blockquote>
-<div><ul>
-<li><p>Install R to set up R environment</p></li>
-<li><p>Install truncreg R package in R environment:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">install</span><span class="o">.</span><span class="n">packages</span><span class="p">(</span><span class="s2">&quot;truncreg&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-</li>
-<li><p>Install rpy2 in the python environment:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">rpy2</span>
-</pre></div>
-</div>
-</li>
-</ul>
-</div></blockquote>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>If you encounters the problem of not finding the R environment, you can set up the R path
-in your environment using the following command in the code:</p>
-<blockquote>
-<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;R_HOME&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;R_HOME&#39;</span>
-</pre></div>
-</div>
-<p>where R_HOME is the R home directory path.</p>
-</div></blockquote>
-</div>
 <p><strong>Sample syntax</strong>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">covnames</span> <span class="o">=</span> <span class="p">[</span> <span class="s1">&#39;L&#39;</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">covnames</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L&#39;</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span><span class="p">]</span>
 <span class="n">covtypes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;truncated normal&#39;</span><span class="p">,</span> <span class="s1">&#39;binary&#39;</span><span class="p">]</span>
-<span class="n">covparams</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L ~ lag1_L + time&#39;</span><span class="p">,</span>
-             <span class="s1">&#39;A ~ L + lag1_L + lag1_A + time&#39;</span><span class="p">]</span>
+<span class="n">covmodels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L ~ lag1_A + lag1_L + t0&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;A ~ lag1_A + lag1_L + L + t0&#39;</span><span class="p">]</span>
 
 <span class="n">trunc_params</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;right&#39;</span><span class="p">],</span> <span class="s1">&#39;NA&#39;</span><span class="p">]</span>
 
@@ -621,38 +584,42 @@ in your environment using the following command in the code:</p>
 in the position where its corresponding covariate is truncated normal, it should be a list with two elements,
 otherwise it should be ‘NA’. In the list of two elements, the first one should be the truncated value of the covariate,
 and the second one should be the truncated direction (‘left’ or ‘right’) of the covariate.</p>
-<p><strong>Running example</strong>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">obs_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;..\datasets\example_data_truncated_normal.csv&quot;</span><span class="p">)</span>
-<span class="n">time_name</span> <span class="o">=</span> <span class="s1">&#39;time&#39;</span>
+<p><strong>Running example</strong> <a class="reference external" href="https://github.com/CausalInference/pygformula/blob/main/running_examples/test_truncated_normal.py">[code]</a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">pygformula</span> <span class="kn">import</span> <span class="n">ParametricGformula</span>
+<span class="kn">from</span> <span class="nn">pygformula.parametric_gformula.interventions</span> <span class="kn">import</span> <span class="n">static</span>
+<span class="kn">from</span> <span class="nn">pygformula.data</span> <span class="kn">import</span> <span class="n">load_truncated_normal</span>
+
+<span class="n">obs_data</span> <span class="o">=</span> <span class="n">load_truncated_normal</span><span class="p">()</span>
+<span class="n">time_name</span> <span class="o">=</span> <span class="s1">&#39;t0&#39;</span>
 <span class="n">id_name</span> <span class="o">=</span> <span class="s1">&#39;id&#39;</span>
 
-<span class="n">covnames</span> <span class="o">=</span> <span class="p">[</span> <span class="s1">&#39;L&#39;</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span><span class="p">]</span>
+<span class="n">covnames</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L&#39;</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span><span class="p">]</span>
 <span class="n">covtypes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;truncated normal&#39;</span><span class="p">,</span> <span class="s1">&#39;binary&#39;</span><span class="p">]</span>
-
-<span class="n">covparams</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L ~ lag1_L + time&#39;</span><span class="p">,</span>
-              <span class="s1">&#39;A ~ L + lag1_L + lag1_A + time&#39;</span><span class="p">]</span>
+<span class="n">covmodels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L ~ lag1_A + lag1_L + t0&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;A ~ lag1_A + lag1_L + L + t0&#39;</span><span class="p">]</span>
 
 <span class="n">trunc_params</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;right&#39;</span><span class="p">],</span> <span class="s1">&#39;NA&#39;</span><span class="p">]</span>
 
 <span class="n">outcome_name</span> <span class="o">=</span> <span class="s1">&#39;Y&#39;</span>
-<span class="n">outcome_model</span> <span class="o">=</span> <span class="s1">&#39;Y ~ L + A&#39;</span>
+<span class="n">outcome_model</span> <span class="o">=</span> <span class="s1">&#39;Y ~ L + A + t0&#39;</span>
+<span class="n">outcome_type</span> <span class="o">=</span> <span class="s1">&#39;survival&#39;</span>
 
 <span class="n">time_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">obs_data</span><span class="p">[</span><span class="n">time_name</span><span class="p">]))</span> <span class="o">+</span> <span class="mi">1</span>
-<span class="n">intervention_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Never treat&#39;</span><span class="p">,</span> <span class="s1">&#39;Always treat&#39;</span><span class="p">]</span>
-<span class="n">interventions</span> <span class="o">=</span> <span class="p">[[[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">time_points</span><span class="p">)]],</span> <span class="p">[[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">time_points</span><span class="p">)]]]</span>
-<span class="n">intvars</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;A&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">]]</span>
+<span class="n">int_descript</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Never treat&#39;</span><span class="p">,</span> <span class="s1">&#39;Always treat&#39;</span><span class="p">]</span>
 
-
-<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="n">obs_data</span> <span class="o">=</span> <span class="n">obs_data</span><span class="p">,</span> <span class="n">id_name</span> <span class="o">=</span> <span class="n">id_name</span><span class="p">,</span> <span class="n">time_name</span><span class="o">=</span><span class="n">time_name</span><span class="p">,</span> <span class="n">time_points</span> <span class="o">=</span> <span class="n">time_points</span><span class="p">,</span>
-                  <span class="n">interventions</span><span class="o">=</span><span class="n">interventions</span><span class="p">,</span> <span class="n">intervention_names</span> <span class="o">=</span> <span class="n">intervention_names</span><span class="p">,</span> <span class="n">intvars</span><span class="o">=</span><span class="n">intvars</span><span class="p">,</span>
-                  <span class="n">covnames</span><span class="o">=</span><span class="n">covnames</span><span class="p">,</span>  <span class="n">covtypes</span><span class="o">=</span><span class="n">covtypes</span><span class="p">,</span> <span class="n">covparams</span><span class="o">=</span><span class="n">covparams</span><span class="p">,</span> <span class="n">trunc_params</span><span class="o">=</span><span class="n">trunc_params</span><span class="p">,</span>
-                  <span class="n">outcome_name</span><span class="o">=</span><span class="n">outcome_name</span><span class="p">,</span> <span class="n">outcome_model</span><span class="o">=</span><span class="n">outcome_model</span><span class="p">,</span> <span class="n">outcome_type</span><span class="o">=</span><span class="s1">&#39;survival&#39;</span><span class="p">)</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="n">obs_data</span> <span class="o">=</span> <span class="n">obs_data</span><span class="p">,</span> <span class="n">id_name</span> <span class="o">=</span> <span class="n">id_name</span><span class="p">,</span> <span class="n">time_name</span><span class="o">=</span><span class="n">time_name</span><span class="p">,</span>
+    <span class="n">time_points</span> <span class="o">=</span> <span class="n">time_points</span><span class="p">,</span> <span class="n">int_descript</span> <span class="o">=</span> <span class="n">int_descript</span><span class="p">,</span>
+    <span class="n">Intervention1_A</span> <span class="o">=</span> <span class="p">[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">time_points</span><span class="p">)],</span>
+    <span class="n">Intervention2_A</span> <span class="o">=</span> <span class="p">[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">time_points</span><span class="p">)],</span>
+    <span class="n">covnames</span><span class="o">=</span><span class="n">covnames</span><span class="p">,</span> <span class="n">covtypes</span><span class="o">=</span><span class="n">covtypes</span><span class="p">,</span> <span class="n">covmodels</span><span class="o">=</span><span class="n">covmodels</span><span class="p">,</span> <span class="n">trunc_params</span><span class="o">=</span><span class="n">trunc_params</span><span class="p">,</span>
+    <span class="n">outcome_name</span><span class="o">=</span><span class="n">outcome_name</span><span class="p">,</span> <span class="n">outcome_model</span><span class="o">=</span><span class="n">outcome_model</span><span class="p">,</span> <span class="n">outcome_type</span><span class="o">=</span><span class="n">outcome_type</span><span class="p">)</span>
 <span class="n">g</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
 </pre></div>
 </div>
 <p><strong>Output</strong>:</p>
 <blockquote>
-<div><img alt="media/truncated_normal_cov_example.jpg" class="align-center" src="media/truncated_normal_cov_example.jpg" />
+<div><img alt="../_images/truncated_normal_cov_example.png" class="align-center" src="../_images/truncated_normal_cov_example.png" />
 </div></blockquote>
 </section>
 <section id="absorbing">
@@ -673,7 +640,7 @@ time and all subsequent times is set to 1.</p>
 <span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">covnames</span> <span class="o">=</span> <span class="n">covnames</span><span class="p">,</span> <span class="n">covtypes</span> <span class="o">=</span> <span class="n">covtypes</span><span class="p">,</span> <span class="n">covparams</span> <span class="o">=</span> <span class="n">covparams</span><span class="p">,</span><span class="o">...</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><strong>Running example</strong>:</p>
+<p><strong>Running example</strong> <a class="reference external" href="https://github.com/CausalInference/pygformula/blob/main/running_examples/test_absorbing_cov.py">[code]</a>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pygformula</span>
 <span class="kn">from</span> <span class="nn">pygformula</span> <span class="kn">import</span> <span class="n">ParametricGformula</span>
@@ -694,15 +661,14 @@ time and all subsequent times is set to 1.</p>
 <span class="n">outcome_type</span> <span class="o">=</span> <span class="s1">&#39;survival&#39;</span>
 
 <span class="n">time_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">obs_data</span><span class="p">[</span><span class="n">time_name</span><span class="p">]))</span> <span class="o">+</span> <span class="mi">1</span>
-<span class="n">int_descripts</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Never treat&#39;</span><span class="p">,</span> <span class="s1">&#39;Always treat&#39;</span><span class="p">]</span>
-<span class="n">interventions</span> <span class="o">=</span> <span class="p">[[[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">time_points</span><span class="p">)]],</span> <span class="p">[[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">time_points</span><span class="p">)]]]</span>
-<span class="n">intvars</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;A&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">]]</span>
+<span class="n">int_descript</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Never treat&#39;</span><span class="p">,</span> <span class="s1">&#39;Always treat&#39;</span><span class="p">]</span>
 
-<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="n">obs_data</span> <span class="o">=</span> <span class="n">obs_data</span><span class="p">,</span> <span class="n">id_name</span> <span class="o">=</span> <span class="n">id_name</span><span class="p">,</span> <span class="n">time_name</span><span class="o">=</span><span class="n">time_name</span><span class="p">,</span> <span class="n">time_points</span> <span class="o">=</span> <span class="n">time_points</span><span class="p">,</span>
-             <span class="n">interventions</span><span class="o">=</span><span class="n">interventions</span><span class="p">,</span> <span class="n">int_descripts</span> <span class="o">=</span> <span class="n">int_descripts</span><span class="p">,</span> <span class="n">intvars</span><span class="o">=</span><span class="n">intvars</span><span class="p">,</span>
-             <span class="n">covnames</span><span class="o">=</span><span class="n">covnames</span><span class="p">,</span> <span class="n">covtypes</span><span class="o">=</span><span class="n">covtypes</span><span class="p">,</span> <span class="n">covmodels</span><span class="o">=</span><span class="n">covmodels</span><span class="p">,</span>
-             <span class="n">outcome_name</span><span class="o">=</span><span class="n">outcome_name</span><span class="p">,</span> <span class="n">outcome_model</span><span class="o">=</span><span class="n">outcome_model</span><span class="p">,</span> <span class="n">outcome_type</span><span class="o">=</span><span class="n">outcome_type</span>
-             <span class="p">)</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="n">obs_data</span> <span class="o">=</span> <span class="n">obs_data</span><span class="p">,</span> <span class="n">id_name</span> <span class="o">=</span> <span class="n">id_name</span><span class="p">,</span> <span class="n">time_name</span><span class="o">=</span><span class="n">time_name</span><span class="p">,</span>
+    <span class="n">time_points</span> <span class="o">=</span> <span class="n">time_points</span><span class="p">,</span> <span class="n">int_descript</span> <span class="o">=</span> <span class="n">int_descript</span><span class="p">,</span>
+    <span class="n">covnames</span><span class="o">=</span><span class="n">covnames</span><span class="p">,</span> <span class="n">covtypes</span><span class="o">=</span><span class="n">covtypes</span><span class="p">,</span> <span class="n">covmodels</span><span class="o">=</span><span class="n">covmodels</span><span class="p">,</span>
+    <span class="n">Intervention1_A</span> <span class="o">=</span> <span class="p">[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">time_points</span><span class="p">)],</span>
+    <span class="n">Intervention2_A</span> <span class="o">=</span> <span class="p">[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">time_points</span><span class="p">)],</span>
+    <span class="n">outcome_name</span><span class="o">=</span><span class="n">outcome_name</span><span class="p">,</span> <span class="n">outcome_model</span><span class="o">=</span><span class="n">outcome_model</span><span class="p">,</span> <span class="n">outcome_type</span><span class="o">=</span><span class="n">outcome_type</span><span class="p">)</span>
 <span class="n">g</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -741,7 +707,7 @@ and specify its type as ‘categorical time’ in covtypes argument. In the covp
 the corresponding position of the categorical time variable should be padded with NA.
 Note that when using the new categorical time variable in the model statement, e.g., ‘‘t0_f’’ in
 the syntax example above, C() should be added.</p>
-<p><strong>Running example</strong>:</p>
+<p><strong>Running example</strong> <a class="reference external" href="https://github.com/CausalInference/pygformula/blob/main/running_examples/test_categorical_time.py">[code]</a>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pygformula</span>
 <span class="kn">from</span> <span class="nn">pygformula</span> <span class="kn">import</span> <span class="n">ParametricGformula</span>
@@ -768,15 +734,16 @@ the syntax example above, C() should be added.</p>
 <span class="n">outcome_type</span> <span class="o">=</span> <span class="s1">&#39;survival&#39;</span>
 
 <span class="n">time_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">obs_data</span><span class="p">[</span><span class="n">time_name</span><span class="p">]))</span> <span class="o">+</span> <span class="mi">1</span>
-<span class="n">int_descripts</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Never treat&#39;</span><span class="p">,</span> <span class="s1">&#39;Always treat&#39;</span><span class="p">]</span>
-<span class="n">interventions</span> <span class="o">=</span> <span class="p">[[[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">time_points</span><span class="p">)]],</span> <span class="p">[[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">time_points</span><span class="p">)]]]</span>
-<span class="n">intvars</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;A&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">]]</span>
+<span class="n">int_descript</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Never treat&#39;</span><span class="p">,</span> <span class="s1">&#39;Always treat&#39;</span><span class="p">]</span>
 
-<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="n">obs_data</span> <span class="o">=</span> <span class="n">obs_data</span><span class="p">,</span> <span class="n">id_name</span> <span class="o">=</span> <span class="n">id_name</span><span class="p">,</span> <span class="n">time_name</span><span class="o">=</span><span class="n">time_name</span><span class="p">,</span> <span class="n">time_points</span> <span class="o">=</span> <span class="n">time_points</span><span class="p">,</span>
-             <span class="n">interventions</span><span class="o">=</span><span class="n">interventions</span><span class="p">,</span> <span class="n">int_descripts</span> <span class="o">=</span> <span class="n">int_descripts</span><span class="p">,</span> <span class="n">intvars</span><span class="o">=</span><span class="n">intvars</span><span class="p">,</span> <span class="n">time_thresholds</span> <span class="o">=</span> <span class="n">time_thresholds</span><span class="p">,</span>
-             <span class="n">covnames</span><span class="o">=</span><span class="n">covnames</span><span class="p">,</span> <span class="n">covtypes</span><span class="o">=</span><span class="n">covtypes</span><span class="p">,</span> <span class="n">covmodels</span><span class="o">=</span><span class="n">covmodels</span><span class="p">,</span> <span class="n">basecovs</span><span class="o">=</span><span class="n">basecovs</span><span class="p">,</span>
-             <span class="n">outcome_name</span><span class="o">=</span><span class="n">outcome_name</span><span class="p">,</span> <span class="n">outcome_model</span><span class="o">=</span><span class="n">outcome_model</span><span class="p">,</span> <span class="n">outcome_type</span><span class="o">=</span><span class="n">outcome_type</span><span class="p">,</span>
-             <span class="p">)</span>
+
+<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="n">obs_data</span> <span class="o">=</span> <span class="n">obs_data</span><span class="p">,</span> <span class="n">id_name</span> <span class="o">=</span> <span class="n">id_name</span><span class="p">,</span> <span class="n">time_name</span><span class="o">=</span><span class="n">time_name</span><span class="p">,</span>
+    <span class="n">time_points</span> <span class="o">=</span> <span class="n">time_points</span><span class="p">,</span> <span class="n">time_thresholds</span> <span class="o">=</span> <span class="n">time_thresholds</span><span class="p">,</span>
+    <span class="n">int_descript</span> <span class="o">=</span> <span class="n">int_descript</span><span class="p">,</span>
+    <span class="n">Intervention1_A</span> <span class="o">=</span> <span class="p">[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">time_points</span><span class="p">)],</span>
+    <span class="n">Intervention2_A</span> <span class="o">=</span> <span class="p">[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">time_points</span><span class="p">)],</span>
+    <span class="n">covnames</span><span class="o">=</span><span class="n">covnames</span><span class="p">,</span> <span class="n">covtypes</span><span class="o">=</span><span class="n">covtypes</span><span class="p">,</span> <span class="n">covmodels</span><span class="o">=</span><span class="n">covmodels</span><span class="p">,</span> <span class="n">basecovs</span><span class="o">=</span><span class="n">basecovs</span><span class="p">,</span>
+    <span class="n">outcome_name</span><span class="o">=</span><span class="n">outcome_name</span><span class="p">,</span> <span class="n">outcome_model</span><span class="o">=</span><span class="n">outcome_model</span><span class="p">,</span> <span class="n">outcome_type</span><span class="o">=</span><span class="n">outcome_type</span><span class="p">)</span>
 <span class="n">g</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -797,7 +764,7 @@ of ‘square’ and the time name in the data, e.g., ‘square_t0’.</p>
 <span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">covnames</span> <span class="o">=</span> <span class="n">covnames</span><span class="p">,</span> <span class="n">covtypes</span> <span class="o">=</span> <span class="n">covtypes</span><span class="p">,</span> <span class="n">covparams</span> <span class="o">=</span> <span class="n">covparams</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><strong>Running example</strong>:</p>
+<p><strong>Running example</strong> <a class="reference external" href="https://github.com/CausalInference/pygformula/blob/main/running_examples/test_square_time.py">[code]</a>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pygformula</span>
 <span class="kn">from</span> <span class="nn">pygformula</span> <span class="kn">import</span> <span class="n">ParametricGformula</span>
@@ -822,15 +789,15 @@ of ‘square’ and the time name in the data, e.g., ‘square_t0’.</p>
 <span class="n">outcome_type</span> <span class="o">=</span> <span class="s1">&#39;survival&#39;</span>
 
 <span class="n">time_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">obs_data</span><span class="p">[</span><span class="n">time_name</span><span class="p">]))</span> <span class="o">+</span> <span class="mi">1</span>
-<span class="n">int_descripts</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Never treat&#39;</span><span class="p">,</span> <span class="s1">&#39;Always treat&#39;</span><span class="p">]</span>
-<span class="n">interventions</span> <span class="o">=</span> <span class="p">[[[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">time_points</span><span class="p">)]],</span> <span class="p">[[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">time_points</span><span class="p">)]]]</span>
-<span class="n">intvars</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;A&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">]]</span>
+<span class="n">int_descript</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Never treat&#39;</span><span class="p">,</span> <span class="s1">&#39;Always treat&#39;</span><span class="p">]</span>
 
-<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="n">obs_data</span> <span class="o">=</span> <span class="n">obs_data</span><span class="p">,</span> <span class="n">id_name</span> <span class="o">=</span> <span class="n">id_name</span><span class="p">,</span> <span class="n">time_name</span><span class="o">=</span><span class="n">time_name</span><span class="p">,</span> <span class="n">time_points</span> <span class="o">=</span> <span class="n">time_points</span><span class="p">,</span>
-             <span class="n">interventions</span><span class="o">=</span><span class="n">interventions</span><span class="p">,</span> <span class="n">int_descripts</span> <span class="o">=</span> <span class="n">int_descripts</span><span class="p">,</span> <span class="n">intvars</span><span class="o">=</span><span class="n">intvars</span><span class="p">,</span>
-             <span class="n">covnames</span><span class="o">=</span><span class="n">covnames</span><span class="p">,</span> <span class="n">covtypes</span><span class="o">=</span><span class="n">covtypes</span><span class="p">,</span> <span class="n">covmodels</span><span class="o">=</span><span class="n">covmodels</span><span class="p">,</span> <span class="n">basecovs</span><span class="o">=</span><span class="n">basecovs</span><span class="p">,</span>
-             <span class="n">outcome_name</span><span class="o">=</span><span class="n">outcome_name</span><span class="p">,</span> <span class="n">outcome_model</span><span class="o">=</span><span class="n">outcome_model</span><span class="p">,</span> <span class="n">outcome_type</span><span class="o">=</span><span class="n">outcome_type</span><span class="p">,</span>
-             <span class="p">)</span>
+
+<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="n">obs_data</span> <span class="o">=</span> <span class="n">obs_data</span><span class="p">,</span> <span class="n">id_name</span> <span class="o">=</span> <span class="n">id_name</span><span class="p">,</span> <span class="n">time_name</span><span class="o">=</span><span class="n">time_name</span><span class="p">,</span>
+    <span class="n">time_points</span> <span class="o">=</span> <span class="n">time_points</span><span class="p">,</span> <span class="n">int_descript</span> <span class="o">=</span> <span class="n">int_descript</span><span class="p">,</span>
+    <span class="n">Intervention1_A</span> <span class="o">=</span> <span class="p">[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">time_points</span><span class="p">)],</span>
+    <span class="n">Intervention2_A</span> <span class="o">=</span> <span class="p">[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">time_points</span><span class="p">)],</span>
+    <span class="n">covnames</span><span class="o">=</span><span class="n">covnames</span><span class="p">,</span> <span class="n">covtypes</span><span class="o">=</span><span class="n">covtypes</span><span class="p">,</span> <span class="n">covmodels</span><span class="o">=</span><span class="n">covmodels</span><span class="p">,</span> <span class="n">basecovs</span><span class="o">=</span><span class="n">basecovs</span><span class="p">,</span>
+    <span class="n">outcome_name</span><span class="o">=</span><span class="n">outcome_name</span><span class="p">,</span> <span class="n">outcome_model</span><span class="o">=</span><span class="n">outcome_model</span><span class="p">,</span> <span class="n">outcome_type</span><span class="o">=</span><span class="n">outcome_type</span><span class="p">)</span>
 <span class="n">g</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -842,24 +809,20 @@ estimation. In this case, the corresponding covtype should be set to ‘‘custo
 fit function and the predict function, which will be called by the arguments ‘‘covfits_custom’’ and ‘‘covpredict_custom’’.</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 33%" />
-<col style="width: 33%" />
-<col style="width: 33%" />
+<col style="width: 50%" />
+<col style="width: 50%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Arguments</p></th>
-<th class="head"><p>Default</p></th>
 <th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>covfits_custom</p></td>
-<td><p>None</p></td>
 <td><p>(Optional) A list, at the index where the covtype is set to “custom”, the element is a user-specified fit function,
 otherwise it should be set to ‘NA’. The list must be the same length as covnames and in the same order.</p></td>
 </tr>
 <tr class="row-odd"><td><p>covpredict_custom</p></td>
-<td><p>None</p></td>
 <td><p>(Optional) A list, at the index where the covtype is set to “custom”, the element is a user-specified predict function,
 otherwise it should be set to ‘NA’.</p></td>
 </tr>
@@ -907,7 +870,7 @@ otherwise it should be set to ‘NA’.</p></td>
 <span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">covfits_custom</span> <span class="o">=</span> <span class="n">covfits_custom</span><span class="p">,</span> <span class="n">covfits_custom</span> <span class="o">=</span> <span class="n">covpredict_custom</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><strong>Running examples</strong>:</p>
+<p><strong>Running examples</strong> <a class="reference external" href="https://github.com/CausalInference/pygformula/blob/main/running_examples/test_fit_random_forest.py">[code]</a>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">RandomForestRegressor</span>
@@ -933,9 +896,8 @@ otherwise it should be set to ‘NA’.</p></td>
 
 <span class="c1"># define interventions</span>
 <span class="n">time_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">obs_data</span><span class="p">[</span><span class="n">time_name</span><span class="p">]))</span> <span class="o">+</span> <span class="mi">1</span>
-<span class="n">int_descripts</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Never treat&#39;</span><span class="p">,</span> <span class="s1">&#39;Always treat&#39;</span><span class="p">]</span>
-<span class="n">interventions</span> <span class="o">=</span> <span class="p">[[[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">time_points</span><span class="p">)]],</span> <span class="p">[[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">time_points</span><span class="p">)]]]</span>
-<span class="n">intvars</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;A&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">]]</span>
+<span class="n">int_descript</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Never treat&#39;</span><span class="p">,</span> <span class="s1">&#39;Always treat&#39;</span><span class="p">]</span>
+
 
 <span class="k">def</span> <span class="nf">fit_rf</span><span class="p">(</span><span class="n">covmodel</span><span class="p">,</span> <span class="n">covname</span><span class="p">,</span> <span class="n">fit_data</span><span class="p">):</span>
     <span class="n">max_depth</span> <span class="o">=</span> <span class="mi">2</span>
@@ -957,14 +919,20 @@ otherwise it should be set to ‘NA’.</p></td>
 <span class="n">covfits_custom</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;NA&#39;</span><span class="p">,</span> <span class="n">fit_rf</span><span class="p">,</span> <span class="s1">&#39;NA&#39;</span><span class="p">]</span>
 <span class="n">covpredict_custom</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;NA&#39;</span><span class="p">,</span> <span class="n">predict_rf</span><span class="p">,</span> <span class="s1">&#39;NA&#39;</span><span class="p">]</span>
 
-<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="n">obs_data</span> <span class="o">=</span> <span class="n">obs_data</span><span class="p">,</span> <span class="n">id_name</span> <span class="o">=</span> <span class="n">id_name</span><span class="p">,</span> <span class="n">time_name</span><span class="o">=</span><span class="n">time_name</span><span class="p">,</span> <span class="n">time_points</span> <span class="o">=</span> <span class="n">time_points</span><span class="p">,</span>
-             <span class="n">interventions</span><span class="o">=</span><span class="n">interventions</span><span class="p">,</span> <span class="n">int_descripts</span> <span class="o">=</span> <span class="n">int_descripts</span><span class="p">,</span> <span class="n">intvars</span><span class="o">=</span><span class="n">intvars</span><span class="p">,</span>
-             <span class="n">covnames</span><span class="o">=</span><span class="n">covnames</span><span class="p">,</span>  <span class="n">covtypes</span><span class="o">=</span><span class="n">covtypes</span><span class="p">,</span> <span class="n">covmodels</span><span class="o">=</span><span class="n">covmodels</span><span class="p">,</span>
-             <span class="n">covfits_custom</span> <span class="o">=</span> <span class="n">covfits_custom</span><span class="p">,</span> <span class="n">covpredict_custom</span><span class="o">=</span><span class="n">covpredict_custom</span><span class="p">,</span>
-             <span class="n">outcome_name</span><span class="o">=</span><span class="n">outcome_name</span><span class="p">,</span> <span class="n">outcome_model</span><span class="o">=</span><span class="n">outcome_model</span><span class="p">,</span> <span class="n">outcome_type</span><span class="o">=</span><span class="s1">&#39;survival&#39;</span><span class="p">)</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="n">obs_data</span> <span class="o">=</span> <span class="n">obs_data</span><span class="p">,</span> <span class="n">id_name</span> <span class="o">=</span> <span class="n">id_name</span><span class="p">,</span> <span class="n">time_name</span><span class="o">=</span><span class="n">time_name</span><span class="p">,</span>
+    <span class="n">time_points</span> <span class="o">=</span> <span class="n">time_points</span><span class="p">,</span> <span class="n">int_descript</span> <span class="o">=</span> <span class="n">int_descript</span><span class="p">,</span>
+    <span class="n">Intervention1_A</span> <span class="o">=</span> <span class="p">[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">time_points</span><span class="p">)],</span>
+    <span class="n">Intervention2_A</span> <span class="o">=</span> <span class="p">[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">time_points</span><span class="p">)],</span>
+    <span class="n">covnames</span><span class="o">=</span><span class="n">covnames</span><span class="p">,</span>  <span class="n">covtypes</span><span class="o">=</span><span class="n">covtypes</span><span class="p">,</span> <span class="n">covmodels</span><span class="o">=</span><span class="n">covmodels</span><span class="p">,</span>
+    <span class="n">covfits_custom</span> <span class="o">=</span> <span class="n">covfits_custom</span><span class="p">,</span> <span class="n">covpredict_custom</span><span class="o">=</span><span class="n">covpredict_custom</span><span class="p">,</span>
+    <span class="n">outcome_name</span><span class="o">=</span><span class="n">outcome_name</span><span class="p">,</span> <span class="n">outcome_model</span><span class="o">=</span><span class="n">outcome_model</span><span class="p">,</span> <span class="n">outcome_type</span><span class="o">=</span><span class="s1">&#39;survival&#39;</span><span class="p">)</span>
 <span class="n">g</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
 </pre></div>
 </div>
+<p><strong>Output</strong>:</p>
+<blockquote>
+<div><img alt="../_images/random_forest_cov.png" class="align-center" src="../_images/random_forest_cov.png" />
+</div></blockquote>
 </section>
 </section>
 </section>
@@ -980,7 +948,7 @@ otherwise it should be set to ‘NA’.</p></td>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023, CAUSALab.</p>
+    <p>&#169; Copyright 2024, CAUSALab.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

@@ -11,7 +11,7 @@ Contact
  - Ryan O’Dea, ryanodea@hsph.harvard.edu
  - Miguel Hernán, mhernan@hsph.harvard.edu
 
-If you have any questions or suggestions about this package, please feel free to contact jing_li@hsph.harvard.edu.
+If you have any questions or suggestions about this package, please feel free to contact us.
 As an open-source project, contributions are highly welcome for any bug reports or
 feature suggestions.
 

@@ -2,7 +2,6 @@ import numpy as np
 import sys
 sys.path.append(r'..\..\pygformula')
 from pygformula import ParametricGformula
-from pygformula.parametric_gformula.interventions import static
 from pygformula.data import load_basicdata_nocomp
 
 obs_data = load_basicdata_nocomp()
@@ -23,7 +22,7 @@ def dynamic_intervention(new_df, pool, int_var, time_name, t):
     new_df.loc[new_df[time_name] == t, int_var] = 0
     new_df.loc[new_df['L2'] > 0.75, int_var] = 1
 
-int_descripts = ['Dynamic intervention']
+int_descript = ['Dynamic intervention']
 
 
 outcome_name = 'Y'
@@ -31,7 +30,7 @@ outcome_model = 'Y ~ L1 + L2 + L3 + A + lag1_A + lag1_L1 + lag1_L2 + t0'
 
 g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name, time_points = time_points,
              covnames=covnames,  covtypes=covtypes, covmodels=covmodels, basecovs=basecovs,
-             int_descripts = int_descripts,
+             int_descript = int_descript,
              Intervention1_A = [dynamic_intervention],
              outcome_name=outcome_name, outcome_model=outcome_model, outcome_type='survival')
 g.fit()

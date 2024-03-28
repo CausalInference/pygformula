@@ -22,11 +22,11 @@ outcome_model = 'Y ~ L1 + L2 + L3 + A + lag1_A + lag1_L1 + lag1_L2 + t0'
 outcome_type = 'survival'
 
 time_points = np.max(np.unique(obs_data[time_name])) + 1
-int_descripts = ['Never treat', 'Always treat']
+int_descript = ['Never treat', 'Always treat']
 
 
 g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name, time_points = time_points,
-             int_descripts = int_descripts,
+             int_descript = int_descript,
              covnames=covnames, covtypes=covtypes, covmodels=covmodels, basecovs=basecovs,
              outcome_name=outcome_name, outcome_model=outcome_model, outcome_type=outcome_type,
              Intervention1_A = [static, np.zeros(time_points)],

@@ -32,10 +32,8 @@ The package allows deterministic knowledge incorporation for covariates by the a
     :header-rows: 1
 
     * - Arguments
-      - Default
       - Description
     * - restrictions
-      - None
       - (Optional) A list with lists, each inner list contains its first entry the covariate name of that its deterministic knowledge
         is known; its second entry is a dictionary whose key is the conditions which should be True when the covariate
         is modeled, the third entry is the value that is set to the covariate during simulation when the conditions
@@ -102,7 +100,7 @@ by its parametric model, otherwise, its previous value is carried forward.
       restrictions = [['L2', {'L1': lambda x: x == 0}, carry_forward]]
       g = ParametricGformula(..., restrictions = restrictions, ...)
 
-**Running example**:
+**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_restrictions.py>`_:
 
 .. code-block::
 
@@ -123,23 +121,24 @@ by its parametric model, otherwise, its previous value is carried forward.
                      'L2 ~ L1 + lag1_L2',
                       'A ~ L1 + L2']
 
-
         basecovs = ['L3']
         outcome_name = 'Y'
         outcome_model = 'Y ~ L1 + L2 + A'
 
         # define interventions
         time_points = np.max(np.unique(obs_data[time_name])) + 1
-        intervention_names = ['Never treat', 'Always treat']
-        interventions = [[[static, np.zeros(time_points)]], [[static, np.ones(time_points)]]]
-        intvars = [['A'], ['A']]
+        int_descript = ['Never treat', 'Always treat']
 
         restrictions = [['L2', {'L1': lambda x: x == 0}, 0.5], ['A', {'L1': lambda x: x == 0, 'L2': lambda x: x > 0.5}, 1]]
 
-        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name, time_points = time_points,
-                     interventions=interventions, intervention_names = intervention_names, intvars=intvars,
-                     covnames=covnames,  covtypes=covtypes, covmodels=covmodels, basecovs=basecovs,
-                     restrictions=restrictions, outcome_name=outcome_name, outcome_model=outcome_model, outcome_type='survival')
+        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name,
+            time_points = time_points,
+            int_descript = int_descript,
+            Intervention1_A = [static, np.zeros(time_points)],
+            Intervention2_A = [static, np.ones(time_points)],
+            covnames=covnames,  covtypes=covtypes, covmodels=covmodels, basecovs=basecovs,
+            restrictions=restrictions, outcome_name=outcome_name,
+            outcome_model=outcome_model, outcome_type='survival')
         g.fit()
 
 
@@ -147,6 +146,7 @@ by its parametric model, otherwise, its previous value is carried forward.
 
     .. image:: ../media/restriction_example_output.png
          :align: center
+
 
 Restrictions on outcome
 ---------------------------------
@@ -158,10 +158,8 @@ When there is deterministic knowledge of the outcome variable Y, the package off
     :header-rows: 1
 
     * - Arguments
-      - Default
       - Description
     * - yrestrictions
-      - None
       - (Optional) A list with lists, for each inner list, its first entry is a dictionary whose key is the conditions which
         should be True when the outcome is modeled, the second entry is the value that is set to the outcome during
         simulation when the conditions in the first entry are not True.
@@ -187,7 +185,7 @@ the probability of outcome Y is estimated by its parametric model, otherwise, it
       g = ParametricGformula(..., yrestrictions = yrestrictions, ...)
 
 
-**Running example**:
+**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_yrestrictions.py>`_:
 
 .. code-block::
 
@@ -213,17 +211,18 @@ the probability of outcome Y is estimated by its parametric model, otherwise, it
 
         # define interventions
         time_points = np.max(np.unique(obs_data[time_name])) + 1
-        int_descripts = ['Never treat', 'Always treat']
-        interventions = [[[static, np.zeros(time_points)]], [[static, np.ones(time_points)]]]
-        intvars = [['A'], ['A']]
+        int_descript = ['Never treat', 'Always treat']
 
         yrestrictions = [[{'L1': lambda x: x == 0}, 0], [{'L2': lambda x: x > 0.5}, 0.1]]
 
-
-        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name, time_points = time_points,
-                     interventions=interventions, int_descripts = int_descripts, intvars=intvars,
-                     covnames=covnames,  covtypes=covtypes, covmodels=covmodels, basecovs=basecovs,
-                     yrestrictions=yrestrictions, outcome_name=outcome_name, outcome_model=outcome_model, outcome_type='survival')
+        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name,
+            time_points = time_points,
+            int_descript = int_descript,
+            Intervention1_A = [static, np.zeros(time_points)],
+            Intervention2_A = [static, np.ones(time_points)],
+            covnames=covnames,  covtypes=covtypes, covmodels=covmodels, basecovs=basecovs,
+            yrestrictions=yrestrictions, outcome_name=outcome_name,
+            outcome_model=outcome_model, outcome_type='survival')
         g.fit()
 
 
@@ -243,10 +242,8 @@ the package offers the argument ‘‘compevent_restrictions’’ for incorpora
     :header-rows: 1
 
     * - Arguments
-      - Default
       - Description
     * - compevent_restrictions
-      - None
       - (Optional) A list with lists, for each inner list, its first entry is a dictionary whose key is the conditions which
         should be True when the competing event is modeled, the second entry is the value that is set to the competing
         event during simulation when the conditions in the first entry are not True. Only applicable for survival outcomes.
@@ -273,7 +270,7 @@ it is set to a value 0.1;
       g = ParametricGformula(..., compevent_restrictions = compevent_restrictions, ...)
 
 
-**Running example**:
+**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_comp_restrictions.py>`_:
 
 .. code-block::
 
@@ -302,18 +299,20 @@ it is set to a value 0.1;
         compevent_cens = False
 
         time_points = np.max(np.unique(obs_data[time_name])) + 1
-        int_descripts = ['Never treat', 'Always treat']
-        interventions = [[[static, np.zeros(time_points)]], [[static, np.ones(time_points)]]]
-        intvars = [['A'], ['A']]
+        int_descript = ['Never treat', 'Always treat']
+
 
         compevent_restrictions = [[{'L1': lambda x: x == 0}, 0], [{'L2': lambda x: x > 0.5}, 0.1]]
 
-        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_points = time_points, time_name=time_name,
-                          int_descripts = int_descripts, interventions=interventions, intvars=intvars,
-                          basecovs =basecovs, covnames=covnames,  covtypes=covtypes, covmodels=covmodels,
-                          compevent_restrictions = compevent_restrictions,
-                          compevent_cens= compevent_cens, compevent_name = compevent_name, compevent_model=compevent_model,
-                          outcome_name=outcome_name, outcome_type='survival', outcome_model=outcome_model)
+        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_points = time_points,
+            time_name=time_name, int_descript = int_descript,
+            Intervention1_A = [static, np.zeros(time_points)],
+            Intervention2_A = [static, np.ones(time_points)],
+            basecovs =basecovs, covnames=covnames,  covtypes=covtypes, covmodels=covmodels,
+            compevent_restrictions = compevent_restrictions,
+            compevent_cens= compevent_cens, compevent_name = compevent_name,
+            compevent_model=compevent_model, outcome_name=outcome_name,
+            outcome_type='survival', outcome_model=outcome_model)
         g.fit()
 
 

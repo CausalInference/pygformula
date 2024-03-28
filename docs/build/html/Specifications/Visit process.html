@@ -114,19 +114,16 @@ carried forward.</p>
 <p>The argument for visit process:</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 33%" />
-<col style="width: 33%" />
-<col style="width: 33%" />
+<col style="width: 50%" />
+<col style="width: 50%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Arguments</p></th>
-<th class="head"><p>Default</p></th>
 <th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>visitprocess</p></td>
-<td><p>None</p></td>
 <td><p>(Optional) List of lists. Each inner list contains its first entry the covariate name of a visit process; its second entry
 the name of a covariate whose modeling depends on the visit process; and its third entry the maximum number
 of consecutive visits that can be missed before an individual is censored.</p></td>
@@ -178,15 +175,16 @@ the ‘‘binary’’ covariate type in ‘‘covtypes’’.</p>
 
 <span class="n">time_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">obs_data</span><span class="p">[</span><span class="n">time_name</span><span class="p">]))</span> <span class="o">+</span> <span class="mi">1</span>
 
-<span class="n">int_descripts</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Never treat&#39;</span><span class="p">,</span> <span class="s1">&#39;Always treat&#39;</span><span class="p">]</span>
-<span class="n">interventions</span> <span class="o">=</span> <span class="p">[[[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">time_points</span><span class="p">)]],</span> <span class="p">[[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">time_points</span><span class="p">)]]]</span>
-<span class="n">intvars</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;everhaart&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;everhaart&#39;</span><span class="p">]]</span>
+<span class="n">int_descript</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Never treat&#39;</span><span class="p">,</span> <span class="s1">&#39;Always treat&#39;</span><span class="p">]</span>
 
 
-<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="n">obs_data</span> <span class="o">=</span> <span class="n">obs_data</span><span class="p">,</span> <span class="n">id_name</span> <span class="o">=</span> <span class="n">id_name</span><span class="p">,</span>  <span class="n">time_name</span> <span class="o">=</span> <span class="n">time_name</span><span class="p">,</span> <span class="n">visitprocess</span> <span class="o">=</span> <span class="n">visitprocess</span><span class="p">,</span>
-                  <span class="n">intvars</span> <span class="o">=</span> <span class="n">intvars</span><span class="p">,</span> <span class="n">interventions</span> <span class="o">=</span> <span class="n">interventions</span><span class="p">,</span> <span class="n">int_descripts</span> <span class="o">=</span> <span class="n">int_descripts</span><span class="p">,</span>
-                  <span class="n">covnames</span><span class="o">=</span><span class="n">covnames</span><span class="p">,</span>  <span class="n">covtypes</span><span class="o">=</span><span class="n">covtypes</span><span class="p">,</span> <span class="n">covmodels</span><span class="o">=</span><span class="n">covmodels</span><span class="p">,</span> <span class="n">basecovs</span> <span class="o">=</span> <span class="n">basecovs</span><span class="p">,</span>
-                  <span class="n">outcome_name</span><span class="o">=</span><span class="n">outcome_name</span><span class="p">,</span> <span class="n">outcome_model</span><span class="o">=</span><span class="n">outcome_model</span><span class="p">,</span> <span class="n">outcome_type</span><span class="o">=</span><span class="s1">&#39;survival&#39;</span><span class="p">)</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="n">obs_data</span> <span class="o">=</span> <span class="n">obs_data</span><span class="p">,</span> <span class="n">id_name</span> <span class="o">=</span> <span class="n">id_name</span><span class="p">,</span>  <span class="n">time_name</span> <span class="o">=</span> <span class="n">time_name</span><span class="p">,</span>
+    <span class="n">visitprocess</span> <span class="o">=</span> <span class="n">visitprocess</span><span class="p">,</span>
+    <span class="n">int_descript</span> <span class="o">=</span> <span class="n">int_descript</span><span class="p">,</span>
+    <span class="n">Intervention1_everhaart</span> <span class="o">=</span> <span class="p">[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">time_points</span><span class="p">)],</span>
+    <span class="n">Intervention2_everhaart</span> <span class="o">=</span> <span class="p">[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">time_points</span><span class="p">)],</span>
+    <span class="n">covnames</span><span class="o">=</span><span class="n">covnames</span><span class="p">,</span>  <span class="n">covtypes</span><span class="o">=</span><span class="n">covtypes</span><span class="p">,</span> <span class="n">covmodels</span><span class="o">=</span><span class="n">covmodels</span><span class="p">,</span> <span class="n">basecovs</span> <span class="o">=</span> <span class="n">basecovs</span><span class="p">,</span>
+    <span class="n">outcome_name</span><span class="o">=</span><span class="n">ou</span> <span class="n">tcome_name</span><span class="p">,</span> <span class="n">outcome_model</span><span class="o">=</span><span class="n">outcome_model</span><span class="p">,</span> <span class="n">outcome_type</span><span class="o">=</span><span class="s1">&#39;survival&#39;</span><span class="p">)</span>
 <span class="n">g</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -217,7 +215,7 @@ an application of the parametric g-formula. Statistics in Biosciences 2011; 3:11
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023, CAUSALab.</p>
+    <p>&#169; Copyright 2024, CAUSALab.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

@@ -20,10 +20,10 @@ outcome_name = 'Y'
 outcome_model = 'Y ~ L1 + A + lag1_A + lag1_L1 + L3 + t0'
 outcome_type = 'binary_eof'
 
-int_descripts = ['Threshold intervention']
+int_descript = ['Threshold intervention']
 
 g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name,
-             int_descripts = int_descripts,
+             int_descript = int_descript,
              Intervention1_A = [threshold, [0.5, float('inf')]],
              covnames=covnames, covtypes=covtypes, covmodels=covmodels, basecovs=basecovs,
              outcome_name=outcome_name, outcome_model=outcome_model, outcome_type=outcome_type

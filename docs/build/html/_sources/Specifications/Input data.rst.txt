@@ -3,7 +3,7 @@
 Input data
 ============================
 
-The input dataset is specified by the ‘‘obs_data’’ argument which contains: ‘‘id_name’’ specifying
+The input dataset is specified by the ‘‘obs_data’’ argument which should contain: ‘‘id_name’’ specifying
 the individual identifier, ‘‘time_name’’ specifying the time index, ‘‘covnames’’ specifying the names of covariate variables,
 ‘‘outcome_name’’ specifying the name of the outcome of interest, ‘‘compevent_name’’ indicating the competing
 event status (if present), ‘‘censoring_name’’ indicating the censoring event status (if present).
@@ -15,38 +15,29 @@ event status (if present), ‘‘censoring_name’’ indicating the censoring e
     :header-rows: 1
 
     * - Arguments
-      - Default
       - Description
     * - obs_data
-      - User specified
       - (Required) A data table (should be pandas.DataFrame type) containing the observed data.
     * - id_name
-      - User specified
       - (Required) A string specifying the name of the id variable in obs_data.
     * - time_name
-      - User specified
       - (Required) A string specifying the name of the time variable in obs_data.
     * - outcome_name
-      - User specified
       - (Required) A string specifying the name of the outcome variable in obs_data.
     * - covnames
-      - None
       - (Optional) A list of strings specifying the names of the time-varying covariates in obs_data. If not specified, no confounders are adjusted.
     * - compevent_name
-      - None
       - (Optional) A string specifying the name of the competing event variable in obs_data. Only applicable for survival outcomes.
     * - censor_name
-      - None
       - (Optional) A string specifying the name of the censoring variable in obs_data. Only applicable for survival outcomes.
     * - time_points
-      - Maximum time points + 1
       - (Optional) Number of time points to simulate. By default, this argument is set equal to the maximum
         number of records that obs_data contains for any individual plus 1.
 
 
 The input data should contain one record for each follow-up time k for each subject (identified by the individual identifier).
 The time index k for each subject should increment by 1 for each subsequent interval (the starting index is 0 in the following
-examples which is a most frequently used case).
+examples).
 The record at each line in the data corresponds to an interval k, which contains the
 covariate measurements at interval k and the outcome measurement at interval k+1.
 
@@ -71,7 +62,7 @@ such that there are no failures in intervals where there are censoring events. I
 whether to count such subjects in the time k risk set or not [1]_ [2]_. For fixed binary/continuous end of follow-up, the
 outcome Y_k+1 should be coded NA.
 
-Here is an example of input data structure with a censoring event (identified by ’’C’’). The subject contains 8 records on the measurements of
+Here is an example of input data structure with a censoring event (identified by ‘‘C’’). The subject contains 8 records on the measurements of
 two time-varying covariates ‘‘L’’, ‘‘A’’, the outcome ‘‘Y’’ and is censored at time index k+1=8. See `"example_data_censor" <https://github.com/CausalInference/pygformula/blob/master/datasets/example_data_censor.csv>`_ for complete example data.
 
     .. image:: ../media/data_example_censor.png
@@ -96,7 +87,6 @@ The subject experiences a competing event after measurement of interval k=6 cova
          :align: center
          :width: 6in
          :height: 1.8in
-
 
 
 +  Note that the ‘‘time_points’’ argument specifies the desired end of follow-up (a

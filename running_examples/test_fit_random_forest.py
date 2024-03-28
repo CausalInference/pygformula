@@ -25,7 +25,7 @@ outcome_model = 'Y ~ L1 + L2 + A'
 
 # define interventions
 time_points = np.max(np.unique(obs_data[time_name])) + 1
-int_descripts = ['Never treat', 'Always treat']
+int_descript = ['Never treat', 'Always treat']
 
 
 def fit_rf(covmodel, covname, fit_data):
@@ -49,7 +49,7 @@ covfits_custom = ['NA', fit_rf, 'NA']
 covpredict_custom = ['NA', predict_rf, 'NA']
 
 g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name, time_points = time_points,
-             int_descripts = int_descripts,
+             int_descript = int_descript,
              Intervention1_A = [static, np.zeros(time_points)],
              Intervention2_A = [static, np.ones(time_points)],
              covnames=covnames,  covtypes=covtypes, covmodels=covmodels,

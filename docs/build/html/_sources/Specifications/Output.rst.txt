@@ -30,6 +30,14 @@ The package provides the following outputs:
         sim_data = g.summary_dict['sim_data'][intervention_name]
 
 
++ **The IP weights**: To get the inverse probability weights when there is censoring event:
+
+     .. code::
+
+        ip_weights = g.summary_dict['IP_weights']
+
+
+
 + **The fitted models**: The package gives the fitted model for each covariate, outcome, competing event (if applicable), censoring event (if applicable).
   First the argument ‘‘model_fits’’ should be set to True, then the fitted models can be obtained by:
 
@@ -223,45 +231,33 @@ argument ‘‘save_path’’:
     :header-rows: 1
 
     * - Arguments
-      - Default
       - Description
     * - n_simul
-      - The number of subjects in the input data
-      - (Optional) An integer indicating the number of subjects for whom to simulate data.
+      - (Optional) An integer indicating the number of subjects for whom to simulate data. The default is the number of subjects in the input data.
     * - ref_int
-      - 0
       - (Optional) An integer indicating the intervention to be used as the reference for calculating the end-of-follow-up mean
         ratio and mean difference. 0 denotes the natural course, while subsequent integers denote user-specified
         interventions in the order that they are named in interventions.
     * - nsamples
-      - None
       - (Optional) An integer specifying the number of bootstrap samples to generate.
     * - parallel
-      - False
       - (Optional) A boolean value indicating whether to parallelize simulations of different interventions to multiple cores.
     * - ncores
-      - 1
       - (Optional) An integer indicating the number of cores used in parallelization. It is set to 1 if not specified by users.
     * - model_fits
-      - False
       - (Optional) A boolean value indicating whether to return the fitted models.
     * - ci_method
-      - "percentile"
       - (Optional) A string specifying the method for calculating the bootstrap 95% confidence intervals, if applicable.
         The options are "percentile" and "normal".
     * - boot_diag
-      - False
       - (Optional) A boolean value indicating whether to return the parametric g-formula estimates as well as the coefficients,
         standard errors, and variance-covariance matrices of the parameters of the fitted models in the bootstrap samples.
     * - save_results
-      - False
       - (Optional) A boolean value indicating whether to save all the returned results to the save_path.
     * - save_path
-      - None
       - (Optional) A path to save all the returned results. A folder will be created automatically in the current working directory
         if the save_path is not specified by users.
     * - seed
-      - 1234
       - (Optional) An integar indicating the starting seed for simulations and bootstrapping.
 
 
@@ -271,53 +267,64 @@ argument ‘‘save_path’’:
 Graphical results
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+.. automodule:: pygformula.plot
+
+
 The package also provides two plotting functions: "plot_natural_course" and "plot_interventions".
 The plot_natural_course function plots the curves of each covariate mean (for all types of outcome) and risk (for survival outcomes only) under g-formula parametric and
-non-parametric estimation, which is called by:
+non-parametric estimation.
 
-  .. code::
+.. autosummary:: plot_natural_course
+.. autofunction:: plot_natural_course
 
-      g.plot_natural_course()
 
-The plot_interventions fucntion plots the curves of risk under interventions of interest (for survival outcomes only), which is called by:
+The plot_interventions fucntion plots the curves of risk under interventions of interest (for survival outcomes only).
 
-  .. code::
 
-      g.plot_interventions()
+.. autosummary:: plot_interventions
+.. autofunction:: plot_interventions
 
-  Users can also specify the following arguments to customize the graph:
 
-  .. list-table::
+Arguments for plotting:
+
+.. list-table::
     :header-rows: 1
 
     * - Arguments
-      - Default
       - Description
     * - plot_name
-      - 'all'
-      - (Optional) This argument is only applicable for plot_natural_course function. Users can specify the plotting variable of interest. If not specified, the function
-        will return plotting results of all covariates and risks.
+      - A string specifying the name for plotting, which is set to "all", "risk" or one specific covariate name. Only
+        applicable for the plot_natural_course function. The default is "all".
     * - colors
-      - None
-      - (Optional) For plot_natural_course function, it is a list wth two elements, specifying the non-parametric estimate curve and parametric curve respectively.
+      - For plot_natural_course function, it is a list wth two elements, specifying the non-parametric estimate curve and parametric curve respectively.
         Users can choose colors from `matplotlib colors <https://matplotlib.org/stable/gallery/color/named_colors.html>`_.
-        For plot_natural_course function, it is a list wth m elements with m the number of interventions plus 1,
+        For plot_interventions function, it is a list wth m elements with m the number of interventions plus 1,
         specifying all intervention curves. If not specified, the function will use default colors.
     * - marker
-      - 'o'
-      - (Optional) Marker style at each data point. Users can also choose markers from
+      - A string used to customize the appearance of points in plotting. Users can also choose markers from
         `matplotlib markers <https://matplotlib.org/stable/api/markers_api.html>`_ library.
     * - markersize
-      - 4
-      - (Optional) Float, specifying the area of the marker.
+      - An integer specifies the size of the markers in plotting.
     * - linewidth
-      - 0.5
-      - (Optional) Float, specifying the thickness of lines.
+      - A number that specifies the width of the line in plotting.
     * - save_figure
-      - False
-      - (Optional) Bool value, specifying whether to save the plotting graph to the save_path folder.
+      - A boolean value indicating whether to save the figure or not.
 
-Note that the plotting functions can only be applied after calling the 'fit' function.
+
+Users can call the 'plot_natural_course' function by:
+
+     .. code-block::
+
+        g.plot_natural_course()
+
+Users can call the 'plot_interventions' function by:
+
+     .. code-block::
+
+        g.plot_interventions()
+
+
+Note that the plotting functions can only be applied after calling the 'g.fit' function.
 
 The figures can be saved by the argument ‘‘save_figure’’, once it is set to True,
 results will be saved locally by creating a folder automatically. If the argument ‘‘save_path’’ is specified, the figure will be saved to the corresponding folder.

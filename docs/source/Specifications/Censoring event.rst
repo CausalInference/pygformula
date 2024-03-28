@@ -5,7 +5,7 @@ Censoring event
 
 In the presence of censoring, the name of the censoring variable in the input data should be specified,
 users also need to specify a censor model.
-Here the censor model is used for nonparametric estimate of natural course which applies inverse probability weighting method [1]_ in estimation.
+Here the censor model is used for nonparametric estimate of natural course which applies inverse probability weighting method [1]_.
 Meanwhile, the compared parametric g-formula involves a hypothetical intervention to abolish censoring.
 
 The arguments for censoring events:
@@ -14,19 +14,14 @@ The arguments for censoring events:
     :header-rows: 1
 
     * - Arguments
-      - Default
       - Description
     * - censor_name
-      - None
       - (Optional) A string specifying the name of the censoring variable in obs_data.
     * - censor_model
-      - None
       - (Optional) A string specifying the model statement for the censoring variable.
     * - ipw_cutoff_quantile
-      - None
       - (Optional) A percentile by which to truncate inverse probability weights.
     * - ipw_cutoff_value
-      - None
       - (Optional) A cutoff value by which to truncate inverse probability weights.
 
 Users may specify a cutoff value (in the argument ‘‘ipw_cutoff_quantile’’) or a cutoff quantile
@@ -48,7 +43,7 @@ Users may specify a cutoff value (in the argument ‘‘ipw_cutoff_quantile’�
    please name the censoring variable any name except 'C' to avoild name confusion.
 
 
-**Running example**:
+**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_censor.py>`_:
 
 .. code-block::
 
@@ -75,17 +70,19 @@ Users may specify a cutoff value (in the argument ‘‘ipw_cutoff_quantile’�
         censor_model = 'C ~ A + L'
 
         time_points = np.max(np.unique(obs_data[time_name])) + 1
-        int_descripts = ['Never treat', 'Always treat']
-        interventions = [[[static, np.zeros(time_points)]], [[static, np.ones(time_points)]]]
-        intvars = [['A'], ['A']]
+        int_descript = ['Never treat', 'Always treat']
 
 
-        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name, time_points = time_points,
-                     int_descripts=int_descripts, interventions=interventions, intvars=intvars,
-                     censor_name= censor_name, censor_model=censor_model,
-                     covnames = covnames, covtypes = covtypes, covmodels = covmodels,
-                     outcome_name=outcome_name, outcome_model=outcome_model, outcome_type='survival')
+        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name,
+            time_points = time_points,
+            int_descript=int_descript,
+            Intervention1_A = [static, np.zeros(time_points)],
+            Intervention2_A = [static, np.ones(time_points)],
+            censor_name= censor_name, censor_model=censor_model,
+            covnames = covnames, covtypes = covtypes, covmodels = covmodels,
+            outcome_name=outcome_name, outcome_model=outcome_model, outcome_type='survival')
         g.fit()
+
 
 **Output**:
 

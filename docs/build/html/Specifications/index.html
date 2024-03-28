@@ -95,9 +95,9 @@
 arguments in different modules of pygformula to construct a specific analysis. To use the g-formula method in the package,
 the first step is to make sure that the input data meets the requirement of
 <a class="reference internal" href="Input%20data.html"><span class="doc">Input data</span></a>.
-Then, users need to specify their parametric covariate model in <a class="reference internal" href="Covariate%20model.html"><span class="doc">Covariate model</span></a>,
-parametric outcome model in <a class="reference internal" href="Outcome%20model.html"><span class="doc">Outcome model</span></a>
-, as well as the treatment strategy of interest in <a class="reference internal" href="Intervention.html"><span class="doc">Intervention</span></a>.
+Then, users need to specify their parametric covariate model (see <a class="reference internal" href="Covariate%20model.html"><span class="doc">Covariate model</span></a>),
+parametric outcome model (see <a class="reference internal" href="Outcome%20model.html"><span class="doc">Outcome model</span></a>)
+, as well as the intervention of interest (see <a class="reference internal" href="Intervention.html"><span class="doc">Intervention</span></a>).
 Once these required modules are well-defined, the g-formula in pygformula can be called and output the results of the method.</p>
 <p>Additionally, if there is censoring event, users need to specify corresponding arguments of the censoring event in
 <a class="reference internal" href="Censoring%20event.html"><span class="doc">Censoring event</span></a>.
@@ -108,8 +108,8 @@ The package also provides option for calculating the hazard ratio of any two int
 If the data structure contains visit process, users can also perform g-formula analysis for this setting in
 <a class="reference internal" href="Visit%20process.html"><span class="doc">Visit process</span></a>.
 If there is deterministic knowledge about the relationship between the variables, it can be incorporated into the estimation
-of g-formula by applying restrictions, please see <a class="reference internal" href="Deterministic%20knowledge.html"><span class="doc">Deterministic knowledge</span></a>.</p>
-<p>The capabilities implemented in the modules of pygformula are basically the same as gfoRmula <a class="footnote-reference brackets" href="#id3" id="id1">1</a> and GFORMULA SAS macro <a class="footnote-reference brackets" href="#id4" id="id2">2</a>.</p>
+of g-formula by applying restrictions ( see <a class="reference internal" href="Deterministic%20knowledge.html"><span class="doc">Deterministic knowledge</span></a>).</p>
+<p>The capabilities implemented in the pygformula are basically the same as gfoRmula <a class="footnote-reference brackets" href="#id3" id="id1">1</a> and GFORMULA SAS macro <a class="footnote-reference brackets" href="#id4" id="id2">2</a>.</p>
 <p><strong>Contents</strong>:</p>
 <div class="toctree-wrapper compound">
 <ul>
@@ -144,7 +144,7 @@ of g-formula by applying restrictions, please see <a class="reference internal" 
 </li>
 <li class="toctree-l1"><a class="reference internal" href="Output.html">Output</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="Output.html#numerical-results">Numerical results</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Output.html#graphical-results">Graphical results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Output.html#module-pygformula.plot">Graphical results</a></li>
 </ul>
 </li>
 </ul>
@@ -170,7 +170,7 @@ of g-formula by applying restrictions, please see <a class="reference internal" 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023, CAUSALab.</p>
+    <p>&#169; Copyright 2024, CAUSALab.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

@@ -34,10 +34,8 @@ The argument for visit process:
     :header-rows: 1
 
     * - Arguments
-      - Default
       - Description
     * - visitprocess
-      - None
       - (Optional) List of lists. Each inner list contains its first entry the covariate name of a visit process; its second entry
         the name of a covariate whose modeling depends on the visit process; and its third entry the maximum number
         of consecutive visits that can be missed before an individual is censored.
@@ -94,15 +92,16 @@ the ‘‘binary’’ covariate type in ‘‘covtypes’’.
 
         time_points = np.max(np.unique(obs_data[time_name])) + 1
 
-        int_descripts = ['Never treat', 'Always treat']
-        interventions = [[[static, np.zeros(time_points)]], [[static, np.ones(time_points)]]]
-        intvars = [['everhaart'], ['everhaart']]
+        int_descript = ['Never treat', 'Always treat']
 
 
-        g = ParametricGformula(obs_data = obs_data, id_name = id_name,  time_name = time_name, visitprocess = visitprocess,
-                          intvars = intvars, interventions = interventions, int_descripts = int_descripts,
-                          covnames=covnames,  covtypes=covtypes, covmodels=covmodels, basecovs = basecovs,
-                          outcome_name=outcome_name, outcome_model=outcome_model, outcome_type='survival')
+        g = ParametricGformula(obs_data = obs_data, id_name = id_name,  time_name = time_name,
+            visitprocess = visitprocess,
+            int_descript = int_descript,
+            Intervention1_everhaart = [static, np.zeros(time_points)],
+            Intervention2_everhaart = [static, np.ones(time_points)],
+            covnames=covnames,  covtypes=covtypes, covmodels=covmodels, basecovs = basecovs,
+            outcome_name=ou tcome_name, outcome_model=outcome_model, outcome_type='survival')
         g.fit()
 
 

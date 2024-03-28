@@ -49,13 +49,10 @@ covariates.
     :header-rows: 1
 
     * - Arguments
-      - Default
       - Description
     * - custom_histvars
-      - None
       - (Optional) A list of strings, each of which specifies the names of the time-varying covariates with user-specified custom histories.
     * - custom_histories
-      - None
       - (Optional) A list of function, each function is the user-specified custom history functions for covariates. The list
         must be the same length as custom_histvars and in the same order.
 
@@ -70,7 +67,7 @@ For each custom history function, the input should be the parameters (not necess
 
 The function output is a dataframe ‘‘pool’’ with the new column of the historical term created.
 
-The following is an example of creating historical functions for covariates 'L1', 'L2' and 'A' by the function
+The following is an example of creating historical functions for covariates ''L1'', ''L2'' and ''A'' by the function
 'ave_last3'. This function generates the average of the three most recent values of the covariate (when the
 t=0, it takes the current value of the covariate; when t=1, it takes the average of the current value).
 The new historical covariates are named as ave_last3_L1, ave_last3_L2, and ave_last3_A.
@@ -101,7 +98,7 @@ The new historical covariates are named as ave_last3_L1, ave_last3_L2, and ave_l
 
       g = ParametricGformula(..., custom_histvars = custom_histvars, custom_histories=custom_histories, ...)
 
-The ave_last3 function has been pre-coded in the package, users can also call this function by:
+The ave_last3 function has been included in the package, users can also call this function by:
 
 .. code-block::
 
@@ -118,48 +115,48 @@ To specify a parametric model for each covariate in pygformula, users need to sp
     :header-rows: 1
 
     * - Arguments
-      - Default
       - Description
     * - covnames
-      - User specified
       - (Required) A list of strings specifying the names of the time-varying covariates in obs_data.
     * - covtypes
-      - User specified
       - (Required) A list of strings specifying the “type” of each time-varying covariate included in covnames.
         The supported types: "binary", "normal", "categorical", "bounded normal", "zero-inflated normal",
         "truncated normal", "absorbing", "categorical time", "square time" and "custom". The list must be the same
         length as covnames and in the same order.
     * - covmodels
-      - User specified
       - (Required) A list of strings, where each string is the model statement of the time-varying covariate. The list
         must be the same length as covnames and in the same order. If a model is not required for a certain covariate,
         it should be set to 'NA' at that index.
     * - basecovs
-      - None
       - (Optional) A vector of strings specifying the names of baseline covariates in obs_data. These covariates are not
         simulated using a model but keep the same value at all time points. These covariates should not be included
         in covnames.
     * - trunc_params
-      - None
       - (Optional) A list, at the index where the covtype is set to "truncated normal", the element contains two elements.
         The first element specifies the truncated value and the second element specifies the truncated direction
         (‘left’ or ‘right’). The values at remaining indexes are set to 'NA'. The list must be the same length as
         covnames and in the same order.
     * - time_thresholds
-      - None
       - (Optional) A list of integers that splits the time points into different intervals. It is used to create the time variable
         of "categorical time".
 
 
-In the usage, users need to specify the names of time-varying covariates in ‘‘covnames’’, the distribution type
+When there are confounders to be adjusted, users need to specify the names of time-varying covariates in ‘‘covnames’’, the distribution type
 of each covariate in ‘‘covtypes’’, as well as the model statement for each covariate in ‘‘covmodels’’.
-In addition, if there are time-fixed baseline covariates, they should be defined in the argument ‘‘basecovs’’.
+In addition, if there are time-fixed baseline covariates, they should be specified in the argument ‘‘basecovs’’.
 If the covariate type is ‘‘truncated normal’’, the ‘‘trunc_params’’ argument should be also defined which contains
-the required truncated direction and truncated value. If the covariate type is ‘‘categorical time’’, the user should
+the required truncated direction and truncated value. If the covariate type is ‘‘categorical time’’, users should
 also define the ‘‘time_thresholds’’ argument to create a desired categorization of time.
 In the following, this section shows examples for different covariate distributions to show how to specify the above arguments
-in specific examples during usage.
+in specific examples during the usage.
 
+.. note::
+
+   For the ‘‘covmodels’’ argument which specifies the model statement for each covariate, users need to be careful to
+   avoid the loop between covariates, i.e., in each covariate model statement, the independent variable and dependent
+   variable should follow the direction in the DAG (directed acyclic graph). For example, if the covariate A is the
+   dependent variable of the covariate B (A ~ B), then the covariate B should not be the dependent variable of the
+   covariate A (B ~ A).
 
 
 Binary
@@ -174,7 +171,7 @@ by sampling from a Bernoulli distribution with parameter the conditional probabi
 
 **Sample syntax**:
 
-An example where the covariate 'L1' is binomial distribution
+An example where the covariate ''L1'' is binomial distribution
 
 .. code-block::
 
@@ -188,7 +185,7 @@ An example where the covariate 'L1' is binomial distribution
       g = ParametricGformula(..., covnames = covnames, covtypes = covtypes, covmodels = covmodels, basecovs = basecovs, ...)
 
 
-**Running example**:
+**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_binary_cov.py>`_:
 
 .. code-block::
 
@@ -196,7 +193,6 @@ An example where the covariate 'L1' is binomial distribution
         import pygformula
         from pygformula import ParametricGformula
         from pygformula.parametric_gformula.interventions import static
-        from pygformula import ParametricGformula
         from pygformula.data import load_basicdata_nocomp
 
         obs_data = load_basicdata_nocomp()
@@ -215,15 +211,15 @@ An example where the covariate 'L1' is binomial distribution
         outcome_type = 'survival'
 
         time_points = np.max(np.unique(obs_data[time_name])) + 1
-        int_descripts = ['Never treat', 'Always treat']
-        interventions = [[[static, np.zeros(time_points)]], [[static, np.ones(time_points)]]]
-        intvars = [['A'], ['A']]
+        int_descript = ['Never treat', 'Always treat']
 
-        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name, time_points = time_points,
-                     interventions=interventions, int_descripts = int_descripts, intvars=intvars,
-                     covnames=covnames, covtypes=covtypes, covmodels=covmodels, basecovs=basecovs,
-                     outcome_name=outcome_name, outcome_model=outcome_model, outcome_type=outcome_type
-                     )
+
+        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name,
+            time_points = time_points, int_descript = int_descript,
+            Intervention1_A = [static, np.zeros(time_points)],
+            Intervention2_A = [static, np.ones(time_points)],
+            covnames=covnames, covtypes=covtypes, covmodels=covmodels, basecovs=basecovs,
+            outcome_name=outcome_name, outcome_model=outcome_model, outcome_type=outcome_type)
         g.fit()
 
 **Output**:
@@ -232,7 +228,7 @@ An example where the covariate 'L1' is binomial distribution
              :align: center
 
 
-Note that in this section, all demonstration examples use the same static treatment strategies
+Note that in this section, all demonstration examples use the same static interventions
 (‘‘Never treat’’ and ‘‘Always treat’’), and are applied in the survival outcome case.
 Please refer to :doc:`Intervention` part for more types of intervention,
 and :doc:`Outcome model` part for more types of outcome.
@@ -262,7 +258,7 @@ from the fitted model. Values generated outside the observed range for the covar
       g = ParametricGformula(..., covnames = covnames, covtypes = covtypes, covmodels = covmodels, basecovs = basecovs, ...)
 
 
-**Running example**:
+**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_normal_cov.py>`_:
 
 .. code-block::
 
@@ -270,7 +266,6 @@ from the fitted model. Values generated outside the observed range for the covar
         import pygformula
         from pygformula import ParametricGformula
         from pygformula.parametric_gformula.interventions import static
-        from pygformula import ParametricGformula
         from pygformula.data import load_basicdata_nocomp
 
         obs_data = load_basicdata_nocomp()
@@ -289,16 +284,17 @@ from the fitted model. Values generated outside the observed range for the covar
         outcome_type = 'survival'
 
         time_points = np.max(np.unique(obs_data[time_name])) + 1
-        int_descripts = ['Never treat', 'Always treat']
-        interventions = [[[static, np.zeros(time_points)]], [[static, np.ones(time_points)]]]
-        intvars = [['A'], ['A']]
+        int_descript = ['Never treat', 'Always treat']
 
-        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name, time_points = time_points,
-                     interventions=interventions, int_descripts = int_descripts, intvars=intvars,
-                     covnames=covnames, covtypes=covtypes, covmodels=covmodels, basecovs=basecovs,
-                     outcome_name=outcome_name, outcome_model=outcome_model, outcome_type=outcome_type
-                     )
+
+        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name,
+            time_points = time_points, int_descript = int_descript,
+            Intervention1_A = [static, np.zeros(time_points)],
+            Intervention2_A = [static, np.ones(time_points)],
+            covnames=covnames, covtypes=covtypes, covmodels=covmodels, basecovs=basecovs,
+            outcome_name=outcome_name, outcome_model=outcome_model, outcome_type=outcome_type)
         g.fit()
+
 
 **Output**:
 
@@ -328,10 +324,10 @@ conditional probabilities of the fitted model.
 
 
 Note that when the covariate model statement contains any categorical variable, such as ‘‘lag1_L’’ or ‘‘L’’,
-e.g., in the example above, the user needs to add a ‘‘C( )’’ on the variable indicating it's categorical.
+e.g., in the example above, users need to add a ‘‘C( )’’ on the variable indicating it's categorical.
 
 
-**Running example**:
+**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_categorical_cov.py>`_:
 
 .. code-block::
 
@@ -354,14 +350,15 @@ e.g., in the example above, the user needs to add a ‘‘C( )’’ on the vari
         outcome_model = 'Y ~ C(lag1_L) + A'
 
         time_points = np.max(np.unique(obs_data[time_name])) + 1
-        int_descripts = ['Never treat', 'Always treat']
-        interventions = [[[static, np.zeros(time_points)]], [[static, np.ones(time_points)]]]
-        intvars = [['A'], ['A']]
+        int_descript = ['Never treat', 'Always treat']
 
-        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name, time_points = time_points,
-                       interventions=interventions, int_descripts = int_descripts, intvars=intvars,
-                       covnames=covnames,  covtypes=covtypes, covmodels=covmodels, outcome_name=outcome_name,
-                       outcome_model=outcome_model, outcome_type='survival')
+
+        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name,
+            time_points = time_points, int_descript = int_descript,
+            Intervention1_A = [static, np.zeros(time_points)],
+            Intervention2_A = [static, np.ones(time_points)],
+            covnames=covnames,  covtypes=covtypes, covmodels=covmodels,
+            outcome_name=outcome_name, outcome_model=outcome_model, outcome_type='survival')
         g.fit()
 
 
@@ -398,7 +395,7 @@ and values generated outside the observed range for the covariate are set to the
       g = ParametricGformula(..., covnames = covnames, covtypes = covtypes, covmodels = covmodels, basecovs = basecovs, ...)
 
 
-**Running example**:
+**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_bounded_normal_cov.py>`_:
 
 .. code-block::
 
@@ -406,7 +403,6 @@ and values generated outside the observed range for the covariate are set to the
         import pygformula
         from pygformula import ParametricGformula
         from pygformula.parametric_gformula.interventions import static
-        from pygformula import ParametricGformula
         from pygformula.data import load_basicdata_nocomp
 
         obs_data = load_basicdata_nocomp()
@@ -414,7 +410,7 @@ and values generated outside the observed range for the covariate are set to the
         id_name = 'id'
 
         covnames = ['L2', 'A']
-        covtypes = ['normal', 'binary']
+        covtypes = ['bounded normal', 'binary']
         covmodels = ['L2 ~ lag1_A + lag_cumavg1_L2 + L3 + t0',
                    'A ~ lag1_A + L2 + lag_cumavg1_L2 + L3 + t0']
 
@@ -425,15 +421,15 @@ and values generated outside the observed range for the covariate are set to the
         outcome_type = 'survival'
 
         time_points = np.max(np.unique(obs_data[time_name])) + 1
-        int_descripts = ['Never treat', 'Always treat']
-        interventions = [[[static, np.zeros(time_points)]], [[static, np.ones(time_points)]]]
-        intvars = [['A'], ['A']]
+        int_descript = ['Never treat', 'Always treat']
 
-        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name, time_points = time_points,
-                     interventions=interventions, int_descripts = int_descripts, intvars=intvars,
-                     covnames=covnames, covtypes=covtypes, covmodels=covmodels, basecovs=basecovs,
-                     outcome_name=outcome_name, outcome_model=outcome_model, outcome_type=outcome_type
-                     )
+
+        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name,
+            time_points = time_points, int_descript = int_descript,
+            Intervention1_A = [static, np.zeros(time_points)],
+            Intervention2_A = [static, np.ones(time_points)],
+            covnames=covnames, covtypes=covtypes, covmodels=covmodels, basecovs=basecovs,
+            outcome_name=outcome_name, outcome_model=outcome_model, outcome_type=outcome_type)
         g.fit()
 
 
@@ -471,7 +467,7 @@ of the covariate.
         g = ParametricGformula(..., covnames = covnames, covtypes = covtypes, covmodels = covmodels, ...)
 
 
-**Running example**:
+**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_zero_inflated_normal_cov.py>`_:
 
 .. code-block::
 
@@ -479,7 +475,6 @@ of the covariate.
         import pygformula
         from pygformula import ParametricGformula
         from pygformula.parametric_gformula.interventions import static
-        from pygformula import ParametricGformula
 
         obs_data = load_zero_inflated_normal()
         time_name = 't0'
@@ -495,15 +490,15 @@ of the covariate.
         outcome_type = 'survival'
 
         time_points = np.max(np.unique(obs_data[time_name])) + 1
-        int_descripts = ['Never treat', 'Always treat']
-        interventions = [[[static, np.zeros(time_points)]], [[static, np.ones(time_points)]]]
-        intvars = [['A'], ['A']]
+        int_descript = ['Never treat', 'Always treat']
 
-        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name, time_points = time_points,
-                     interventions=interventions, int_descripts = int_descripts, intvars=intvars,
-                     covnames=covnames, covtypes=covtypes, covmodels=covmodels,
-                     outcome_name=outcome_name, outcome_model=outcome_model, outcome_type=outcome_type
-                     )
+
+        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name,
+            time_points = time_points, int_descript = int_descript,
+            Intervention1_A = [static, np.zeros(time_points)],
+            Intervention2_A = [static, np.ones(time_points)],
+            covnames=covnames, covtypes=covtypes, covmodels=covmodels,
+            outcome_name=outcome_name, outcome_model=outcome_model, outcome_type=outcome_type)
         g.fit()
 
 
@@ -524,45 +519,14 @@ distribution with the covariate mean from the fitted model. The generated covari
 are set to the minimum or maximum of the observed range.
 
 
-*Prerequisite*: The pygformula calls R package ‘‘truncreg’’ to fit a truncated normal regression. In the case
-the covariate follows a truncated normal distribution, the user needs to have additional installation steps.
-Please install the R environment and the rpy2 interface in python environment as follows:
-
- - Install R to set up R environment
-
- - Install truncreg R package in R environment:
-
-   .. code::
-
-      install.packages("truncreg")
-
- - Install rpy2 in the python environment:
-
-   .. code::
-
-      pip install rpy2
-
-.. note::
-
-   If you encounters the problem of not finding the R environment, you can set up the R path
-   in your environment using the following command in the code:
-
-    .. code-block::
-
-       import os
-       os.environ["R_HOME"] = 'R_HOME'
-
-    where R_HOME is the R home directory path.
-
-
 **Sample syntax**:
 
 .. code-block::
 
-      covnames = [ 'L', 'A']
+      covnames = ['L', 'A']
       covtypes = ['truncated normal', 'binary']
-      covparams = ['L ~ lag1_L + time',
-                   'A ~ L + lag1_L + lag1_A + time']
+      covmodels = ['L ~ lag1_A + lag1_L + t0',
+                   'A ~ lag1_A + lag1_L + L + t0']
 
       trunc_params = [[1, 'right'], 'NA']
 
@@ -574,40 +538,45 @@ otherwise it should be 'NA'. In the list of two elements, the first one should b
 and the second one should be the truncated direction ('left' or 'right') of the covariate.
 
 
-**Running example**:
+**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_truncated_normal.py>`_:
 
 .. code-block::
 
-        obs_data = pd.read_csv("..\datasets\example_data_truncated_normal.csv")
-        time_name = 'time'
+        import numpy as np
+        from pygformula import ParametricGformula
+        from pygformula.parametric_gformula.interventions import static
+        from pygformula.data import load_truncated_normal
+
+        obs_data = load_truncated_normal()
+        time_name = 't0'
         id_name = 'id'
 
-        covnames = [ 'L', 'A']
+        covnames = ['L', 'A']
         covtypes = ['truncated normal', 'binary']
-
-        covparams = ['L ~ lag1_L + time',
-                      'A ~ L + lag1_L + lag1_A + time']
+        covmodels = ['L ~ lag1_A + lag1_L + t0',
+                     'A ~ lag1_A + lag1_L + L + t0']
 
         trunc_params = [[1, 'right'], 'NA']
 
         outcome_name = 'Y'
-        outcome_model = 'Y ~ L + A'
+        outcome_model = 'Y ~ L + A + t0'
+        outcome_type = 'survival'
 
         time_points = np.max(np.unique(obs_data[time_name])) + 1
-        intervention_names = ['Never treat', 'Always treat']
-        interventions = [[[static, np.zeros(time_points)]], [[static, np.ones(time_points)]]]
-        intvars = [['A'], ['A']]
+        int_descript = ['Never treat', 'Always treat']
 
-
-        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name, time_points = time_points,
-                          interventions=interventions, intervention_names = intervention_names, intvars=intvars,
-                          covnames=covnames,  covtypes=covtypes, covparams=covparams, trunc_params=trunc_params,
-                          outcome_name=outcome_name, outcome_model=outcome_model, outcome_type='survival')
+        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name,
+            time_points = time_points, int_descript = int_descript,
+            Intervention1_A = [static, np.zeros(time_points)],
+            Intervention2_A = [static, np.ones(time_points)],
+            covnames=covnames, covtypes=covtypes, covmodels=covmodels, trunc_params=trunc_params,
+            outcome_name=outcome_name, outcome_model=outcome_model, outcome_type=outcome_type)
         g.fit()
+
 
 **Output**:
 
-    .. image:: ../media/truncated_normal_cov_example.jpg
+    .. image:: ../media/truncated_normal_cov_example.png
              :align: center
 
 
@@ -634,7 +603,7 @@ time and all subsequent times is set to 1.
         g = ParametricGformula(..., covnames = covnames, covtypes = covtypes, covparams = covparams,...)
 
 
-**Running example**:
+**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_absorbing_cov.py>`_:
 
 .. code-block::
 
@@ -658,15 +627,14 @@ time and all subsequent times is set to 1.
         outcome_type = 'survival'
 
         time_points = np.max(np.unique(obs_data[time_name])) + 1
-        int_descripts = ['Never treat', 'Always treat']
-        interventions = [[[static, np.zeros(time_points)]], [[static, np.ones(time_points)]]]
-        intvars = [['A'], ['A']]
+        int_descript = ['Never treat', 'Always treat']
 
-        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name, time_points = time_points,
-                     interventions=interventions, int_descripts = int_descripts, intvars=intvars,
-                     covnames=covnames, covtypes=covtypes, covmodels=covmodels,
-                     outcome_name=outcome_name, outcome_model=outcome_model, outcome_type=outcome_type
-                     )
+        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name,
+            time_points = time_points, int_descript = int_descript,
+            covnames=covnames, covtypes=covtypes, covmodels=covmodels,
+            Intervention1_A = [static, np.zeros(time_points)],
+            Intervention2_A = [static, np.ones(time_points)],
+            outcome_name=outcome_name, outcome_model=outcome_model, outcome_type=outcome_type)
         g.fit()
 
 
@@ -714,7 +682,7 @@ Note that when using the new categorical time variable in the model statement, e
 the syntax example above, C() should be added.
 
 
-**Running example**:
+**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_categorical_time.py>`_:
 
 .. code-block::
 
@@ -744,15 +712,16 @@ the syntax example above, C() should be added.
         outcome_type = 'survival'
 
         time_points = np.max(np.unique(obs_data[time_name])) + 1
-        int_descripts = ['Never treat', 'Always treat']
-        interventions = [[[static, np.zeros(time_points)]], [[static, np.ones(time_points)]]]
-        intvars = [['A'], ['A']]
+        int_descript = ['Never treat', 'Always treat']
 
-        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name, time_points = time_points,
-                     interventions=interventions, int_descripts = int_descripts, intvars=intvars, time_thresholds = time_thresholds,
-                     covnames=covnames, covtypes=covtypes, covmodels=covmodels, basecovs=basecovs,
-                     outcome_name=outcome_name, outcome_model=outcome_model, outcome_type=outcome_type,
-                     )
+
+        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name,
+            time_points = time_points, time_thresholds = time_thresholds,
+            int_descript = int_descript,
+            Intervention1_A = [static, np.zeros(time_points)],
+            Intervention2_A = [static, np.ones(time_points)],
+            covnames=covnames, covtypes=covtypes, covmodels=covmodels, basecovs=basecovs,
+            outcome_name=outcome_name, outcome_model=outcome_model, outcome_type=outcome_type)
         g.fit()
 
 
@@ -779,7 +748,7 @@ of 'square' and the time name in the data, e.g., 'square_t0'.
 
         g = ParametricGformula(..., covnames = covnames, covtypes = covtypes, covparams = covparams, ...)
 
-**Running example**:
+**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_square_time.py>`_:
 
 .. code-block::
 
@@ -807,15 +776,15 @@ of 'square' and the time name in the data, e.g., 'square_t0'.
         outcome_type = 'survival'
 
         time_points = np.max(np.unique(obs_data[time_name])) + 1
-        int_descripts = ['Never treat', 'Always treat']
-        interventions = [[[static, np.zeros(time_points)]], [[static, np.ones(time_points)]]]
-        intvars = [['A'], ['A']]
+        int_descript = ['Never treat', 'Always treat']
 
-        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name, time_points = time_points,
-                     interventions=interventions, int_descripts = int_descripts, intvars=intvars,
-                     covnames=covnames, covtypes=covtypes, covmodels=covmodels, basecovs=basecovs,
-                     outcome_name=outcome_name, outcome_model=outcome_model, outcome_type=outcome_type,
-                     )
+
+        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name,
+            time_points = time_points, int_descript = int_descript,
+            Intervention1_A = [static, np.zeros(time_points)],
+            Intervention2_A = [static, np.ones(time_points)],
+            covnames=covnames, covtypes=covtypes, covmodels=covmodels, basecovs=basecovs,
+            outcome_name=outcome_name, outcome_model=outcome_model, outcome_type=outcome_type)
         g.fit()
 
 
@@ -832,14 +801,11 @@ fit function and the predict function, which will be called by the arguments ‘
     :header-rows: 1
 
     * - Arguments
-      - Default
       - Description
     * - covfits_custom
-      - None
       - (Optional) A list, at the index where the covtype is set to "custom", the element is a user-specified fit function,
         otherwise it should be set to 'NA'. The list must be the same length as covnames and in the same order.
     * - covpredict_custom
-      - None
       - (Optional) A list, at the index where the covtype is set to "custom", the element is a user-specified predict function,
         otherwise it should be set to 'NA'.
 
@@ -897,7 +863,7 @@ The custom predict function for the random forest model:
       g = ParametricGformula(..., covfits_custom = covfits_custom, covfits_custom = covpredict_custom, ...)
 
 
-**Running examples**:
+**Running examples** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_fit_random_forest.py>`_:
 
 .. code-block::
 
@@ -926,9 +892,8 @@ The custom predict function for the random forest model:
 
         # define interventions
         time_points = np.max(np.unique(obs_data[time_name])) + 1
-        int_descripts = ['Never treat', 'Always treat']
-        interventions = [[[static, np.zeros(time_points)]], [[static, np.ones(time_points)]]]
-        intvars = [['A'], ['A']]
+        int_descript = ['Never treat', 'Always treat']
+
 
         def fit_rf(covmodel, covname, fit_data):
             max_depth = 2
@@ -950,11 +915,16 @@ The custom predict function for the random forest model:
         covfits_custom = ['NA', fit_rf, 'NA']
         covpredict_custom = ['NA', predict_rf, 'NA']
 
-        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name, time_points = time_points,
-                     interventions=interventions, int_descripts = int_descripts, intvars=intvars,
-                     covnames=covnames,  covtypes=covtypes, covmodels=covmodels,
-                     covfits_custom = covfits_custom, covpredict_custom=covpredict_custom,
-                     outcome_name=outcome_name, outcome_model=outcome_model, outcome_type='survival')
+        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name,
+            time_points = time_points, int_descript = int_descript,
+            Intervention1_A = [static, np.zeros(time_points)],
+            Intervention2_A = [static, np.ones(time_points)],
+            covnames=covnames,  covtypes=covtypes, covmodels=covmodels,
+            covfits_custom = covfits_custom, covpredict_custom=covpredict_custom,
+            outcome_name=outcome_name, outcome_model=outcome_model, outcome_type='survival')
         g.fit()
 
+**Output**:
 
+    .. image:: ../media/random_forest_cov.png
+             :align: center

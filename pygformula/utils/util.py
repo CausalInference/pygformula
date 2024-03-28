@@ -266,6 +266,7 @@ def keywords_check(interventions):
 def get_output(ref_int, int_descript, censor, obs_res, g_results, time_points, ci_method, time_name, obs_means,
                outcome_type, nsamples, boot_results=None):
     """
+    An internal function to get and print the output of the g-formula.
 
     Parameters
     ----------

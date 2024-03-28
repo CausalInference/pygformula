@@ -92,54 +92,44 @@
              
   <section id="input-data">
 <span id="id1"></span><h1>Input data<a class="headerlink" href="#input-data" title="Permalink to this headline"></a></h1>
-<p>The input dataset is specified by the ‘‘obs_data’’ argument which contains: ‘‘id_name’’ specifying
+<p>The input dataset is specified by the ‘‘obs_data’’ argument which should contain: ‘‘id_name’’ specifying
 the individual identifier, ‘‘time_name’’ specifying the time index, ‘‘covnames’’ specifying the names of covariate variables,
 ‘‘outcome_name’’ specifying the name of the outcome of interest, ‘‘compevent_name’’ indicating the competing
 event status (if present), ‘‘censoring_name’’ indicating the censoring event status (if present).</p>
 <p><strong>The related arguments</strong>:</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 33%" />
-<col style="width: 33%" />
-<col style="width: 33%" />
+<col style="width: 50%" />
+<col style="width: 50%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Arguments</p></th>
-<th class="head"><p>Default</p></th>
 <th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>obs_data</p></td>
-<td><p>User specified</p></td>
 <td><p>(Required) A data table (should be pandas.DataFrame type) containing the observed data.</p></td>
 </tr>
 <tr class="row-odd"><td><p>id_name</p></td>
-<td><p>User specified</p></td>
 <td><p>(Required) A string specifying the name of the id variable in obs_data.</p></td>
 </tr>
 <tr class="row-even"><td><p>time_name</p></td>
-<td><p>User specified</p></td>
 <td><p>(Required) A string specifying the name of the time variable in obs_data.</p></td>
 </tr>
 <tr class="row-odd"><td><p>outcome_name</p></td>
-<td><p>User specified</p></td>
 <td><p>(Required) A string specifying the name of the outcome variable in obs_data.</p></td>
 </tr>
 <tr class="row-even"><td><p>covnames</p></td>
-<td><p>None</p></td>
 <td><p>(Optional) A list of strings specifying the names of the time-varying covariates in obs_data. If not specified, no confounders are adjusted.</p></td>
 </tr>
 <tr class="row-odd"><td><p>compevent_name</p></td>
-<td><p>None</p></td>
 <td><p>(Optional) A string specifying the name of the competing event variable in obs_data. Only applicable for survival outcomes.</p></td>
 </tr>
 <tr class="row-even"><td><p>censor_name</p></td>
-<td><p>None</p></td>
 <td><p>(Optional) A string specifying the name of the censoring variable in obs_data. Only applicable for survival outcomes.</p></td>
 </tr>
 <tr class="row-odd"><td><p>time_points</p></td>
-<td><p>Maximum time points + 1</p></td>
 <td><p>(Optional) Number of time points to simulate. By default, this argument is set equal to the maximum
 number of records that obs_data contains for any individual plus 1.</p></td>
 </tr>
@@ -147,7 +137,7 @@ number of records that obs_data contains for any individual plus 1.</p></td>
 </table>
 <p>The input data should contain one record for each follow-up time k for each subject (identified by the individual identifier).
 The time index k for each subject should increment by 1 for each subsequent interval (the starting index is 0 in the following
-examples which is a most frequently used case).
+examples).
 The record at each line in the data corresponds to an interval k, which contains the
 covariate measurements at interval k and the outcome measurement at interval k+1.</p>
 <p>Here is an example of input data structure for one subject which contains 7 records on
@@ -165,7 +155,7 @@ This choice will make no difference to estimates in the algorithm when intervals
 such that there are no failures in intervals where there are censoring events. It depends on
 whether to count such subjects in the time k risk set or not <a class="footnote-reference brackets" href="#id4" id="id2">1</a> <a class="footnote-reference brackets" href="#id5" id="id3">2</a>. For fixed binary/continuous end of follow-up, the
 outcome Y_k+1 should be coded NA.</p>
-<p>Here is an example of input data structure with a censoring event (identified by ’’C’’). The subject contains 8 records on the measurements of
+<p>Here is an example of input data structure with a censoring event (identified by ‘‘C’’). The subject contains 8 records on the measurements of
 two time-varying covariates ‘‘L’’, ‘‘A’’, the outcome ‘‘Y’’ and is censored at time index k+1=8. See <a class="reference external" href="https://github.com/CausalInference/pygformula/blob/master/datasets/example_data_censor.csv">“example_data_censor”</a> for complete example data.</p>
 <blockquote>
 <div><a class="reference internal image-reference" href="../_images/data_example_censor.png"><img alt="../_images/data_example_censor.png" class="align-center" src="../_images/data_example_censor.png" style="width: 4.5in; height: 2in;" /></a>
@@ -209,7 +199,7 @@ follow-up interval k that is no more than the maximum number of records for an i
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023, CAUSALab.</p>
+    <p>&#169; Copyright 2024, CAUSALab.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

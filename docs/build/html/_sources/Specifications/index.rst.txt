@@ -1,13 +1,15 @@
 Specifications
 ===================
 
+
+
 The ‘‘Specifications’’ section gives detailed instructions about how to specify the required or optional
 arguments in different modules of pygformula to construct a specific analysis. To use the g-formula method in the package,
 the first step is to make sure that the input data meets the requirement of
 :doc:`Input data`.
-Then, users need to specify their parametric covariate model in :doc:`Covariate model`,
-parametric outcome model in :doc:`Outcome model`
-, as well as the treatment strategy of interest in :doc:`Intervention`.
+Then, users need to specify their parametric covariate model (see :doc:`Covariate model`),
+parametric outcome model (see :doc:`Outcome model`)
+, as well as the intervention of interest (see :doc:`Intervention`).
 Once these required modules are well-defined, the g-formula in pygformula can be called and output the results of the method.
 
 Additionally, if there is censoring event, users need to specify corresponding arguments of the censoring event in
@@ -19,9 +21,11 @@ The package also provides option for calculating the hazard ratio of any two int
 If the data structure contains visit process, users can also perform g-formula analysis for this setting in
 :doc:`Visit process`.
 If there is deterministic knowledge about the relationship between the variables, it can be incorporated into the estimation
-of g-formula by applying restrictions, please see :doc:`Deterministic knowledge`.
+of g-formula by applying restrictions ( see :doc:`Deterministic knowledge`).
 
-The capabilities implemented in the modules of pygformula are basically the same as gfoRmula [1]_ and GFORMULA SAS macro [2]_.
+
+
+The capabilities implemented in the pygformula are basically the same as gfoRmula [1]_ and GFORMULA SAS macro [2]_.
 
 
 
