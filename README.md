@@ -1,6 +1,6 @@
 # pygformula: a python implementation of the parametric g-formula
 
-Authors: Jing Li, Sophia Rein, Sean McGrath, Roger Logan, Ryan O’Dea, Miguel Hernán
+**Authors: Jing Li, Sophia Rein, Sean McGrath, Roger Logan, Ryan O’Dea, Miguel Hernán**
 
 
 ## Overview
