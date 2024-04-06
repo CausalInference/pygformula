@@ -1,25 +1,29 @@
 # pygformula: a python implementation of the parametric g-formula
 
+Authors: Jing Li, Sophia Rein, Sean McGrath, Roger Logan, Ryan O’Dea, Miguel Hernán
+
 
 ## Overview
-The pygformula is a python package that implements the parametric g-formula to estimate the effects of sustained treatment strategies.
-Specifically, it implements the noniterative conditional expectation estimator of parametric g-formula which accommodates 
-different types of covariates, different types of outcomes, different types of interventions, as well as more complicated scenarios such as competing events
-, censoring events and visit process etc.
+The pygformula implements the parametric g-formula (Robins 1986) to estimate the risk or mean of an outcome under 
+hypothetical sustained treatment strategies or interventions from longitudinal data with time-varying measurements of 
+treatments and confounders.
+
 
 ### Features: 
 
 * Covariates: binary, normal, categorical, bounded normal, zero-inflated normal, truncated normal, absorbing and time variable. 
-* Outcomes: survival outcomes, fixed binary end of follow-up outcomes, and fixed continuous end of follow-up outcomes.
+* Treatments: binary or continuous/multi-level time-varying treatments; multiple treatments.
 * Interventions: natural course intervention, static interventions, dynamic interventions, and threshold interventions.
-* Competing events.
+* Outcomes: survival outcomes, fixed binary end of follow-up outcomes, and fixed continuous end of follow-up outcomes.
 * Censoring events.
+* Competing events.
 * Visit process.
+* Priori knowledge incorporation.
 
 
 ## Requirements
 
-The package supports python ≥ 3.8. It requires these necessary dependencies:
+The package requires python ≥ 3.8 and these necessary dependencies:
 
 - joblib
 - lifelines
@@ -34,3 +38,10 @@ The package supports python ≥ 3.8. It requires these necessary dependencies:
 and an optional dependency:
 
 - cmprsk
+
+
+## Issues:
+
+if you have any issues, please open an [issue](https://github.com/CausalInference/pygformula/issues) on github. 
+We will regularly check the questions. For any additional questions or comments, please 
+email jing_li@hsph.harvard.edu.
