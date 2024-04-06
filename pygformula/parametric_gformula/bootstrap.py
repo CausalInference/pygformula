@@ -4,14 +4,14 @@ import warnings
 from lifelines import CoxPHFitter
 from .histories import update_precoded_history, update_custom_history
 from .simulate import simulate
-from .fit import fit_covariate_model, fit_outcome_model, fit_compevent_model
+from .fit import fit_covariate_model, fit_ymodel, fit_compevent_model
 from ..utils.helper import hr_data_helper, hr_comp_data_helper
 
 
 def Bootstrap(obs_data, boot_id, boot_seeds, int_descript, intervention_dicts, covnames,
-              basecovs, cov_hist, time_points, n_simul, time_name, id_name, custom_histvars, custom_histories,
+              basecovs, cov_hist, time_points, n_simul, time_name, id, custom_histvars, custom_histories,
               covmodels, hazardratio, intcomp, covtypes, covfits_custom, covpredict_custom,
-              outcome_model, outcome_type, outcome_name, competing, compevent_name, compevent_model, compevent_cens,
+              ymodel, outcome_type, outcome_name, competing, compevent_name, compevent_model, compevent_cens,
               boot_diag, trunc_params, visit_names, visit_covs, ts_visit_names, max_visits, time_thresholds,
               below_zero_indicator, baselags, restrictions, yrestrictions, compevent_restrictions):
     """
@@ -23,7 +23,7 @@ def Bootstrap(obs_data, boot_id, boot_seeds, int_descript, intervention_dicts, c
         A data frame containing the observed data.
 
     boot_id: Int
-        An interger indicating the id of the bootstrap sample.
+        An integer indicating the id of the bootstrap sample.
 
     boot_seeds: List
         A list that stores the random seeds of all bootstrap samples.
@@ -39,8 +39,8 @@ def Bootstrap(obs_data, boot_id, boot_seeds, int_descript, intervention_dicts, c
         A list of strings specifying the names of the time-varying covariates in obs_data.
 
     basecovs: List
-        A vector of strings specifying the names of baseline covariates in obs_data. These covariates are not simulated
-        using a model but keep the same value at all time steps. These covariates should not be included in covnames.
+        A list of strings specifying the names of baseline covariates in obs_data. These covariates should not be
+        included in covnames.
 
     cov_hist: Dict
         A dictionary whose keys are covariate names and values are sub-dictionaries with historical information for
@@ -50,22 +50,24 @@ def Bootstrap(obs_data, boot_id, boot_seeds, int_descript, intervention_dicts, c
         'cumavg' is a list with all cumavg terms.
 
     time_points: Int
-        An integer indicating the number of time points to simulate.
+        An integer indicating the number of time points to simulate. It is set equal to the maximum number of records (K)
+        that obs_data contains for any individual plus 1, if not specified by users.
 
     n_simul: Int
-        An integer indicating the number of subjects for whom to simulate data.
+        An integer indicating the number of subjects for whom to simulate data. It is set equal to the number (M) of
+        subjects in obs_data, if not specified by users.
 
     time_name: Str
         A string specifying the name of the time variable in obs_data.
 
-    id_name: Str
+    id: Str
         A string specifying the name of the id variable in obs_data.
 
     custom_histvars: List
         A list of strings, each of which specifies the names of the time-varying covariates with user-specified custom histories.
 
     custom_histories: List
-        A list of function, each function is the user-specified custom history functions for covariates. The list must
+        A list of functions, each function is the user-specified custom history functions for covariates. The list must
         be the same length as custom_histvars and in the same order.
 
     covmodels: List
@@ -85,14 +87,16 @@ def Bootstrap(obs_data, boot_id, boot_seeds, int_descript, intervention_dicts, c
         "categorical time", "square time" and "custom". The list must be the same length as covnames and in the same order.
 
     covfits_custom: List
-        A list, at the index where the covtype is set to "custom", the element is a user-specified fit function, otherwise
-        it should be set to 'NA'. The list must be the same length as covnames and in the same order.
+        A list, each element could be 'NA' or a user-specified fit function. The non-NA value is set
+        for the covariates with custom type. The 'NA' value is set for other covariates. The list must be the
+        same length as covnames and in the same order.
 
     covpredict_custom: List
-        A list, at the index where the covtype is set to "custom", the element is a user-specified predict function,
-        otherwise it should be set to 'NA'.
+        A list, each element could be 'NA' or a user-specified predict function. The non-NA value is set
+        for the covariates with custom type. The 'NA' value is set for other covariates. The list must be the
+        same length as covnames and in the same order.
 
-    outcome_model: Str
+    ymodel: Str
         A string specifying the model statement for the outcome variable.
 
     outcome_type: Str
@@ -118,10 +122,10 @@ def Bootstrap(obs_data, boot_id, boot_seeds, int_descript, intervention_dicts, c
         standard errors, and variance-covariance matrices of the parameters of the fitted models in the bootstrap samples.
 
     trunc_params: List
-        A list, at the index where the covtype is set to "truncated normal", the list contains two elements.
-        The first element specifies the truncated value and the second element specifies the truncated direction
-        (‘left’ or ‘right’). The values at remaining indexes are set to 'NA'. The list must be the same length as
-        covnames and in the same order.
+        A list, each element could be 'NA' or a two-element list. If not 'NA', the first element specifies the truncated
+        value and the second element specifies the truncated direction (‘left’ or ‘right’). The non-NA value is set
+        for the truncated normal covariates. The 'NA' value is set for other covariates. The list should be the same
+        length as covnames and in the same order.
 
     visit_names: List
         A list, each of which is a string specifying the covariate name of a visit process.
@@ -134,12 +138,12 @@ def Bootstrap(obs_data, boot_id, boot_seeds, int_descript, intervention_dicts, c
         individual is censored.
 
     max_visits: List
-        A list of integars, each integar indicates the maximum number of consecutive missed visits for one covariate that
+        A list of integers, each integer indicates the maximum number of consecutive missed visits for one covariate that
         has a visit process.
 
     time_thresholds: List
-        A list of integars that splits the time points into different intervals. It is used to create the time variable
-        of "categorical time".
+        A list of integers that splits the time points into different intervals. It is used to create the variable
+        "categorical time".
 
     below_zero_indicator: Bool
         A boolean value indicating if the obs_data contains pre-baseline times.
@@ -152,18 +156,18 @@ def Bootstrap(obs_data, boot_id, boot_seeds, int_descript, intervention_dicts, c
         True, the value of lagi and lag_cumavgi terms are set to their values at time 0. The default is False.
 
     restrictions: List
-        A list with lists, each inner list contains its first entry the covariate name of that its deterministic knowledge
+        List of lists. Each inner list contains its first entry the covariate name of that its deterministic knowledge
         is known; its second entry is a dictionary whose key is the conditions which should be True when the covariate
         is modeled, the third entry is the value that is set to the covariate during simulation when the conditions
         in the second entry are not True.
 
     yrestrictions: List
-        A list with lists, for each inner list, its first entry is a dictionary whose key is the conditions which
+        List of lists. For each inner list, its first entry is a dictionary whose key is the conditions which
         should be True when the outcome is modeled, the second entry is the value that is set to the outcome during
         simulation when the conditions in the first entry are not True.
 
     compevent_restrictions: List
-        A list with lists, for each inner list, its first entry is a dictionary whose key is the conditions which
+        List of lists. For each inner list, its first entry is a dictionary whose key is the conditions which
         should be True when the competing event is modeled, the second entry is the value that is set to the competing
         event during simulation when the conditions in the first entry are not True. Only applicable for survival outcomes.
 
@@ -176,23 +180,23 @@ def Bootstrap(obs_data, boot_id, boot_seeds, int_descript, intervention_dicts, c
     try:
         np.random.seed(boot_seeds[boot_id])
 
-        data_list = dict(list(obs_data.groupby(id_name, group_keys=False)))
-        ids = np.unique(obs_data[id_name])
+        data_list = dict(list(obs_data.groupby(id, group_keys=False)))
+        ids = np.unique(obs_data[id])
         new_ids = np.random.choice(ids, len(ids), replace=True)
 
         new_df = []
         for index, new_id in enumerate(new_ids):
             new_id_df = data_list[new_id].copy()
-            new_id_df[id_name] = index
+            new_id_df[id] = index
             new_df.append(new_id_df)
         resample_data = pd.concat(new_df, ignore_index=True)
 
         update_precoded_history(pool=resample_data, covnames=covnames, cov_hist=cov_hist, covtypes=covtypes,
-                                time_name=time_name, id_name=id_name, below_zero_indicator=below_zero_indicator,
+                                time_name=time_name, id=id, below_zero_indicator=below_zero_indicator,
                                 baselags=baselags, ts_visit_names = ts_visit_names)
         if custom_histvars is not None:
             for t in range(time_points):
-                update_custom_history(resample_data, custom_histvars, custom_histories, time_name, t, id_name)
+                update_custom_history(resample_data, custom_histvars, custom_histories, time_name, t, id)
 
         covariate_fits, bounds, rmses, cov_model_coeffs, cov_model_stderrs, cov_model_vcovs, cov_model_fits_summary = \
             fit_covariate_model(covmodels=covmodels, covnames=covnames, covtypes=covtypes,
@@ -201,16 +205,16 @@ def Bootstrap(obs_data, boot_id, boot_seeds, int_descript, intervention_dicts, c
                                 max_visits=max_visits, ts_visit_names=ts_visit_names,
                                 visit_covs=visit_covs, restrictions=restrictions)
 
-        outcome_fit, outcome_model_coeffs, outcome_model_stderrs, outcome_model_vcovs, outcome_model_fits_summary = \
-            fit_outcome_model(outcome_model=outcome_model, outcome_type=outcome_type,
+        outcome_fit, ymodel_coeffs, ymodel_stderrs, ymodel_vcovs, ymodel_fits_summary = \
+            fit_ymodel(ymodel=ymodel, outcome_type=outcome_type,
                               outcome_name=outcome_name, time_name=time_name, obs_data=resample_data,
                               competing=competing, compevent_name=compevent_name, return_fits=boot_diag,
                               yrestrictions=yrestrictions)
 
-        model_coeffs = {**cov_model_coeffs, **outcome_model_coeffs}
-        model_stderrs = {**cov_model_stderrs, **outcome_model_stderrs}
-        model_vcovs = {**cov_model_vcovs, **outcome_model_vcovs}
-        model_fits_summary = {**cov_model_fits_summary, **outcome_model_fits_summary}
+        model_coeffs = {**cov_model_coeffs, **ymodel_coeffs}
+        model_stderrs = {**cov_model_stderrs, **ymodel_stderrs}
+        model_vcovs = {**cov_model_vcovs, **ymodel_vcovs}
+        model_fits_summary = {**cov_model_fits_summary, **ymodel_fits_summary}
 
         if competing:
             compevent_fit, comp_model_coeffs, comp_model_stderrs, comp_model_vcovs, comp_model_fits_summary = \
@@ -224,15 +228,15 @@ def Bootstrap(obs_data, boot_id, boot_seeds, int_descript, intervention_dicts, c
         else:
             compevent_fit = None
 
-        if n_simul != len(np.unique(resample_data[id_name])):
-            data_list = dict(list(obs_data.groupby(id_name, group_keys=True)))
-            ids = np.unique(obs_data[id_name])
+        if n_simul != len(np.unique(resample_data[id])):
+            data_list = dict(list(obs_data.groupby(id, group_keys=True)))
+            ids = np.unique(obs_data[id])
             new_ids = np.random.choice(ids, n_simul, replace=True)
 
             new_df = []
             for index, new_id in enumerate(new_ids):
                 new_id_df = data_list[new_id].copy()
-                new_id_df[id_name] = index
+                new_id_df[id] = index
                 new_df.append(new_id_df)
             resample_data = pd.concat(new_df, ignore_index=True)
 
@@ -240,7 +244,7 @@ def Bootstrap(obs_data, boot_id, boot_seeds, int_descript, intervention_dicts, c
         boot_pools = []
         for intervention_name in int_descript:
             boot_result = simulate(seed=boot_seeds[boot_id], time_points=time_points, time_name=time_name,
-                                       id_name=id_name, covnames=covnames, basecovs=basecovs,
+                                       id=id, covnames=covnames, basecovs=basecovs,
                                        covmodels=covmodels,  covtypes=covtypes, cov_hist=cov_hist,
                                        covariate_fits=covariate_fits, rmses=rmses, bounds=bounds, outcome_type=outcome_type,
                                        obs_data=resample_data,
@@ -270,9 +274,9 @@ def Bootstrap(obs_data, boot_id, boot_seeds, int_descript, intervention_dicts, c
             if competing and not compevent_cens:
                 import cmprsk.cmprsk as cmprsk
 
-                new_pool1 = pool1.groupby(id_name, group_keys=False).apply(hr_comp_data_helper,
+                new_pool1 = pool1.groupby(id, group_keys=False).apply(hr_comp_data_helper,
                             outcome_name=outcome_name, compevent_name=compevent_name)
-                new_pool2 = pool2.groupby(id_name, group_keys=False).apply(hr_comp_data_helper,
+                new_pool2 = pool2.groupby(id, group_keys=False).apply(hr_comp_data_helper,
                             outcome_name=outcome_name, compevent_name=compevent_name)
                 new_pool1['regime'] = 0
                 new_pool2['regime'] = 1
@@ -286,8 +290,8 @@ def Bootstrap(obs_data, boot_id, boot_seeds, int_descript, intervention_dicts, c
                 crr_res = cmprsk.crr(failure_time=ftime, failure_status=fstatus, static_covariates=concat_data[['regime']])
                 hazard_ratio = crr_res.hazard_ratio()[0][0]
             else:
-                new_pool1 = pool1.groupby(id_name, group_keys=False).apply(hr_data_helper, outcome_name=outcome_name)
-                new_pool2 = pool2.groupby(id_name, group_keys=False).apply(hr_data_helper, outcome_name=outcome_name)
+                new_pool1 = pool1.groupby(id, group_keys=False).apply(hr_data_helper, outcome_name=outcome_name)
+                new_pool2 = pool2.groupby(id, group_keys=False).apply(hr_data_helper, outcome_name=outcome_name)
                 new_pool1['regime'] = 0
                 new_pool2['regime'] = 1
                 concat_data = pd.concat([new_pool1, new_pool2])

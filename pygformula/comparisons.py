@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def comparison_calculate(obs_data, time_name, time_points, id_name, covnames, covtypes, outcome_name, outcome_type,
+def comparison_calculate(obs_data, time_name, time_points, id, covnames, covtypes, outcome_name, outcome_type,
                          nc_pool, nc_risk, censor, censor_name, censor_fit, ipw_cutoff_quantile, ipw_cutoff_value,
                          competing=None, compevent_name=None, compevent_cens=False, compevent_fit=None):
     """
@@ -20,7 +20,7 @@ def comparison_calculate(obs_data, time_name, time_points, id_name, covnames, co
         An integer indicating the number of time points to simulate. It is set equal to the maximum number of records
         that obs_data contains for any individual plus 1, if not specified by users.
 
-    id_name: Str
+    id: Str
         A string specifying the name of the id variable in obs_data.
 
     covnames: List
@@ -55,10 +55,10 @@ def comparison_calculate(obs_data, time_name, time_points, id_name, covnames, co
         A class object of the fitted model for the censoring event.
 
     ipw_cutoff_quantile: Float
-        A percentile by which to truncate inverse probability weights.
+        Percentile value for truncation of the inverse probability weights
 
     ipw_cutoff_value: Float
-        A cutoff value by which to truncate inverse probability weights.
+        Absolute value for truncation of the inverse probability weights.
 
     competing: Bool
         A boolean value indicating the if there is a competing event.
@@ -92,13 +92,13 @@ def comparison_calculate(obs_data, time_name, time_points, id_name, covnames, co
         censor_pre = censor_fit.predict(obs_data)
         censor_p0_inv = 1 / (1 - censor_pre)
         obs_data['censor_p0_inv'] = censor_p0_inv
-        censor_inv_cum = obs_data.groupby([id_name])['censor_p0_inv'].cumprod()
+        censor_inv_cum = obs_data.groupby([id])['censor_p0_inv'].cumprod()
         obs_data['censor_inv_cum'] = censor_inv_cum
         w_censor = censor_inv_cum * (1 - obs_data[censor_name])
         if outcome_type == 'survival' and compevent_cens:
             comprisk_p0_inv = 1 / (1 - compevent_fit.predict(obs_data))
             obs_data['comprisk_p0_inv'] = comprisk_p0_inv
-            comprisk_inv_cum = obs_data.groupby([id_name])['comprisk_p0_inv'].cumprod()
+            comprisk_inv_cum = obs_data.groupby([id])['comprisk_p0_inv'].cumprod()
             w_comp = np.where((obs_data[compevent_name].isna()) | (obs_data[compevent_name] == 1), 0, comprisk_inv_cum)
             w = w_comp * w_censor
         else:
@@ -157,13 +157,13 @@ def comparison_calculate(obs_data, time_name, time_points, id_name, covnames, co
         if outcome_type == 'survival':
             # for parametric cov means and risks
             if competing and not compevent_cens:
-                nc_pool['p0_cum'] = nc_pool.groupby(id_name)['prob0'].cumprod()
+                nc_pool['p0_cum'] = nc_pool.groupby(id)['prob0'].cumprod()
                 nc_pool['pd_0'] = 1 - nc_pool['prob_D']
-                nc_pool['pd_0_cum'] = nc_pool.groupby(id_name)['pd_0'].cumprod()
+                nc_pool['pd_0_cum'] = nc_pool.groupby(id)['pd_0'].cumprod()
                 nc_pool['w_cov'] = np.where(nc_pool[time_name] > 0,
                                             nc_pool['p0_cum'].shift(1) * nc_pool['pd_0_cum'].shift(1), 1)
             else:
-                nc_pool['p0_cum'] = nc_pool.groupby([id_name])['prob0'].cumprod()
+                nc_pool['p0_cum'] = nc_pool.groupby([id])['prob0'].cumprod()
                 nc_pool['w_cov'] = np.where(nc_pool[time_name] > 0, nc_pool['p0_cum'].shift(1), 1)
         else:
             nc_pool['w_cov'] = 1
@@ -227,13 +227,13 @@ def comparison_calculate(obs_data, time_name, time_points, id_name, covnames, co
         if outcome_type == 'survival':
             # for parametric cov means and risks
             if competing and not compevent_cens:
-                nc_pool['p0_cum'] = nc_pool.groupby(id_name)['prob0'].cumprod()
+                nc_pool['p0_cum'] = nc_pool.groupby(id)['prob0'].cumprod()
                 nc_pool['pd_0'] = 1 - nc_pool['prob_D']
-                nc_pool['pd_0_cum'] = nc_pool.groupby(id_name)['pd_0'].cumprod()
+                nc_pool['pd_0_cum'] = nc_pool.groupby(id)['pd_0'].cumprod()
                 nc_pool['w_cov'] = np.where(nc_pool[time_name] > 0,
                                             nc_pool['p0_cum'].shift(1) * nc_pool['pd_0_cum'].shift(1), 1)
             else:
-                nc_pool['p0_cum'] = nc_pool.groupby([id_name])['prob0'].cumprod()
+                nc_pool['p0_cum'] = nc_pool.groupby([id])['prob0'].cumprod()
                 nc_pool['w_cov'] = np.where(nc_pool[time_name] > 0, nc_pool['p0_cum'].shift(1), 1)
         else:
             nc_pool['w_cov'] = 1

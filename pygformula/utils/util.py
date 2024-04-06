@@ -24,10 +24,10 @@ def read_intervention_input(interventions, int_descript):
     return intervention_dicts
 
 
-def error_catch(obs_data, id_name, time_points, interventions, intervention_dicts, int_descript, custom_histvars,
+def error_catch(obs_data, id, time_points, interventions, intervention_dicts, int_descript, custom_histvars,
                 custom_histories, covfits_custom, covpredict_custom, time_name, outcome_name, censor_name, censor_model,
                 ipw_cutoff_quantile, ipw_cutoff_value, outcome_type, ref_int, covnames = None, covtypes = None,
-                covmodels=None, outcome_model=None, compevent_name=None, compevent_model=None, intcomp=None,
+                covmodels=None, ymodel=None, compevent_name=None, compevent_model=None, intcomp=None,
                 trunc_params=None, basecovs=None, time_thresholds=None):
 
     """
@@ -38,39 +38,41 @@ def error_catch(obs_data, id_name, time_points, interventions, intervention_dict
     obs_data: DataFrame
         A data frame containing the observed data.
 
-    id_name: Str
+    id: Str
         A string specifying the name of the id variable in obs_data.
 
-    time_points: Int, default is None
+    time_points: Int
         An integer indicating the number of time points to simulate. It is set equal to the maximum number of records
         that obs_data contains for any individual plus 1, if not specified by users.
 
-    interventions: Dict, default is None
+    interventions: Dict
         A dictionary whose key is the treatment name in the intervention with the format Intervention{id}_{treatment_name},
         value is a list that contains the intervention function, values required by the function, and a list of time
         points in which the intervention is applied.
 
-    intervention_dicts: Dict, default is None
+    intervention_dicts: Dict
         A dictionary whose key is the intervention decription and the value is the intervention list for all treatment
         variables in this intervention.
 
-    int_descript: List, default is None
+    int_descript: List
         A list of strings, each of which describes a user-specified intervention.
 
-    custom_histvars: List, default is None
-        A list of strings, each of which describes the names of the time-varying covariates with user-specified custom histories.
+    custom_histvars: List
+        A list of strings, each of which specifies the names of the time-varying covariates with user-specified custom histories.
 
-    custom_histories: List, default is None
-        A list of function, each function is the user-specified custom history functions for covariates. The list must
-        be the same length as custom_histvars and in the same order.
+    custom_histories: List
+        A list of functions, each function is the user-specified custom history functions for covariates. The list
+        should be the same length as custom_histvars and in the same order.
 
-    covfits_custom: List, default is None
-        A list, at the index where the covtype is set to "custom", the element is a user-specified fit function, otherwise
-        it should be set to 'NA'. The list must be the same length as covnames and in the same order.
+    covfits_custom: List
+        A list, each element could be 'NA' or a user-specified fit function. The non-NA value is set
+        for the covariates with custom type. The 'NA' value is set for other covariates. The list must be the
+        same length as covnames and in the same order.
 
-    covpredict_custom: List, default is None
-        A list, at the index where the covtype is set to "custom", the element is a user-specified predict function,
-        otherwise it should be set to 'NA'.
+    covpredict_custom: List
+        A list, each element could be 'NA' or a user-specified predict function. The non-NA value is set
+        for the covariates with custom type. The 'NA' value is set for other covariates. The list must be the
+        same length as covnames and in the same order.
 
     time_name: Str
         A string specifying the name of the time variable in obs_data.
@@ -86,24 +88,24 @@ def error_catch(obs_data, id_name, time_points, interventions, intervention_dict
         "binary", "normal", "categorical", "bounded normal", "zero-inflated normal", "truncated normal", "absorbing",
         "categorical time", "square time" and "custom". The list must be the same length as covnames and in the same order.
 
-    censor_name: Str, default is None
+    censor_name: Str
         A string specifying the name of the censoring variable in obs_data. Only applicable when using inverse probability
         weights to estimate the natural course means / risk from the observed data.
 
-    censor_model: Str, default is None
+    censor_model: Str
         A string specifying the model statement for the censoring variable. Only applicable when using inverse probability
          weights to estimate the natural course means / risk from the observed data.
 
-    ipw_cutoff_quantile: Float, default is None
-        A percentile by which to truncate inverse probability weights.
+    ipw_cutoff_quantile: Float
+        Percentile value for truncation of the inverse probability weights.
 
-    ipw_cutoff_value: Float, default is None
-        A cutoff value by which to truncate inverse probability weights.
+    ipw_cutoff_value: Float
+        Absolute value for truncation of the inverse probability weights.
 
-    outcome_type: Str, default is None
+    outcome_type: Str
         A string specifying the "type" of outcome. The possible "types" are: "survival", "continuous_eof", and "binary_eof".
 
-    ref_int: Int, default is None
+    ref_int: Int
         An integer indicating the intervention to be used as the reference for calculating the end-of-follow-up mean ratio
         and mean difference. 0 denotes the natural course, while subsequent integers denote user-specified interventions
         in the order that they are named in interventions. It is set to 0 if not specified by users.
@@ -113,30 +115,31 @@ def error_catch(obs_data, id_name, time_points, interventions, intervention_dict
         same length as covnames and in the same order. If a model is not required for a certain covariate, it should be
         set to 'NA' at that index.
 
-    outcome_model: Str
+    ymodel: Str
         A string specifying the model statement for the outcome variable.
 
-    compevent_name: Str, default is None
+    compevent_name: Str
         A string specifying the name of the competing event variable in obs_data. Only applicable for survival outcomes.
 
-    compevent_model: Str, default is None
+    compevent_model: Str
         A string specifying the model statement for the competing event variable. Only applicable for survival outcomes.
 
-    intcomp: List, default is None
+    intcomp: List
         List of two numbers indicating a pair of interventions to be compared by a hazard ratio.
 
-    trunc_params: List, default is None
-        A list, at the index where the covtype is set to "truncated normal", the element contains two elements. The first
-        element specifies the truncated value and the second element specifies the truncated direction (‘left’ or ‘right’).
-        The values at remaining indexes are set to 'NA'. The list must be the same length as covnames and in the same order.
+    trunc_params: List
+        A list, each element could be 'NA' or a two-element list. If not 'NA', the first element specifies the truncated
+        value and the second element specifies the truncated direction (‘left’ or ‘right’). The non-NA value is set
+        for the truncated normal covariates. The 'NA' value is set for other covariates. The list should be the same
+        length as covnames and in the same order.
 
-    basecovs: List, default is None
-        A vector of strings specifying the names of baseline covariates in obs_data. These covariates are not simulated
-        using a model but keep the same value at all time steps. These covariates should not be included in covnames.
+    basecovs: List
+        A list of strings specifying the names of baseline covariates in obs_data. These covariates should not be
+        included in covnames.
 
-    time_thresholds: List, default is None
-        A list of integers that splits the time points into different intervals. It is used to create the time variable
-        of "categorical time".
+    time_thresholds: List
+        A list of integers that splits the time points into different intervals. It is used to create the variable
+        "categorical time".
 
     Returns
     -------
@@ -148,13 +151,13 @@ def error_catch(obs_data, id_name, time_points, interventions, intervention_dict
         raise ValueError('Missing input observational data.')
     if not isinstance(obs_data, pd.DataFrame):
         raise TypeError('obs_data should be DataFrame type.')
-    if id_name not in obs_data.columns:
+    if id not in obs_data.columns:
         raise ValueError('Missing id name in the observational data.')
     if time_name not in obs_data.columns:
         raise ValueError('Missing time name in the observational data.')
     if outcome_name not in obs_data.columns:
         raise ValueError('Missing outcome name in the observational data.')
-    if outcome_model is None:
+    if ymodel is None:
         raise ValueError('Missing outcome model.')
     if outcome_type not in ['survival', 'continuous_eof', 'binary_eof']:
         raise ValueError('Please specify the outcome type as survival, continuous_eof, or binary_eof.')
@@ -187,7 +190,7 @@ def error_catch(obs_data, id_name, time_points, interventions, intervention_dict
 
     if basecovs is not None:
         for basecov in basecovs:
-            unique_num = obs_data.groupby(id_name)[basecov].nunique().tolist()
+            unique_num = obs_data.groupby(id)[basecov].nunique().tolist()
             if len(set(unique_num)) != 1:
                 raise ValueError('The baseline covariate for each individual should be the same value at all time steps.')
 
@@ -285,7 +288,7 @@ def get_output(ref_int, int_descript, censor, obs_res, g_results, time_points, c
         The nonparametric risk value at the final time point.
 
     g_results: List
-        A list of lists, the kth inner list contains the parametric estimate of risk at all the time points for the kth intervention.
+        List of lists. The kth inner list contains the parametric estimate of risk at all the time points for the kth intervention.
 
     time_points: Int
         An integer indicating the number of time points to simulate. It is set equal to the maximum number of records

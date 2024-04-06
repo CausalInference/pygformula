@@ -21,18 +21,18 @@ def plot_categorical(plot_name, cov_name, categorical_obs_mean, categorical_est_
         A string specifying the name of the categorical covariate for plotting.
 
     categorical_obs_mean: List
-        A list of lists, the length of outer list equals to the number of categories, and the inner list contains the observed
+        List of lists, the length of outer list equals to the number of categories, and the inner list contains the observed
         probabilities of the current category at each time point.
 
     categorical_est_mean: List
-        A list of lists, the length of outer list equals to the number of categories, and the inner list contains the estimated
+        List of lists, the length of outer list equals to the number of categories, and the inner list contains the estimated
         probabilities of the current category at each time point.
 
     obs_data: DataFrame
         A data frame containing the observed data.
 
     time_points: Int
-        An integer indicating the number of time points to simulate. It is set equal to the maximum number of records
+        An integer indicating the number of time points to simulate. It is set equal to the maximum number of records (K)
         that obs_data contains for any individual plus 1, if not specified by users.
 
     time_name: Str
@@ -117,7 +117,7 @@ def plot_natural_course(time_points, covnames, covtypes, time_name, obs_data, ob
     Parameters
     ----------
     time_points: Int
-        An integer indicating the number of time points to simulate. It is set equal to the maximum number of records
+        An integer indicating the number of time points to simulate. It is set equal to the maximum number of records (K)
         that obs_data contains for any individual plus 1, if not specified by users.
 
     covnames: List
@@ -336,14 +336,14 @@ def plot_interventions(time_points, time_name, risk_results, int_descript, outco
     Parameters
     ----------
     time_points: Int
-        An integer indicating the number of time points to simulate. It is set equal to the maximum number of records
+        An integer indicating the number of time points to simulate. It is set equal to the maximum number of records (K)
         that obs_data contains for any individual plus 1, if not specified by users.
 
     time_name: Str
         A string specifying the name of the time variable in obs_data.
 
     risk_results: List
-        A list contains the risk estimates at all the time points of all interventions.
+        A list that contains the risk estimates at all the time points of all interventions.
 
     int_descript: List
         A list of strings, each describing a user-specified intervention.

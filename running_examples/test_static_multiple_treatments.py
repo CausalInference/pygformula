@@ -7,7 +7,7 @@ from pygformula.data import load_multiple_treatments_data
 
 obs_data = load_multiple_treatments_data()
 time_name = 't0'
-id_name = 'id'
+id = 'id'
 
 covnames = ['L1', 'L2', 'A1', 'A2']
 covtypes = ['binary', 'bounded normal', 'binary', 'binary']
@@ -21,12 +21,12 @@ int_descript = ['Always treat on A1 & A2']
 
 
 outcome_name = 'Y'
-outcome_model = 'Y ~ L1 + L2 + A1 + A2'
+ymodel = 'Y ~ L1 + L2 + A1 + A2'
 
-g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name, time_points = time_points,
+g = ParametricGformula(obs_data = obs_data, id = id, time_name=time_name, time_points = time_points,
              covnames=covnames,  covtypes=covtypes, covmodels=covmodels,
              int_descript = int_descript,
              Intervention1_A1 = [static, np.ones(time_points)],
              Intervention1_A2 = [static, np.ones(time_points)],
-             outcome_name=outcome_name, outcome_model=outcome_model, outcome_type='survival')
+             outcome_name=outcome_name, ymodel=ymodel, outcome_type='survival')
 g.fit()

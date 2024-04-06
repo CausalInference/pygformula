@@ -10,19 +10,19 @@ def natural(new_df, pool, int_var, time_name, t):
     Parameters
     ----------
     new_df: DataFrame
-        A DataFrame that contains data frame at time t.
+        A DataFrame that contains the observed or simulated data at time t.
 
     pool: DataFrame
-        A DataFrame that contains data frame up to time t.
+        A DataFrame that contains the observed or simulated data up to time t.
 
     int_var: List
-        A list contains strings of treatment names to be intervened in a particular intervention.
+        A list containing strings of treatment names to be intervened in a particular intervention.
 
     time_name: Str
         A string specifying the name of the time variable in obs_data.
 
     t: Int
-        An integar indicating the current time index to be intervened.
+        An integer indicating the current time index to be intervened.
 
     Returns
     -------
@@ -34,21 +34,21 @@ def natural(new_df, pool, int_var, time_name, t):
 
 def static(new_df, pool, int_var, int_values, time_name, t):
     """
-    This is an internal function to perform static intervention.
+    This is an internal function to perform a static intervention.
 
     Parameters
     ----------
     new_df: DataFrame
-        A DataFrame that contains data frame at time t.
+        A DataFrame that contains the observed or simulated data at time t.
 
     pool: DataFrame
-        A DataFrame that contains data frame up to time t.
+        A DataFrame that contains the observed or simulated data up to time t.
 
     int_var: List
-        A list contains strings of treatment names to be intervened in a particular intervention.
+        A list containing strings of treatment names to be intervened in a particular intervention.
 
     int_values: List
-        A list contains the value needed when performing a particular intervention function.
+        A list containing the value needed when performing a particular intervention function.
 
     time_name: Str
         A string specifying the name of the time variable in obs_data.
@@ -66,21 +66,21 @@ def static(new_df, pool, int_var, int_values, time_name, t):
 
 def threshold(new_df, pool, int_var, threshold_values, time_name, t):
     """
-    This is an internal function to perform threshold intervention.
+    This is an internal function to perform a threshold intervention.
 
     Parameters
     ----------
     new_df: DataFrame
-        A DataFrame that contains data frame at time t.
+        A DataFrame that contains the observed or simulated data at time t.
 
     pool: DataFrame
-        A DataFrame that contains data frame up to time t.
+        A DataFrame that contains the observed or simulated data up to time t.
 
     int_var: List
-        A list contains strings of treatment names to be intervened in a particular intervention.
+        A list containing strings of treatment names to be intervened in a particular intervention.
 
     threshold_values: List
-        A list contains the threshold values needed when performing a threshold intervention function.
+        A list containing the threshold values needed when performing a threshold intervention function.
 
     time_name: Str
         A string specifying the name of the time variable in obs_data.
@@ -99,23 +99,23 @@ def threshold(new_df, pool, int_var, threshold_values, time_name, t):
 
 def natural_grace_period(new_df, pool, int_var, nperiod, conditions, time_name, t):
     """
-    This is a pre-coded function to perform a natural grace period intervention. Once a conditional covariate
+    This is a pre-coded function to perform a natural grace period intervention. Once a covariate
     meets a threshold level, the treatment (int_var) is initiated within m (nperiod) time intervals which is the duration
     of the grace period. During grace period, the treatment takes its natural value.
 
     Parameters
     ----------
     new_df: DataFrame
-        A DataFrame that contains data frame at time t.
+        A DataFrame that contains the observed or simulated data at time t.
 
     pool: DataFrame
-        A DataFrame that contains data frame up to time t.
+        A DataFrame that contains the observed or simulated data up to time t.
 
     int_var: Str
         A string specifying the treatment variable to be intervened.
 
     nperiod: Int
-        An integar indicating the duration of the grace period.
+        An integer indicating the duration of the grace period.
 
     conditions: Dict
         A dictionary that contains the covariate and its coditions for initiating the treatment.
@@ -157,7 +157,7 @@ def natural_grace_period(new_df, pool, int_var, nperiod, conditions, time_name, 
 
 def uniform_grace_period(new_df, pool, int_var, nperiod, conditions, time_name, t):
     """
-    This is a pre-coded function to perform a uniform grace period intervention. Once a conditional covariate
+    This is a pre-coded function to perform a uniform grace period intervention. Once a covariate
     meets a threshold level, the treatment (int_var) is initiated within m (nperiod) time intervals which is the duration
     of the grace period. During grace period, treatment initiation is randomly allocated with a uniform probability of
     starting treatment in each time interval of the grace period.
@@ -165,16 +165,16 @@ def uniform_grace_period(new_df, pool, int_var, nperiod, conditions, time_name, 
     Parameters
     ----------
     new_df: DataFrame
-        A DataFrame that contains data frame at time t.
+        A DataFrame that contains the observed or simulated data at time t.
 
     pool: DataFrame
-        A DataFrame that contains data frame up to time t.
+        A DataFrame that contains the observed or simulated data up to time t.
 
     int_var: Str
         A string specifying the treatment variable to be intervened.
 
     nperiod: Int
-        An integar indicating the duration of the grace period.
+        An integer indicating the duration of the grace period.
 
     conditions: Dict
         A dictionary that contains the covariate and its coditions for initiating the treatment.
@@ -247,13 +247,13 @@ def intervention_func(new_df, pool, intervention, time_name, t):
     Parameters
     ----------
     new_df: DataFrame
-        A DataFrame that contains data frame at time t.
+        A DataFrame that contains the observed or simulated data at time t.
 
     pool: DataFrame
-        A DataFrame that contains data frame up to time t.
+        A DataFrame that contains the observed or simulated data up to time t.
 
     intervention: List
-        A list of lists, the k-th list contains the intervention list on k-th treatment name in the intervention.
+        List of lists. The k-th list contains the intervention list on k-th treatment name in the intervention.
         The intervention list contains a function implementing a particular intervention on the treatment variable,
         required values for the intervention function and a list of time points in which the intervention
         is applied.
