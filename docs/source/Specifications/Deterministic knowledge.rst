@@ -34,7 +34,7 @@ The package allows deterministic knowledge incorporation for covariates by the a
     * - Arguments
       - Description
     * - restrictions
-      - (Optional) A list with lists, each inner list contains its first entry the covariate name of that its deterministic knowledge
+      - (Optional) List of lists. Each inner list contains its first entry the covariate name of that its deterministic knowledge
         is known; its second entry is a dictionary whose key is the conditions which should be True when the covariate
         is modeled, the third entry is the value that is set to the covariate during simulation when the conditions
         in the second entry are not True.
@@ -67,7 +67,7 @@ by its parametric model, otherwise, it is set to a known value 1.
       restrictions = [['A', {'L1': lambda x: x == 0, 'L2': lambda x: x > 0.5}, 1]]
       g = ParametricGformula(..., restrictions = restrictions, ...)
 
-An example with multiple restrictions, one for covariate L1 and one for covariate A:
+An example with multiple restrictions, one for covariate L2 and one for covariate A:
 
 .. code-block::
 
@@ -80,8 +80,8 @@ instead of a value.
 
 For each custom restriction function, the input should be the parameters (not necessary to use all):
 
-* new_df: A DataFrame that contains data table at current time t.
-* pool: A DataFrame that contains data table up to time t.
+* new_df: A DataFrame that contains the observed or simulated data at time t.
+* pool: A DataFrame that contains the observed or simulated data up to time t.
 * time_name: A string specifying the name of the time variable in pool.
 * t: An integer specifying the current time index.
 
@@ -113,7 +113,7 @@ by its parametric model, otherwise, its previous value is carried forward.
         obs_data = load_basicdata_nocomp()
 
         time_name = 't0'
-        id_name = 'id'
+        id = 'id'
 
         covnames = ['L1', 'L2', 'A']
         covtypes = ['binary', 'normal', 'binary']
@@ -123,7 +123,7 @@ by its parametric model, otherwise, its previous value is carried forward.
 
         basecovs = ['L3']
         outcome_name = 'Y'
-        outcome_model = 'Y ~ L1 + L2 + A'
+        ymodel = 'Y ~ L1 + L2 + A'
 
         # define interventions
         time_points = np.max(np.unique(obs_data[time_name])) + 1
@@ -131,14 +131,15 @@ by its parametric model, otherwise, its previous value is carried forward.
 
         restrictions = [['L2', {'L1': lambda x: x == 0}, 0.5], ['A', {'L1': lambda x: x == 0, 'L2': lambda x: x > 0.5}, 1]]
 
-        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name,
+        g = ParametricGformula(obs_data = obs_data, id = id, time_name=time_name,
             time_points = time_points,
             int_descript = int_descript,
             Intervention1_A = [static, np.zeros(time_points)],
             Intervention2_A = [static, np.ones(time_points)],
-            covnames=covnames,  covtypes=covtypes, covmodels=covmodels, basecovs=basecovs,
+            covnames=covnames, covtypes=covtypes,
+            covmodels=covmodels, basecovs=basecovs,
             restrictions=restrictions, outcome_name=outcome_name,
-            outcome_model=outcome_model, outcome_type='survival')
+            ymodel=ymodel, outcome_type='survival')
         g.fit()
 
 
@@ -160,7 +161,7 @@ When there is deterministic knowledge of the outcome variable Y, the package off
     * - Arguments
       - Description
     * - yrestrictions
-      - (Optional) A list with lists, for each inner list, its first entry is a dictionary whose key is the conditions which
+      - (Optional) List of lists. For each inner list, its first entry is a dictionary whose key is the conditions which
         should be True when the outcome is modeled, the second entry is the value that is set to the outcome during
         simulation when the conditions in the first entry are not True.
 
@@ -197,7 +198,7 @@ the probability of outcome Y is estimated by its parametric model, otherwise, it
         obs_data = load_basicdata_nocomp()
 
         time_name = 't0'
-        id_name = 'id'
+        id = 'id'
 
         covnames = ['L1', 'L2', 'A']
         covtypes = ['binary', 'normal', 'binary']
@@ -207,7 +208,7 @@ the probability of outcome Y is estimated by its parametric model, otherwise, it
 
         basecovs = ['L3']
         outcome_name = 'Y'
-        outcome_model = 'Y ~ L1 + L2 + A'
+        ymodel = 'Y ~ L1 + L2 + A'
 
         # define interventions
         time_points = np.max(np.unique(obs_data[time_name])) + 1
@@ -215,14 +216,14 @@ the probability of outcome Y is estimated by its parametric model, otherwise, it
 
         yrestrictions = [[{'L1': lambda x: x == 0}, 0], [{'L2': lambda x: x > 0.5}, 0.1]]
 
-        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name,
+        g = ParametricGformula(obs_data = obs_data, id = id, time_name=time_name,
             time_points = time_points,
             int_descript = int_descript,
             Intervention1_A = [static, np.zeros(time_points)],
             Intervention2_A = [static, np.ones(time_points)],
             covnames=covnames,  covtypes=covtypes, covmodels=covmodels, basecovs=basecovs,
             yrestrictions=yrestrictions, outcome_name=outcome_name,
-            outcome_model=outcome_model, outcome_type='survival')
+            ymodel=ymodel, outcome_type='survival')
         g.fit()
 
 
@@ -244,7 +245,7 @@ the package offers the argument ‘‘compevent_restrictions’’ for incorpora
     * - Arguments
       - Description
     * - compevent_restrictions
-      - (Optional) A list with lists, for each inner list, its first entry is a dictionary whose key is the conditions which
+      - (Optional) List of lists. For each inner list, its first entry is a dictionary whose key is the conditions which
         should be True when the competing event is modeled, the second entry is the value that is set to the competing
         event during simulation when the conditions in the first entry are not True. Only applicable for survival outcomes.
 
@@ -290,7 +291,7 @@ it is set to a value 0.1;
         outcome_model = 'Y ~ A + L1 + L2 + L3 + lag1_A + lag1_L1 + lag1_L2'
 
         time_name = 't0'
-        id_name = 'id'
+        id = 'id'
         outcome_name = 'Y'
         basecovs = ['L3']
 
@@ -301,18 +302,18 @@ it is set to a value 0.1;
         time_points = np.max(np.unique(obs_data[time_name])) + 1
         int_descript = ['Never treat', 'Always treat']
 
-
         compevent_restrictions = [[{'L1': lambda x: x == 0}, 0], [{'L2': lambda x: x > 0.5}, 0.1]]
 
-        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_points = time_points,
+        g = ParametricGformula(obs_data = obs_data, id = id, time_points = time_points,
             time_name=time_name, int_descript = int_descript,
             Intervention1_A = [static, np.zeros(time_points)],
             Intervention2_A = [static, np.ones(time_points)],
-            basecovs =basecovs, covnames=covnames,  covtypes=covtypes, covmodels=covmodels,
+            basecovs =basecovs, covnames=covnames,
+            covtypes=covtypes, covmodels=covmodels,
             compevent_restrictions = compevent_restrictions,
             compevent_cens= compevent_cens, compevent_name = compevent_name,
             compevent_model=compevent_model, outcome_name=outcome_name,
-            outcome_type='survival', outcome_model=outcome_model)
+            outcome_type='survival', ymodel=ymodel)
         g.fit()
 
 

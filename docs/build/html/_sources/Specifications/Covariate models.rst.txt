@@ -1,6 +1,6 @@
-.. _Covariate model:
+.. _Covariate models:
 
-Covariate model
+Covariate models
 ===================
 To model the joint densities of covariates in g-formula, the conditional densities of each covariate given past covariate history
 are estimated. Users can specify the covariate histories by the pre-coded functions of histories or custom histories.
@@ -20,7 +20,7 @@ Pre-coded histories
 
 The package provides three pre-coded functions (‘‘lag’’, ‘‘cumavg’’, ‘‘lag_cumavg’’) for users to specify the covariate histories.
 
-    * ‘‘lag’’: For any covariate L, specifying lagi_L will add a variable to the input dataset, which contains the ith lag of L relative to the
+    * ‘‘lag’’: For any covariate L, specifying lagi_L will add a variable to the input dataset, which contains the i-th lag of L relative to the
       current follow-up time k. For example, lag1_L means the value of L at the time k-1,
       lag2_L means the value of L at the time k-2 etc. The value is set to 0 if k < i if there is no pre-baseline times.
 
@@ -28,7 +28,7 @@ The package provides three pre-coded functions (‘‘lag’’, ‘‘cumavg’
       average of L up until the current follow-up time k.
 
     * ‘‘lag_cumavg’’: For any covariate L, specifying lag_cumavgi_L will add a variable to the input dataset, which contains
-      the ith lag of the cumulative average of L relative to the current follow-up time k. The value is set to 0 if k < i
+      the i-th lag of the cumulative average of L relative to the current follow-up time k. The value is set to 0 if k < i
       if there is no pre-baseline times.
 
 
@@ -53,23 +53,23 @@ covariates.
     * - custom_histvars
       - (Optional) A list of strings, each of which specifies the names of the time-varying covariates with user-specified custom histories.
     * - custom_histories
-      - (Optional) A list of function, each function is the user-specified custom history functions for covariates. The list
-        must be the same length as custom_histvars and in the same order.
+      - (Optional) A list of functions, each function is the user-specified custom history functions for covariates. The list
+        should be the same length as custom_histvars and in the same order.
 
 
 For each custom history function, the input should be the parameters (not necessary to use all):
 
-* pool: A DataFrame that contains data table up to time t.
+* pool: A DataFrame that contains the observed or simulated data up to time t.
 * histvar: A string that specifies the name of the variable for which this history function is to be applied.
 * time_name: A string specifying the name of the time variable in pool.
 * t: An integer specifying the current time index.
-* id_name: A string specifying the name of the ID variable in the pool.
+* id: A string specifying the name of the ID variable in the pool.
 
 The function output is a dataframe ‘‘pool’’ with the new column of the historical term created.
 
 The following is an example of creating historical functions for covariates ''L1'', ''L2'' and ''A'' by the function
 'ave_last3'. This function generates the average of the three most recent values of the covariate (when the
-t=0, it takes the current value of the covariate; when t=1, it takes the average of the current value).
+t=0, it takes the current value at time 0; when t=1, it takes the average of the covariate values at times 0 and 1).
 The new historical covariates are named as ave_last3_L1, ave_last3_L2, and ave_last3_A.
 
 
@@ -78,7 +78,7 @@ The new historical covariates are named as ave_last3_L1, ave_last3_L2, and ave_l
 
 .. code-block::
 
-      def ave_last3(pool, histvar, time_name, t, id_name):
+      def ave_last3(pool, histvar, time_name, t, id):
 
         def avg_func(df, time_name, t, histvar):
             if t < 3:
@@ -128,27 +128,26 @@ To specify a parametric model for each covariate in pygformula, users need to sp
         must be the same length as covnames and in the same order. If a model is not required for a certain covariate,
         it should be set to 'NA' at that index.
     * - basecovs
-      - (Optional) A vector of strings specifying the names of baseline covariates in obs_data. These covariates are not
-        simulated using a model but keep the same value at all time points. These covariates should not be included
-        in covnames.
+      - (Optional) A list of strings specifying the names of baseline covariates in obs_data. These covariates should not be
+        included in covnames.
     * - trunc_params
-      - (Optional) A list, at the index where the covtype is set to "truncated normal", the element contains two elements.
-        The first element specifies the truncated value and the second element specifies the truncated direction
-        (‘left’ or ‘right’). The values at remaining indexes are set to 'NA'. The list must be the same length as
-        covnames and in the same order.
+      - (Optional) A list, each element could be 'NA' or a two-element list. If not 'NA', the first element specifies the truncated
+        value and the second element specifies the truncated direction (‘left’ or ‘right’). The non-NA value is set
+        for the truncated normal covariates. The 'NA' value is set for other covariates. The list should be the same
+        length as covnames and in the same order.
     * - time_thresholds
-      - (Optional) A list of integers that splits the time points into different intervals. It is used to create the time variable
-        of "categorical time".
+      - (Optional)  A list of integers that splits the time points into different intervals. It is used to create the variable
+        "categorical time".
 
 
-When there are confounders to be adjusted, users need to specify the names of time-varying covariates in ‘‘covnames’’, the distribution type
+Users need to specify the names of time-varying covariates in ‘‘covnames’’, the distribution type
 of each covariate in ‘‘covtypes’’, as well as the model statement for each covariate in ‘‘covmodels’’.
 In addition, if there are time-fixed baseline covariates, they should be specified in the argument ‘‘basecovs’’.
-If the covariate type is ‘‘truncated normal’’, the ‘‘trunc_params’’ argument should be also defined which contains
+If the covariate type is ‘‘truncated normal’’, the ‘‘trunc_params’’ argument should be also specified which contains
 the required truncated direction and truncated value. If the covariate type is ‘‘categorical time’’, users should
 also define the ‘‘time_thresholds’’ argument to create a desired categorization of time.
 In the following, this section shows examples for different covariate distributions to show how to specify the above arguments
-in specific examples during the usage.
+in specific examples.
 
 .. note::
 
@@ -197,7 +196,7 @@ An example where the covariate ''L1'' is binomial distribution
 
         obs_data = load_basicdata_nocomp()
         time_name = 't0'
-        id_name = 'id'
+        id = 'id'
 
         covnames = ['L1', 'A']
         covtypes = ['binary', 'binary']
@@ -207,19 +206,19 @@ An example where the covariate ''L1'' is binomial distribution
         basecovs = ['L3']
 
         outcome_name = 'Y'
-        outcome_model = 'Y ~ L1 + A + lag1_A + lag1_L1 + L3 + t0'
+        ymodel = 'Y ~ L1 + A + lag1_A + lag1_L1 + L3 + t0'
         outcome_type = 'survival'
 
         time_points = np.max(np.unique(obs_data[time_name])) + 1
         int_descript = ['Never treat', 'Always treat']
 
-
-        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name,
-            time_points = time_points, int_descript = int_descript,
-            Intervention1_A = [static, np.zeros(time_points)],
-            Intervention2_A = [static, np.ones(time_points)],
-            covnames=covnames, covtypes=covtypes, covmodels=covmodels, basecovs=basecovs,
-            outcome_name=outcome_name, outcome_model=outcome_model, outcome_type=outcome_type)
+        g = ParametricGformula(obs_data = obs_data, id = id, time_name=time_name,
+                     time_points = time_points, int_descript = int_descript,
+                     Intervention1_A = [static, np.zeros(time_points)],
+                     Intervention2_A = [static, np.ones(time_points)],
+                     covnames=covnames, covtypes=covtypes,
+                     covmodels=covmodels, basecovs=basecovs,
+                     outcome_name=outcome_name, ymodel=ymodel, outcome_type=outcome_type)
         g.fit()
 
 **Output**:
@@ -230,8 +229,8 @@ An example where the covariate ''L1'' is binomial distribution
 
 Note that in this section, all demonstration examples use the same static interventions
 (‘‘Never treat’’ and ‘‘Always treat’’), and are applied in the survival outcome case.
-Please refer to :doc:`Intervention` part for more types of intervention,
-and :doc:`Outcome model` part for more types of outcome.
+Please refer to :doc:`Interventions` for more types of interventions,
+and :doc:`Outcome model` for more types of outcomes.
 
 
 Normal
@@ -270,7 +269,7 @@ from the fitted model. Values generated outside the observed range for the covar
 
         obs_data = load_basicdata_nocomp()
         time_name = 't0'
-        id_name = 'id'
+        id = 'id'
 
         covnames = ['L2', 'A']
         covtypes = ['normal', 'binary']
@@ -280,19 +279,19 @@ from the fitted model. Values generated outside the observed range for the covar
         basecovs = ['L3']
 
         outcome_name = 'Y'
-        outcome_model = 'Y ~ L2 + A + lag1_A + L3 + t0'
+        ymodel = 'Y ~ L2 + A + lag1_A + L3 + t0'
         outcome_type = 'survival'
 
         time_points = np.max(np.unique(obs_data[time_name])) + 1
         int_descript = ['Never treat', 'Always treat']
 
-
-        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name,
-            time_points = time_points, int_descript = int_descript,
-            Intervention1_A = [static, np.zeros(time_points)],
-            Intervention2_A = [static, np.ones(time_points)],
-            covnames=covnames, covtypes=covtypes, covmodels=covmodels, basecovs=basecovs,
-            outcome_name=outcome_name, outcome_model=outcome_model, outcome_type=outcome_type)
+        g = ParametricGformula(obs_data = obs_data, id = id, time_name=time_name,
+                  time_points = time_points, int_descript = int_descript,
+                  Intervention1_A = [static, np.zeros(time_points)],
+                  Intervention2_A = [static, np.ones(time_points)],
+                  covnames=covnames, covtypes=covtypes,
+                  covmodels=covmodels, basecovs=basecovs,
+                  outcome_name=outcome_name, ymodel=ymodel, outcome_type=outcome_type)
         g.fit()
 
 
@@ -339,7 +338,7 @@ e.g., in the example above, users need to add a ‘‘C( )’’ on the variable
 
         obs_data = load_categorical()
         time_name = 't0'
-        id_name = 'id'
+        id = 'id'
 
         covnames = [ 'L', 'A']
         covtypes = ['categorical', 'binary']
@@ -347,18 +346,18 @@ e.g., in the example above, users need to add a ‘‘C( )’’ on the variable
                       'A ~ C(L) + C(lag1_L) + t0']
 
         outcome_name = 'Y'
-        outcome_model = 'Y ~ C(lag1_L) + A'
+        ymodel = 'Y ~ C(lag1_L) + A'
 
         time_points = np.max(np.unique(obs_data[time_name])) + 1
         int_descript = ['Never treat', 'Always treat']
 
-
-        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name,
-            time_points = time_points, int_descript = int_descript,
-            Intervention1_A = [static, np.zeros(time_points)],
-            Intervention2_A = [static, np.ones(time_points)],
-            covnames=covnames,  covtypes=covtypes, covmodels=covmodels,
-            outcome_name=outcome_name, outcome_model=outcome_model, outcome_type='survival')
+        g = ParametricGformula(obs_data = obs_data, id = id, time_name=time_name,
+                   time_points = time_points,int_descript = int_descript,
+                   Intervention1_A = [static, np.zeros(time_points)],
+                   Intervention2_A = [static, np.ones(time_points)],
+                   covnames=covnames,  covtypes=covtypes,
+                   covmodels=covmodels, outcome_name=outcome_name,
+                   ymodel=ymodel, outcome_type='survival')
         g.fit()
 
 
@@ -407,7 +406,7 @@ and values generated outside the observed range for the covariate are set to the
 
         obs_data = load_basicdata_nocomp()
         time_name = 't0'
-        id_name = 'id'
+        id = 'id'
 
         covnames = ['L2', 'A']
         covtypes = ['bounded normal', 'binary']
@@ -417,19 +416,19 @@ and values generated outside the observed range for the covariate are set to the
         basecovs = ['L3']
 
         outcome_name = 'Y'
-        outcome_model = 'Y ~ L2 + A + lag1_A + L3 + t0'
+        ymodel = 'Y ~ L2 + A + lag1_A + L3 + t0'
         outcome_type = 'survival'
 
         time_points = np.max(np.unique(obs_data[time_name])) + 1
         int_descript = ['Never treat', 'Always treat']
 
-
-        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name,
-            time_points = time_points, int_descript = int_descript,
-            Intervention1_A = [static, np.zeros(time_points)],
-            Intervention2_A = [static, np.ones(time_points)],
-            covnames=covnames, covtypes=covtypes, covmodels=covmodels, basecovs=basecovs,
-            outcome_name=outcome_name, outcome_model=outcome_model, outcome_type=outcome_type)
+        g = ParametricGformula(obs_data = obs_data, id = id, time_name=time_name,
+                 time_points = time_points, int_descript = int_descript, intcomp=[1, 2],
+                 Intervention1_A = [static, np.zeros(time_points)],
+                 Intervention2_A = [static, np.ones(time_points)],
+                 covnames=covnames, covtypes=covtypes,
+                 covmodels=covmodels, basecovs=basecovs,
+                 outcome_name=outcome_name, ymodel=ymodel, outcome_type=outcome_type)
         g.fit()
 
 
@@ -475,10 +474,11 @@ of the covariate.
         import pygformula
         from pygformula import ParametricGformula
         from pygformula.parametric_gformula.interventions import static
+        from pygformula.data import load_zero_inflated_normal
 
         obs_data = load_zero_inflated_normal()
         time_name = 't0'
-        id_name = 'id'
+        id = 'id'
 
         covnames = ['L', 'A']
         covtypes = ['zero-inflated normal', 'binary']
@@ -486,19 +486,18 @@ of the covariate.
                       'A ~ lag1_A + L + t0']
 
         outcome_name = 'Y'
-        outcome_model = 'Y ~ L + A + t0'
+        ymodel = 'Y ~ L + A + t0'
         outcome_type = 'survival'
 
         time_points = np.max(np.unique(obs_data[time_name])) + 1
         int_descript = ['Never treat', 'Always treat']
 
-
-        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name,
-            time_points = time_points, int_descript = int_descript,
-            Intervention1_A = [static, np.zeros(time_points)],
-            Intervention2_A = [static, np.ones(time_points)],
-            covnames=covnames, covtypes=covtypes, covmodels=covmodels,
-            outcome_name=outcome_name, outcome_model=outcome_model, outcome_type=outcome_type)
+        g = ParametricGformula(obs_data = obs_data, id = id, time_name=time_name,
+                     time_points = time_points, int_descript = int_descript,
+                     Intervention1_A = [static, np.zeros(time_points)],
+                     Intervention2_A = [static, np.ones(time_points)],
+                     covnames=covnames, covtypes=covtypes, covmodels=covmodels,
+                     outcome_name=outcome_name, ymodel=ymodel, outcome_type=outcome_type)
         g.fit()
 
 
@@ -532,7 +531,7 @@ are set to the minimum or maximum of the observed range.
 
       g = ParametricGformula(..., covnames = covnames, covtypes = covtypes, covmodels = covmodels, trunc_params=trunc_params, ...)
 
-Note that the elements in the ‘‘trunc_points’’ list also follows the same order as ‘‘covnames’’,
+The elements in the ‘‘trunc_params’’ list also follows the same order as ‘‘covnames’’,
 in the position where its corresponding covariate is truncated normal, it should be a list with two elements,
 otherwise it should be 'NA'. In the list of two elements, the first one should be the truncated value of the covariate,
 and the second one should be the truncated direction ('left' or 'right') of the covariate.
@@ -549,28 +548,29 @@ and the second one should be the truncated direction ('left' or 'right') of the 
 
         obs_data = load_truncated_normal()
         time_name = 't0'
-        id_name = 'id'
+        id = 'id'
 
         covnames = ['L', 'A']
         covtypes = ['truncated normal', 'binary']
         covmodels = ['L ~ lag1_A + lag1_L + t0',
-                     'A ~ lag1_A + lag1_L + L + t0']
+                   'A ~ lag1_A + lag1_L + L + t0']
 
         trunc_params = [[1, 'right'], 'NA']
 
         outcome_name = 'Y'
-        outcome_model = 'Y ~ L + A + t0'
+        ymodel = 'Y ~ L + A + t0'
         outcome_type = 'survival'
 
         time_points = np.max(np.unique(obs_data[time_name])) + 1
         int_descript = ['Never treat', 'Always treat']
 
-        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name,
-            time_points = time_points, int_descript = int_descript,
-            Intervention1_A = [static, np.zeros(time_points)],
-            Intervention2_A = [static, np.ones(time_points)],
-            covnames=covnames, covtypes=covtypes, covmodels=covmodels, trunc_params=trunc_params,
-            outcome_name=outcome_name, outcome_model=outcome_model, outcome_type=outcome_type)
+        g = ParametricGformula(obs_data = obs_data, id = id, time_name=time_name,
+                     time_points = time_points, int_descript = int_descript,
+                     Intervention1_A = [static, np.zeros(time_points)],
+                     Intervention2_A = [static, np.ones(time_points)],
+                     covnames=covnames, covtypes=covtypes, covmodels=covmodels,
+                     trunc_params=trunc_params, outcome_name=outcome_name,
+                     ymodel=ymodel, outcome_type=outcome_type)
         g.fit()
 
 
@@ -615,7 +615,7 @@ time and all subsequent times is set to 1.
 
         obs_data = load_absorbing_data()
         time_name = 't0'
-        id_name = 'id'
+        id = 'id'
 
         covnames = ['L', 'A']
         covtypes = ['absorbing', 'binary']
@@ -623,18 +623,18 @@ time and all subsequent times is set to 1.
                       'A ~ lag1_A + L + t0']
 
         outcome_name = 'Y'
-        outcome_model = 'Y ~ L + A + t0'
+        ymodel = 'Y ~ L + A + t0'
         outcome_type = 'survival'
 
         time_points = np.max(np.unique(obs_data[time_name])) + 1
         int_descript = ['Never treat', 'Always treat']
 
-        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name,
-            time_points = time_points, int_descript = int_descript,
-            covnames=covnames, covtypes=covtypes, covmodels=covmodels,
-            Intervention1_A = [static, np.zeros(time_points)],
-            Intervention2_A = [static, np.ones(time_points)],
-            outcome_name=outcome_name, outcome_model=outcome_model, outcome_type=outcome_type)
+        g = ParametricGformula(obs_data = obs_data, id = id, time_name=time_name,
+                     time_points = time_points, int_descript = int_descript,
+                     covnames=covnames, covtypes=covtypes, covmodels=covmodels,
+                     Intervention1_A = [static, np.zeros(time_points)],
+                     Intervention2_A = [static, np.ones(time_points)],
+                     outcome_name=outcome_name, ymodel=ymodel, outcome_type=outcome_type)
         g.fit()
 
 
@@ -667,7 +667,7 @@ is the squared time index.
 
         time_thresholds = [1, 3, 5]
 
-        g = ParametricGformula(..., covnames = covnames, covtypes = covtypes, covparams = covparams, time_thresholds = time_thresholds, ...)
+        g = ParametricGformula(..., covnames = covnames, covtypes = covtypes, covmodels = covmodels, time_thresholds = time_thresholds, ...)
 
 The argument ‘‘time_thresholds’’ creates indicators for categorizing the time index,
 The time index values inside the interval from each adjacent array (right-closed) form a category.
@@ -676,7 +676,7 @@ for example, setting time_thresholds = [1, 3, 5] in input data with 7 time point
 category 4 : 5 < time index <= 6).
 
 Users should specify the name of categorical time variable by adding a ‘‘_f’’ after the time name,
-and specify its type as 'categorical time' in covtypes argument. In the covparams argument,
+and specify its type as 'categorical time' in covtypes argument. In the covmodels argument,
 the corresponding position of the categorical time variable should be padded with NA.
 Note that when using the new categorical time variable in the model statement, e.g., ‘‘t0_f’’ in
 the syntax example above, C() should be added.
@@ -694,7 +694,7 @@ the syntax example above, C() should be added.
 
         obs_data = load_basicdata_nocomp()
         time_name = 't0'
-        id_name = 'id'
+        id = 'id'
 
         covnames = ['L1', 'L2', 'A', 't0_f']
         covtypes = ['binary', 'bounded normal', 'binary', 'categorical time']
@@ -708,20 +708,20 @@ the syntax example above, C() should be added.
         basecovs = ['L3']
 
         outcome_name = 'Y'
-        outcome_model = 'Y ~ L1 + L2 + L3 + A + lag1_A + lag1_L1 + lag1_L2 + t0'
+        ymodel = 'Y ~ L1 + L2 + L3 + A + lag1_A + lag1_L1 + lag1_L2 + t0'
         outcome_type = 'survival'
 
         time_points = np.max(np.unique(obs_data[time_name])) + 1
         int_descript = ['Never treat', 'Always treat']
 
-
-        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name,
+        g = ParametricGformula(obs_data = obs_data, id = id, time_name=time_name,
             time_points = time_points, time_thresholds = time_thresholds,
             int_descript = int_descript,
             Intervention1_A = [static, np.zeros(time_points)],
             Intervention2_A = [static, np.ones(time_points)],
-            covnames=covnames, covtypes=covtypes, covmodels=covmodels, basecovs=basecovs,
-            outcome_name=outcome_name, outcome_model=outcome_model, outcome_type=outcome_type)
+            covnames=covnames, covtypes=covtypes,
+            covmodels=covmodels, basecovs=basecovs,
+            outcome_name=outcome_name, ymodel=ymodel, outcome_type=outcome_type)
         g.fit()
 
 
@@ -746,7 +746,7 @@ of 'square' and the time name in the data, e.g., 'square_t0'.
                    'A ~ lag1_A + L1 + L2 + lag_cumavg1_L1 + lag_cumavg1_L2 + L3 + t0 + square_t0',
                    'NA']
 
-        g = ParametricGformula(..., covnames = covnames, covtypes = covtypes, covparams = covparams, ...)
+        g = ParametricGformula(..., covnames = covnames, covtypes = covtypes, covmodels = covmodels, ...)
 
 **Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_square_time.py>`_:
 
@@ -760,7 +760,7 @@ of 'square' and the time name in the data, e.g., 'square_t0'.
 
         obs_data = load_basicdata_nocomp()
         time_name = 't0'
-        id_name = 'id'
+        id = 'id'
 
         covnames = ['L1', 'L2', 'A', 'square_t0']
         covtypes = ['binary', 'bounded normal', 'binary', 'square time']
@@ -772,19 +772,19 @@ of 'square' and the time name in the data, e.g., 'square_t0'.
         basecovs = ['L3']
 
         outcome_name = 'Y'
-        outcome_model = 'Y ~ L1 + L2 + L3 + A + lag1_A + lag1_L1 + lag1_L2 + t0 + square_t0'
+        ymodel = 'Y ~ L1 + L2 + L3 + A + lag1_A + lag1_L1 + lag1_L2 + t0 + square_t0'
         outcome_type = 'survival'
 
         time_points = np.max(np.unique(obs_data[time_name])) + 1
         int_descript = ['Never treat', 'Always treat']
 
-
-        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name,
+        g = ParametricGformula(obs_data = obs_data, id = id, time_name=time_name,
             time_points = time_points, int_descript = int_descript,
             Intervention1_A = [static, np.zeros(time_points)],
             Intervention2_A = [static, np.ones(time_points)],
-            covnames=covnames, covtypes=covtypes, covmodels=covmodels, basecovs=basecovs,
-            outcome_name=outcome_name, outcome_model=outcome_model, outcome_type=outcome_type)
+            covnames=covnames, covtypes=covtypes,
+            covmodels=covmodels, basecovs=basecovs,
+            outcome_name=outcome_name, ymodel=ymodel, outcome_type=outcome_type)
         g.fit()
 
 
@@ -794,7 +794,7 @@ Custom
 
 In addition to the covariate types above, the package also allows users to choose their own covariate distributions for
 estimation. In this case, the corresponding covtype should be set to ‘‘custom’’, users need to specify the custom
-fit function and the predict function, which will be called by the arguments ‘‘covfits_custom’’ and ‘‘covpredict_custom’’.
+fit function and the predict function, which can be specified by the arguments ‘‘covfits_custom’’ and ‘‘covpredict_custom’’.
 
 
 .. list-table::
@@ -803,11 +803,13 @@ fit function and the predict function, which will be called by the arguments ‘
     * - Arguments
       - Description
     * - covfits_custom
-      - (Optional) A list, at the index where the covtype is set to "custom", the element is a user-specified fit function,
-        otherwise it should be set to 'NA'. The list must be the same length as covnames and in the same order.
+      - (Optional) A list, each element could be 'NA' or a user-specified fit function. The non-NA value is set
+        for the covariates with custom type. The 'NA' value is set for other covariates. The list must be the
+        same length as covnames and in the same order.
     * - covpredict_custom
-      - (Optional) A list, at the index where the covtype is set to "custom", the element is a user-specified predict function,
-        otherwise it should be set to 'NA'.
+      - (Optional) A list, each element could be 'NA' or a user-specified predict function. The non-NA value is set
+        for the covariates with custom type. The 'NA' value is set for other covariates. The list must be the
+        same length as covnames and in the same order.
 
 
 Each custom fit function has input parameters (not necessary to use all):
@@ -837,7 +839,7 @@ An example using random forest to fit a covariate model:
 Each custom predict function has parameters (not necessary to use all):
 
 * covmodel: model statement of the covariate
-* new_df: simulated data table at time t.
+* new_df: simulated data at time t.
 * fit: fitted model of the custom function
 
 and return a list of predicted values at time t.
@@ -878,7 +880,7 @@ The custom predict function for the random forest model:
         obs_data = load_basicdata_nocomp()
 
         time_name = 't0'
-        id_name = 'id'
+        id = 'id'
 
         covnames = ['L1', 'L2', 'A']
         covtypes = ['binary', 'custom', 'binary']
@@ -886,14 +888,11 @@ The custom predict function for the random forest model:
                      'L2 ~ lag1_A + L1 + lag1_L1 + lag_cumavg1_L2 + t0',
                      'A ~ lag1_A + L1 + L2 +lag1_L1 + lag_cumavg1_L2 + t0']
 
-
         outcome_name = 'Y'
-        outcome_model = 'Y ~ L1 + L2 + A'
+        ymodel = 'Y ~ L1 + L2 + A'
 
-        # define interventions
         time_points = np.max(np.unique(obs_data[time_name])) + 1
         int_descript = ['Never treat', 'Always treat']
-
 
         def fit_rf(covmodel, covname, fit_data):
             max_depth = 2
@@ -915,13 +914,13 @@ The custom predict function for the random forest model:
         covfits_custom = ['NA', fit_rf, 'NA']
         covpredict_custom = ['NA', predict_rf, 'NA']
 
-        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name,
-            time_points = time_points, int_descript = int_descript,
-            Intervention1_A = [static, np.zeros(time_points)],
-            Intervention2_A = [static, np.ones(time_points)],
-            covnames=covnames,  covtypes=covtypes, covmodels=covmodels,
-            covfits_custom = covfits_custom, covpredict_custom=covpredict_custom,
-            outcome_name=outcome_name, outcome_model=outcome_model, outcome_type='survival')
+        g = ParametricGformula(obs_data = obs_data, id = id, time_name=time_name,
+                    time_points = time_points, int_descript = int_descript,
+                    Intervention1_A = [static, np.zeros(time_points)],
+                    Intervention2_A = [static, np.ones(time_points)],
+                    covnames=covnames,  covtypes=covtypes, covmodels=covmodels,
+                    covfits_custom = covfits_custom, covpredict_custom=covpredict_custom,
+                    outcome_name=outcome_name, ymodel=ymodel, outcome_type='survival')
         g.fit()
 
 **Output**:

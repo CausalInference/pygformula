@@ -1,18 +1,17 @@
 Contact
 ''''''''''''''''''''
 
+The pygformula project was developed by Jing Li (jing_li@hsph.harvard.edu) at CAUSALab and was contributed by our following collaborators:
 
-**Team members**:
-
- - Jing Li, jing_li@hsph.harvard.edu
  - Sophia Rein, srein@hsph.harvard.edu
  - Sean McGrath, sean_mcgrath@g.harvard.edu
  - Roger Logan, rwlogan@hsph.harvard.edu
  - Ryan O’Dea, ryanodea@hsph.harvard.edu
  - Miguel Hernán, mhernan@hsph.harvard.edu
 
-If you have any questions or suggestions about this package, please feel free to contact us.
-As an open-source project, contributions are highly welcome for any bug reports or
+
+If you have any questions or suggestions about this package, please contact jing_li@hsph.harvard.edu.
+As an ongoing open-source project, contributions are highly welcome for any bug reports or
 feature suggestions.
 
  - Issue reports: if you have any issues, please let us know by opening an `issue <https://github.com/CausalInference/pygformula/issues>`_

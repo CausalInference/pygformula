@@ -48,8 +48,8 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Specifications</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="Input%20data.html">Input data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Intervention.html">Intervention</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Covariate%20model.html">Covariate model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Interventions.html">Interventions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Covariate%20models.html">Covariate models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Outcome%20model.html">Outcome model</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Censoring event</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Competing%20event.html">Competing event</a></li>
@@ -92,10 +92,13 @@
              
   <section id="censoring-event">
 <span id="id1"></span><h1>Censoring event<a class="headerlink" href="#censoring-event" title="Permalink to this headline"></a></h1>
-<p>In the presence of censoring, the name of the censoring variable in the input data should be specified,
-users also need to specify a censor model.
-Here the censor model is used for nonparametric estimate of natural course which applies inverse probability weighting method <a class="footnote-reference brackets" href="#id3" id="id2">1</a>.
-Meanwhile, the compared parametric g-formula involves a hypothetical intervention to abolish censoring.</p>
+<p>When there are censoring events, the package provides the option to obtain inverse probability weighted (IPW) estimates
+for comparison with the g-formula estimates. The comparison of these two estimates can be useful to assess model misspecification
+of the g-formula <a class="footnote-reference brackets" href="#id3" id="id2">1</a>.
+To get the IPW estimate, the name of the censoring variable in the input data should be specified,
+users also need to specify a censor model to obtain the weights.</p>
+<p>Note that the arguments ‘‘censor_name’’ and ‘‘censor_model’’ are only needed when users want to
+get the IPW estimate. The package will return the nonparametric observed risk in general cases.</p>
 <p>The arguments for censoring events:</p>
 <table class="docutils align-default">
 <colgroup>
@@ -109,20 +112,22 @@ Meanwhile, the compared parametric g-formula involves a hypothetical interventio
 </thead>
 <tbody>
 <tr class="row-even"><td><p>censor_name</p></td>
-<td><p>(Optional) A string specifying the name of the censoring variable in obs_data.</p></td>
+<td><p>(Optional) A string specifying the name of the censoring variable in obs_data. Only applicable when using inverse
+probability weights to estimate the natural course means / risk from the observed data.</p></td>
 </tr>
 <tr class="row-odd"><td><p>censor_model</p></td>
-<td><p>(Optional) A string specifying the model statement for the censoring variable.</p></td>
+<td><p>(Optional) A string specifying the model statement for the censoring variable. Only applicable when using inverse
+probability weights to estimate the natural course means / risk from the observed data.</p></td>
 </tr>
 <tr class="row-even"><td><p>ipw_cutoff_quantile</p></td>
-<td><p>(Optional) A percentile by which to truncate inverse probability weights.</p></td>
+<td><p>(Optional) Percentile value for truncation of the inverse probability weights.</p></td>
 </tr>
 <tr class="row-odd"><td><p>ipw_cutoff_value</p></td>
-<td><p>(Optional) A cutoff value by which to truncate inverse probability weights.</p></td>
+<td><p>(Optional) Absolute value for truncation of the inverse probability weights.</p></td>
 </tr>
 </tbody>
 </table>
-<p>Users may specify a cutoff value (in the argument ‘‘ipw_cutoff_quantile’’) or a cutoff quantile
+<p>Users can also specify a percentile value (in the argument ‘‘ipw_cutoff_quantile’’) or an absolute value
 (in the argument ‘‘ipw_cutoff_value’’) to truncate inverse probability weight.</p>
 <p><strong>Sample syntax</strong>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">censor_name</span> <span class="o">=</span> <span class="s1">&#39;C&#39;</span>
@@ -145,7 +150,7 @@ please name the censoring variable any name except ‘C’ to avoild name confus
 
 <span class="n">obs_data</span> <span class="o">=</span> <span class="n">load_censor_data</span><span class="p">()</span>
 <span class="n">time_name</span> <span class="o">=</span> <span class="s1">&#39;t0&#39;</span>
-<span class="n">id_name</span> <span class="o">=</span> <span class="s1">&#39;id&#39;</span>
+<span class="nb">id</span> <span class="o">=</span> <span class="s1">&#39;id&#39;</span>
 
 <span class="n">covnames</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L&#39;</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span><span class="p">]</span>
 <span class="n">covtypes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;binary&#39;</span><span class="p">,</span> <span class="s1">&#39;normal&#39;</span><span class="p">]</span>
@@ -154,7 +159,7 @@ please name the censoring variable any name except ‘C’ to avoild name confus
              <span class="s1">&#39;A ~ lag1_A + L + t0&#39;</span><span class="p">]</span>
 
 <span class="n">outcome_name</span> <span class="o">=</span> <span class="s1">&#39;Y&#39;</span>
-<span class="n">outcome_model</span> <span class="o">=</span> <span class="s1">&#39;Y ~ A + L&#39;</span>
+<span class="n">ymodel</span> <span class="o">=</span> <span class="s1">&#39;Y ~ A + L&#39;</span>
 
 <span class="n">censor_name</span> <span class="o">=</span> <span class="s1">&#39;C&#39;</span>
 <span class="n">censor_model</span> <span class="o">=</span> <span class="s1">&#39;C ~ A + L&#39;</span>
@@ -162,15 +167,14 @@ please name the censoring variable any name except ‘C’ to avoild name confus
 <span class="n">time_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">obs_data</span><span class="p">[</span><span class="n">time_name</span><span class="p">]))</span> <span class="o">+</span> <span class="mi">1</span>
 <span class="n">int_descript</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Never treat&#39;</span><span class="p">,</span> <span class="s1">&#39;Always treat&#39;</span><span class="p">]</span>
 
-
-<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="n">obs_data</span> <span class="o">=</span> <span class="n">obs_data</span><span class="p">,</span> <span class="n">id_name</span> <span class="o">=</span> <span class="n">id_name</span><span class="p">,</span> <span class="n">time_name</span><span class="o">=</span><span class="n">time_name</span><span class="p">,</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="n">obs_data</span> <span class="o">=</span> <span class="n">obs_data</span><span class="p">,</span> <span class="nb">id</span> <span class="o">=</span> <span class="nb">id</span><span class="p">,</span> <span class="n">time_name</span><span class="o">=</span><span class="n">time_name</span><span class="p">,</span>
     <span class="n">time_points</span> <span class="o">=</span> <span class="n">time_points</span><span class="p">,</span>
     <span class="n">int_descript</span><span class="o">=</span><span class="n">int_descript</span><span class="p">,</span>
     <span class="n">Intervention1_A</span> <span class="o">=</span> <span class="p">[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">time_points</span><span class="p">)],</span>
     <span class="n">Intervention2_A</span> <span class="o">=</span> <span class="p">[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">time_points</span><span class="p">)],</span>
     <span class="n">censor_name</span><span class="o">=</span> <span class="n">censor_name</span><span class="p">,</span> <span class="n">censor_model</span><span class="o">=</span><span class="n">censor_model</span><span class="p">,</span>
     <span class="n">covnames</span> <span class="o">=</span> <span class="n">covnames</span><span class="p">,</span> <span class="n">covtypes</span> <span class="o">=</span> <span class="n">covtypes</span><span class="p">,</span> <span class="n">covmodels</span> <span class="o">=</span> <span class="n">covmodels</span><span class="p">,</span>
-    <span class="n">outcome_name</span><span class="o">=</span><span class="n">outcome_name</span><span class="p">,</span> <span class="n">outcome_model</span><span class="o">=</span><span class="n">outcome_model</span><span class="p">,</span> <span class="n">outcome_type</span><span class="o">=</span><span class="s1">&#39;survival&#39;</span><span class="p">)</span>
+    <span class="n">outcome_name</span><span class="o">=</span><span class="n">outcome_name</span><span class="p">,</span> <span class="n">ymodel</span><span class="o">=</span><span class="n">ymodel</span><span class="p">,</span> <span class="n">outcome_type</span><span class="o">=</span><span class="s1">&#39;survival&#39;</span><span class="p">)</span>
 <span class="n">g</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
 </pre></div>
 </div>

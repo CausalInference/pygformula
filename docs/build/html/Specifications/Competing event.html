@@ -48,8 +48,8 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Specifications</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="Input%20data.html">Input data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Intervention.html">Intervention</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Covariate%20model.html">Covariate model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Interventions.html">Interventions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Covariate%20models.html">Covariate models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Outcome%20model.html">Outcome model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Censoring%20event.html">Censoring event</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Competing event</a></li>
@@ -111,13 +111,13 @@ competing events, and are obtained by using an estimate of the subdistribution c
 </thead>
 <tbody>
 <tr class="row-even"><td><p>compevent_name</p></td>
-<td><p>(Optional) A string specifying the name of the competing event variable in obs_data. Only applicable for survival outcomes..</p></td>
+<td><p>(Optional) A string specifying the name of the competing event variable in obs_data. Only applicable for survival outcomes.</p></td>
 </tr>
 <tr class="row-odd"><td><p>compevent_model</p></td>
 <td><p>(Optional) A string specifying the model statement for the competing event variable. Only applicable for survival outcomes.</p></td>
 </tr>
 <tr class="row-even"><td><p>compevent_cens</p></td>
-<td><p>(Optional) A boolean value indicating whether to treat competing events as censoring events.</p></td>
+<td><p>(Optional) A boolean value indicating whether to treat competing events as censoring events. Default is False.</p></td>
 </tr>
 </tbody>
 </table>
@@ -132,7 +132,8 @@ competing events, and are obtained by using an estimate of the subdistribution c
 <p>The name of competing event in the input data should be specified in the argument ‘‘compevent_name’’.
 The model statement for the competing event variable should be specified in the argument ‘‘compevent_model’’.
 Users should also specify the argument ‘‘compevent_cens’’ as True or False indicating whether they want to treat the competing
-event as censoring event.</p>
+event as censoring event (the default is False).</p>
+<p>Setting ‘‘compevent_cens’’ as default (False):</p>
 <p><strong>Running example</strong> <a class="reference external" href="https://github.com/CausalInference/pygformula/blob/main/running_examples/test_competing_event.py">[code]</a>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pygformula</span>
 <span class="kn">from</span> <span class="nn">pygformula</span> <span class="kn">import</span> <span class="n">ParametricGformula</span>
@@ -147,30 +148,27 @@ event as censoring event.</p>
              <span class="s1">&#39;L2 ~ lag1_A + L1 + lag_cumavg1_L1 + lag_cumavg1_L2  + L3 + t0&#39;</span><span class="p">,</span>
              <span class="s1">&#39;A ~ lag1_A + L1 + L2 +lag_cumavg1_L1 + lag_cumavg1_L2 + L3 + t0&#39;</span><span class="p">]</span>
 
-<span class="n">outcome_model</span> <span class="o">=</span> <span class="s1">&#39;Y ~ A + L1 + L2 + L3 + lag1_A + lag1_L1 + lag1_L2&#39;</span>
+<span class="n">ymodel</span> <span class="o">=</span> <span class="s1">&#39;Y ~ A + L1 + L2 + L3 + lag1_A + lag1_L1 + lag1_L2&#39;</span>
 
 <span class="n">time_name</span> <span class="o">=</span> <span class="s1">&#39;t0&#39;</span>
-<span class="n">id_name</span> <span class="o">=</span> <span class="s1">&#39;id&#39;</span>
+<span class="nb">id</span> <span class="o">=</span> <span class="s1">&#39;id&#39;</span>
 <span class="n">outcome_name</span> <span class="o">=</span> <span class="s1">&#39;Y&#39;</span>
 <span class="n">basecovs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L3&#39;</span><span class="p">]</span>
 
 <span class="n">compevent_name</span> <span class="o">=</span> <span class="s1">&#39;D&#39;</span>
 <span class="n">compevent_model</span> <span class="o">=</span> <span class="s1">&#39;D ~ A + L1 + L2 + L3 + t0&#39;</span>
-<span class="n">compevent_cens</span> <span class="o">=</span> <span class="kc">False</span>
 
 <span class="n">time_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">obs_data</span><span class="p">[</span><span class="n">time_name</span><span class="p">]))</span> <span class="o">+</span> <span class="mi">1</span>
 <span class="n">int_descript</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Never treat&#39;</span><span class="p">,</span> <span class="s1">&#39;Always treat&#39;</span><span class="p">]</span>
 
-
-<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="n">obs_data</span> <span class="o">=</span> <span class="n">obs_data</span><span class="p">,</span> <span class="n">id_name</span> <span class="o">=</span> <span class="n">id_name</span><span class="p">,</span> <span class="n">time_points</span> <span class="o">=</span> <span class="n">time_points</span><span class="p">,</span>
-    <span class="n">time_name</span><span class="o">=</span><span class="n">time_name</span><span class="p">,</span>
-    <span class="n">int_descript</span> <span class="o">=</span> <span class="n">int_descript</span><span class="p">,</span>
-    <span class="n">Intervention1_A</span> <span class="o">=</span> <span class="p">[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">time_points</span><span class="p">)],</span>
-    <span class="n">Intervention2_A</span> <span class="o">=</span> <span class="p">[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">time_points</span><span class="p">)],</span>
-    <span class="n">basecovs</span> <span class="o">=</span><span class="n">basecovs</span><span class="p">,</span> <span class="n">covnames</span><span class="o">=</span><span class="n">covnames</span><span class="p">,</span>  <span class="n">covtypes</span><span class="o">=</span><span class="n">covtypes</span><span class="p">,</span> <span class="n">covmodels</span><span class="o">=</span><span class="n">covmodels</span><span class="p">,</span>
-    <span class="n">compevent_cens</span><span class="o">=</span> <span class="n">compevent_cens</span><span class="p">,</span> <span class="n">compevent_name</span> <span class="o">=</span> <span class="n">compevent_name</span><span class="p">,</span>
-    <span class="n">compevent_model</span><span class="o">=</span><span class="n">compevent_model</span><span class="p">,</span>
-    <span class="n">outcome_name</span><span class="o">=</span><span class="n">outcome_name</span><span class="p">,</span> <span class="n">outcome_type</span><span class="o">=</span><span class="s1">&#39;survival&#39;</span><span class="p">,</span> <span class="n">outcome_model</span><span class="o">=</span><span class="n">outcome_model</span><span class="p">)</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="n">obs_data</span> <span class="o">=</span> <span class="n">obs_data</span><span class="p">,</span> <span class="nb">id</span> <span class="o">=</span> <span class="nb">id</span><span class="p">,</span> <span class="n">time_points</span> <span class="o">=</span> <span class="n">time_points</span><span class="p">,</span>
+              <span class="n">time_name</span><span class="o">=</span><span class="n">time_name</span><span class="p">,</span> <span class="n">int_descript</span> <span class="o">=</span> <span class="n">int_descript</span><span class="p">,</span>
+              <span class="n">Intervention1_A</span> <span class="o">=</span> <span class="p">[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">time_points</span><span class="p">)],</span>
+              <span class="n">Intervention2_A</span> <span class="o">=</span> <span class="p">[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">time_points</span><span class="p">)],</span>
+              <span class="n">basecovs</span> <span class="o">=</span><span class="n">basecovs</span><span class="p">,</span> <span class="n">covnames</span><span class="o">=</span><span class="n">covnames</span><span class="p">,</span>
+              <span class="n">covtypes</span><span class="o">=</span><span class="n">covtypes</span><span class="p">,</span> <span class="n">covmodels</span><span class="o">=</span><span class="n">covmodels</span><span class="p">,</span>
+              <span class="n">compevent_name</span> <span class="o">=</span> <span class="n">compevent_name</span><span class="p">,</span> <span class="n">compevent_model</span><span class="o">=</span><span class="n">compevent_model</span><span class="p">,</span>
+              <span class="n">outcome_name</span><span class="o">=</span><span class="n">outcome_name</span><span class="p">,</span> <span class="n">outcome_type</span><span class="o">=</span><span class="s1">&#39;survival&#39;</span><span class="p">,</span> <span class="n">ymodel</span><span class="o">=</span><span class="n">ymodel</span><span class="p">)</span>
 <span class="n">g</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
 </pre></div>
 </div>

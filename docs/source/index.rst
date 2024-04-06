@@ -1,18 +1,18 @@
 
 Welcome to pygformula's documentation!
 ======================================
-The `pygformula <https://github.com/CausalInference/pygformula>`_ is a python package that implements the parametric g-formula method
-to estimate the effects of sustained treatment strategies from observational data with time-varying treatments, confounders, and outcomes [1]_ [2]_.
 
-Specifically, this package implements the noniterative conditional expectation (NICE) estimator of parametric
-g-formula which accommodates different types of covariates, different types of outcomes, different types of interventions, as well as more complicated scenarios
-such as competing event, censoring event and visit process.
+The `pygformula <https://github.com/CausalInference/pygformula>`_ package implements the parametric g-formula
+algorithm [1]_ [2]_. The g-formula can be used to estimate the causal effects of hypothetical time-varying
+treatment interventions on the mean or risk of an outcome from longitudinal data with time-varying confounding.
+This package allows: 1) binary or continuous/multi-level time-varying treatments; 2) different types of outcomes
+(survival or continuous/binary end of follow-up); 3) data with competing events or truncation by death and loss
+to follow-up and other types of censoring events; 4) different options for handling competing events in the case
+of survival outcomes; 5) a random measurement/visit process; 6) joint interventions on multiple treatments; and
+7) general incorporation of a priori knowledge of the data structure.
 
-The goal of this package is to give an easy and convenient tool for users to perform data analysis based on the parametric g-formula method in python.
-You can have a quick understanding of how to use the pygformula by going through a simple example in
-:doc:`Get Started`.
-If you want to perform a more specific analysis, please see :doc:`Specifications/index` in which you
-will learn how to specify each module in the usage of the package.
+For a quick review of how to use the pygformula, see a simple example in :doc:`Get Started`.
+For a detailed list of options, see :doc:`Specifications/index`.
 
 
 .. toctree::
@@ -33,8 +33,12 @@ will learn how to specify each module in the usage of the package.
    Contact
 
 
-.. [1] Robins JM. A new approach to causal inference in mortality studies with a sustained exposure period—application to control of the healthy worker survivor effect. Mathematical modelling 1986;7(9-12):1393-512.
-.. [2] Hernán MA, Robins JM (2020). Causal Inference: What If. Boca Raton: Chapman & Hall/CRC.
+.. [1] Robins JM. A new approach to causal inference in mortality studies with a sustained exposure period:
+       application to the healthy worker survivor effect. Mathematical Modelling. 1986;7:1393–1512. [Errata (1987)
+       in Computers and Mathematics with Applications 14, 917-921. Addendum (1987) in Computers and Mathematics
+       with Applications 14, 923-945. Errata (1987) to addendum in Computers and Mathematics with Applications
+       18, 477.
+.. [2] Hernán, M.A., and Robins, J. (2020). Causal Inference: What If (Chapman & Hall/CRC).
 
 
 

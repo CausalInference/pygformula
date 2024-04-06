@@ -7,7 +7,7 @@ two interventions of interest. In the presence of competing events, it will retu
 [1]_. Note that there is an order requirement for the input data structure that it should have the competing event before the outcome event.
 
 *Prerequisite*: If users want to calculate the hazard ratio with competing event, they needs to install additional “rpy2” package
-and call the python `"cmprsk" <https://pypi.org/project/cmprsk>`_ package. Please follow the steps below to install:
+and install the python `"cmprsk" <https://pypi.org/project/cmprsk>`_ package. Please follow the steps below to install:
 
  - Install R to set up R environment
 
@@ -72,7 +72,7 @@ The integer i in ‘‘intcomp’’ denotes the i-th intervention in the user-s
 
     obs_data = load_basicdata_nocomp()
     time_name = 't0'
-    id_name = 'id'
+    id = 'id'
 
     covnames = ['L2', 'A']
     covtypes = ['bounded normal', 'binary']
@@ -82,19 +82,20 @@ The integer i in ‘‘intcomp’’ denotes the i-th intervention in the user-s
     basecovs = ['L3']
 
     outcome_name = 'Y'
-    outcome_model = 'Y ~ L2 + A + lag1_A + L3 + t0'
+    ymodel = 'Y ~ L2 + A + lag1_A + L3 + t0'
     outcome_type = 'survival'
 
     time_points = np.max(np.unique(obs_data[time_name])) + 1
     int_descript = ['Never treat', 'Always treat']
 
-    g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name,
+    g = ParametricGformula(obs_data = obs_data, id = id, time_name=time_name,
         time_points = time_points,
         int_descript = int_descript, intcomp=[1, 2],
         Intervention1_A = [static, np.zeros(time_points)],
         Intervention2_A = [static, np.ones(time_points)],
-        covnames=covnames, covtypes=covtypes, covmodels=covmodels, basecovs=basecovs,
-        outcome_name=outcome_name, outcome_model=outcome_model, outcome_type=outcome_type)
+        covnames=covnames, covtypes=covtypes,
+        covmodels=covmodels, basecovs=basecovs,
+        outcome_name=outcome_name, ymodel=ymodel, outcome_type=outcome_type)
     g.fit()
 
 

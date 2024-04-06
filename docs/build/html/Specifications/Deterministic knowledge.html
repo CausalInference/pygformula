@@ -48,8 +48,8 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Specifications</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="Input%20data.html">Input data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Intervention.html">Intervention</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Covariate%20model.html">Covariate model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Interventions.html">Interventions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Covariate%20models.html">Covariate models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Outcome%20model.html">Outcome model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Censoring%20event.html">Censoring event</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Competing%20event.html">Competing event</a></li>
@@ -126,7 +126,7 @@ of pregnancy at time k is drawn from the estimated distribution in step 1.</p>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>restrictions</p></td>
-<td><p>(Optional) A list with lists, each inner list contains its first entry the covariate name of that its deterministic knowledge
+<td><p>(Optional) List of lists. Each inner list contains its first entry the covariate name of that its deterministic knowledge
 is known; its second entry is a dictionary whose key is the conditions which should be True when the covariate
 is modeled, the third entry is the value that is set to the covariate during simulation when the conditions
 in the second entry are not True.</p></td>
@@ -153,7 +153,7 @@ by its parametric model, otherwise, it is set to a known value 1.</p>
 <span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">restrictions</span> <span class="o">=</span> <span class="n">restrictions</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>An example with multiple restrictions, one for covariate L1 and one for covariate A:</p>
+<p>An example with multiple restrictions, one for covariate L2 and one for covariate A:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">restrictions</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;L2&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;L1&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">==</span> <span class="mi">0</span><span class="p">},</span> <span class="mf">0.5</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;L1&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;L2&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">},</span> <span class="mi">1</span><span class="p">]]</span>
 <span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">restrictions</span> <span class="o">=</span> <span class="n">restrictions</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
 </pre></div>
@@ -163,8 +163,8 @@ the ‘‘restrictions’’ allows an input as a function type. In this case, t
 instead of a value.</p>
 <p>For each custom restriction function, the input should be the parameters (not necessary to use all):</p>
 <ul class="simple">
-<li><p>new_df: A DataFrame that contains data table at current time t.</p></li>
-<li><p>pool: A DataFrame that contains data table up to time t.</p></li>
+<li><p>new_df: A DataFrame that contains the observed or simulated data at time t.</p></li>
+<li><p>pool: A DataFrame that contains the observed or simulated data up to time t.</p></li>
 <li><p>time_name: A string specifying the name of the time variable in pool.</p></li>
 <li><p>t: An integer specifying the current time index.</p></li>
 </ul>
@@ -190,7 +190,7 @@ by its parametric model, otherwise, its previous value is carried forward.</p>
 <span class="n">obs_data</span> <span class="o">=</span> <span class="n">load_basicdata_nocomp</span><span class="p">()</span>
 
 <span class="n">time_name</span> <span class="o">=</span> <span class="s1">&#39;t0&#39;</span>
-<span class="n">id_name</span> <span class="o">=</span> <span class="s1">&#39;id&#39;</span>
+<span class="nb">id</span> <span class="o">=</span> <span class="s1">&#39;id&#39;</span>
 
 <span class="n">covnames</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L1&#39;</span><span class="p">,</span> <span class="s1">&#39;L2&#39;</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span><span class="p">]</span>
 <span class="n">covtypes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;binary&#39;</span><span class="p">,</span> <span class="s1">&#39;normal&#39;</span><span class="p">,</span> <span class="s1">&#39;binary&#39;</span><span class="p">]</span>
@@ -200,7 +200,7 @@ by its parametric model, otherwise, its previous value is carried forward.</p>
 
 <span class="n">basecovs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L3&#39;</span><span class="p">]</span>
 <span class="n">outcome_name</span> <span class="o">=</span> <span class="s1">&#39;Y&#39;</span>
-<span class="n">outcome_model</span> <span class="o">=</span> <span class="s1">&#39;Y ~ L1 + L2 + A&#39;</span>
+<span class="n">ymodel</span> <span class="o">=</span> <span class="s1">&#39;Y ~ L1 + L2 + A&#39;</span>
 
 <span class="c1"># define interventions</span>
 <span class="n">time_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">obs_data</span><span class="p">[</span><span class="n">time_name</span><span class="p">]))</span> <span class="o">+</span> <span class="mi">1</span>
@@ -208,14 +208,15 @@ by its parametric model, otherwise, its previous value is carried forward.</p>
 
 <span class="n">restrictions</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;L2&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;L1&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">==</span> <span class="mi">0</span><span class="p">},</span> <span class="mf">0.5</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;L1&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;L2&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">},</span> <span class="mi">1</span><span class="p">]]</span>
 
-<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="n">obs_data</span> <span class="o">=</span> <span class="n">obs_data</span><span class="p">,</span> <span class="n">id_name</span> <span class="o">=</span> <span class="n">id_name</span><span class="p">,</span> <span class="n">time_name</span><span class="o">=</span><span class="n">time_name</span><span class="p">,</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="n">obs_data</span> <span class="o">=</span> <span class="n">obs_data</span><span class="p">,</span> <span class="nb">id</span> <span class="o">=</span> <span class="nb">id</span><span class="p">,</span> <span class="n">time_name</span><span class="o">=</span><span class="n">time_name</span><span class="p">,</span>
     <span class="n">time_points</span> <span class="o">=</span> <span class="n">time_points</span><span class="p">,</span>
     <span class="n">int_descript</span> <span class="o">=</span> <span class="n">int_descript</span><span class="p">,</span>
     <span class="n">Intervention1_A</span> <span class="o">=</span> <span class="p">[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">time_points</span><span class="p">)],</span>
     <span class="n">Intervention2_A</span> <span class="o">=</span> <span class="p">[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">time_points</span><span class="p">)],</span>
-    <span class="n">covnames</span><span class="o">=</span><span class="n">covnames</span><span class="p">,</span>  <span class="n">covtypes</span><span class="o">=</span><span class="n">covtypes</span><span class="p">,</span> <span class="n">covmodels</span><span class="o">=</span><span class="n">covmodels</span><span class="p">,</span> <span class="n">basecovs</span><span class="o">=</span><span class="n">basecovs</span><span class="p">,</span>
+    <span class="n">covnames</span><span class="o">=</span><span class="n">covnames</span><span class="p">,</span> <span class="n">covtypes</span><span class="o">=</span><span class="n">covtypes</span><span class="p">,</span>
+    <span class="n">covmodels</span><span class="o">=</span><span class="n">covmodels</span><span class="p">,</span> <span class="n">basecovs</span><span class="o">=</span><span class="n">basecovs</span><span class="p">,</span>
     <span class="n">restrictions</span><span class="o">=</span><span class="n">restrictions</span><span class="p">,</span> <span class="n">outcome_name</span><span class="o">=</span><span class="n">outcome_name</span><span class="p">,</span>
-    <span class="n">outcome_model</span><span class="o">=</span><span class="n">outcome_model</span><span class="p">,</span> <span class="n">outcome_type</span><span class="o">=</span><span class="s1">&#39;survival&#39;</span><span class="p">)</span>
+    <span class="n">ymodel</span><span class="o">=</span><span class="n">ymodel</span><span class="p">,</span> <span class="n">outcome_type</span><span class="o">=</span><span class="s1">&#39;survival&#39;</span><span class="p">)</span>
 <span class="n">g</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -240,7 +241,7 @@ by its parametric model, otherwise, its previous value is carried forward.</p>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>yrestrictions</p></td>
-<td><p>(Optional) A list with lists, for each inner list, its first entry is a dictionary whose key is the conditions which
+<td><p>(Optional) List of lists. For each inner list, its first entry is a dictionary whose key is the conditions which
 should be True when the outcome is modeled, the second entry is the value that is set to the outcome during
 simulation when the conditions in the first entry are not True.</p></td>
 </tr>
@@ -269,7 +270,7 @@ the probability of outcome Y is estimated by its parametric model, otherwise, it
 <span class="n">obs_data</span> <span class="o">=</span> <span class="n">load_basicdata_nocomp</span><span class="p">()</span>
 
 <span class="n">time_name</span> <span class="o">=</span> <span class="s1">&#39;t0&#39;</span>
-<span class="n">id_name</span> <span class="o">=</span> <span class="s1">&#39;id&#39;</span>
+<span class="nb">id</span> <span class="o">=</span> <span class="s1">&#39;id&#39;</span>
 
 <span class="n">covnames</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L1&#39;</span><span class="p">,</span> <span class="s1">&#39;L2&#39;</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span><span class="p">]</span>
 <span class="n">covtypes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;binary&#39;</span><span class="p">,</span> <span class="s1">&#39;normal&#39;</span><span class="p">,</span> <span class="s1">&#39;binary&#39;</span><span class="p">]</span>
@@ -279,7 +280,7 @@ the probability of outcome Y is estimated by its parametric model, otherwise, it
 
 <span class="n">basecovs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L3&#39;</span><span class="p">]</span>
 <span class="n">outcome_name</span> <span class="o">=</span> <span class="s1">&#39;Y&#39;</span>
-<span class="n">outcome_model</span> <span class="o">=</span> <span class="s1">&#39;Y ~ L1 + L2 + A&#39;</span>
+<span class="n">ymodel</span> <span class="o">=</span> <span class="s1">&#39;Y ~ L1 + L2 + A&#39;</span>
 
 <span class="c1"># define interventions</span>
 <span class="n">time_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">obs_data</span><span class="p">[</span><span class="n">time_name</span><span class="p">]))</span> <span class="o">+</span> <span class="mi">1</span>
@@ -287,14 +288,14 @@ the probability of outcome Y is estimated by its parametric model, otherwise, it
 
 <span class="n">yrestrictions</span> <span class="o">=</span> <span class="p">[[{</span><span class="s1">&#39;L1&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">==</span> <span class="mi">0</span><span class="p">},</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[{</span><span class="s1">&#39;L2&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">},</span> <span class="mf">0.1</span><span class="p">]]</span>
 
-<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="n">obs_data</span> <span class="o">=</span> <span class="n">obs_data</span><span class="p">,</span> <span class="n">id_name</span> <span class="o">=</span> <span class="n">id_name</span><span class="p">,</span> <span class="n">time_name</span><span class="o">=</span><span class="n">time_name</span><span class="p">,</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="n">obs_data</span> <span class="o">=</span> <span class="n">obs_data</span><span class="p">,</span> <span class="nb">id</span> <span class="o">=</span> <span class="nb">id</span><span class="p">,</span> <span class="n">time_name</span><span class="o">=</span><span class="n">time_name</span><span class="p">,</span>
     <span class="n">time_points</span> <span class="o">=</span> <span class="n">time_points</span><span class="p">,</span>
     <span class="n">int_descript</span> <span class="o">=</span> <span class="n">int_descript</span><span class="p">,</span>
     <span class="n">Intervention1_A</span> <span class="o">=</span> <span class="p">[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">time_points</span><span class="p">)],</span>
     <span class="n">Intervention2_A</span> <span class="o">=</span> <span class="p">[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">time_points</span><span class="p">)],</span>
     <span class="n">covnames</span><span class="o">=</span><span class="n">covnames</span><span class="p">,</span>  <span class="n">covtypes</span><span class="o">=</span><span class="n">covtypes</span><span class="p">,</span> <span class="n">covmodels</span><span class="o">=</span><span class="n">covmodels</span><span class="p">,</span> <span class="n">basecovs</span><span class="o">=</span><span class="n">basecovs</span><span class="p">,</span>
     <span class="n">yrestrictions</span><span class="o">=</span><span class="n">yrestrictions</span><span class="p">,</span> <span class="n">outcome_name</span><span class="o">=</span><span class="n">outcome_name</span><span class="p">,</span>
-    <span class="n">outcome_model</span><span class="o">=</span><span class="n">outcome_model</span><span class="p">,</span> <span class="n">outcome_type</span><span class="o">=</span><span class="s1">&#39;survival&#39;</span><span class="p">)</span>
+    <span class="n">ymodel</span><span class="o">=</span><span class="n">ymodel</span><span class="p">,</span> <span class="n">outcome_type</span><span class="o">=</span><span class="s1">&#39;survival&#39;</span><span class="p">)</span>
 <span class="n">g</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -319,7 +320,7 @@ the package offers the argument ‘‘compevent_restrictions’’ for incorpora
 </thead>
 <tbody>
 <tr class="row-even"><td><p>compevent_restrictions</p></td>
-<td><p>(Optional) A list with lists, for each inner list, its first entry is a dictionary whose key is the conditions which
+<td><p>(Optional) List of lists. For each inner list, its first entry is a dictionary whose key is the conditions which
 should be True when the competing event is modeled, the second entry is the value that is set to the competing
 event during simulation when the conditions in the first entry are not True. Only applicable for survival outcomes.</p></td>
 </tr>
@@ -357,7 +358,7 @@ it is set to a value 0.1;</p>
 <span class="n">outcome_model</span> <span class="o">=</span> <span class="s1">&#39;Y ~ A + L1 + L2 + L3 + lag1_A + lag1_L1 + lag1_L2&#39;</span>
 
 <span class="n">time_name</span> <span class="o">=</span> <span class="s1">&#39;t0&#39;</span>
-<span class="n">id_name</span> <span class="o">=</span> <span class="s1">&#39;id&#39;</span>
+<span class="nb">id</span> <span class="o">=</span> <span class="s1">&#39;id&#39;</span>
 <span class="n">outcome_name</span> <span class="o">=</span> <span class="s1">&#39;Y&#39;</span>
 <span class="n">basecovs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L3&#39;</span><span class="p">]</span>
 
@@ -368,18 +369,18 @@ it is set to a value 0.1;</p>
 <span class="n">time_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">obs_data</span><span class="p">[</span><span class="n">time_name</span><span class="p">]))</span> <span class="o">+</span> <span class="mi">1</span>
 <span class="n">int_descript</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Never treat&#39;</span><span class="p">,</span> <span class="s1">&#39;Always treat&#39;</span><span class="p">]</span>
 
-
 <span class="n">compevent_restrictions</span> <span class="o">=</span> <span class="p">[[{</span><span class="s1">&#39;L1&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">==</span> <span class="mi">0</span><span class="p">},</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[{</span><span class="s1">&#39;L2&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">},</span> <span class="mf">0.1</span><span class="p">]]</span>
 
-<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="n">obs_data</span> <span class="o">=</span> <span class="n">obs_data</span><span class="p">,</span> <span class="n">id_name</span> <span class="o">=</span> <span class="n">id_name</span><span class="p">,</span> <span class="n">time_points</span> <span class="o">=</span> <span class="n">time_points</span><span class="p">,</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="n">obs_data</span> <span class="o">=</span> <span class="n">obs_data</span><span class="p">,</span> <span class="nb">id</span> <span class="o">=</span> <span class="nb">id</span><span class="p">,</span> <span class="n">time_points</span> <span class="o">=</span> <span class="n">time_points</span><span class="p">,</span>
     <span class="n">time_name</span><span class="o">=</span><span class="n">time_name</span><span class="p">,</span> <span class="n">int_descript</span> <span class="o">=</span> <span class="n">int_descript</span><span class="p">,</span>
     <span class="n">Intervention1_A</span> <span class="o">=</span> <span class="p">[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">time_points</span><span class="p">)],</span>
     <span class="n">Intervention2_A</span> <span class="o">=</span> <span class="p">[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">time_points</span><span class="p">)],</span>
-    <span class="n">basecovs</span> <span class="o">=</span><span class="n">basecovs</span><span class="p">,</span> <span class="n">covnames</span><span class="o">=</span><span class="n">covnames</span><span class="p">,</span>  <span class="n">covtypes</span><span class="o">=</span><span class="n">covtypes</span><span class="p">,</span> <span class="n">covmodels</span><span class="o">=</span><span class="n">covmodels</span><span class="p">,</span>
+    <span class="n">basecovs</span> <span class="o">=</span><span class="n">basecovs</span><span class="p">,</span> <span class="n">covnames</span><span class="o">=</span><span class="n">covnames</span><span class="p">,</span>
+    <span class="n">covtypes</span><span class="o">=</span><span class="n">covtypes</span><span class="p">,</span> <span class="n">covmodels</span><span class="o">=</span><span class="n">covmodels</span><span class="p">,</span>
     <span class="n">compevent_restrictions</span> <span class="o">=</span> <span class="n">compevent_restrictions</span><span class="p">,</span>
     <span class="n">compevent_cens</span><span class="o">=</span> <span class="n">compevent_cens</span><span class="p">,</span> <span class="n">compevent_name</span> <span class="o">=</span> <span class="n">compevent_name</span><span class="p">,</span>
     <span class="n">compevent_model</span><span class="o">=</span><span class="n">compevent_model</span><span class="p">,</span> <span class="n">outcome_name</span><span class="o">=</span><span class="n">outcome_name</span><span class="p">,</span>
-    <span class="n">outcome_type</span><span class="o">=</span><span class="s1">&#39;survival&#39;</span><span class="p">,</span> <span class="n">outcome_model</span><span class="o">=</span><span class="n">outcome_model</span><span class="p">)</span>
+    <span class="n">outcome_type</span><span class="o">=</span><span class="s1">&#39;survival&#39;</span><span class="p">,</span> <span class="n">ymodel</span><span class="o">=</span><span class="n">ymodel</span><span class="p">)</span>
 <span class="n">g</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
 </pre></div>
 </div>

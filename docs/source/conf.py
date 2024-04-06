@@ -19,7 +19,6 @@
 
 project = 'pygformula'
 copyright = '2024, CAUSALab'
-author = 'Jing Li'
 
 # The full version, including alpha/beta/rc tags
 release = '0.0.1'
