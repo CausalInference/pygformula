@@ -42,6 +42,6 @@ and an optional dependency:
 
 ## Issues:
 
-if you have any issues, please open an [issue](https://github.com/CausalInference/pygformula/issues) on github. 
+If you have any issues, please open an [issue](https://github.com/CausalInference/pygformula/issues) on github. 
 We will regularly check the questions. For any additional questions or comments, please 
 email jing_li@hsph.harvard.edu.
