@@ -11,7 +11,7 @@ The pygformula package implements the non-iterative conditional expectation (NIC
 
 ### Features: 
 
-* Treatments: discrete or continuous time-varying treatments
+* Treatments: discrete or continuous time-varying treatments.
 * Outcomes: failure time outcomes or continuous/binary end of follow-up outcomes.
 * Interventions: interventions on a single treatment or joint interventions on multiple treatments.
 * Random measurement/visit process.
