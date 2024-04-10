@@ -4,7 +4,7 @@ import math
 import re
 import statsmodels.api as sm
 import statsmodels.formula.api as smf
-from .truncreg import truncreg
+from pytruncreg import truncreg
 
 
 def fit_covariate_model(covmodels, covnames, covtypes, covfits_custom, time_name, obs_data, return_fits,
