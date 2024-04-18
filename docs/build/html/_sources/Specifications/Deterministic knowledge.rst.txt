@@ -3,7 +3,7 @@
 
 Deterministic knowledge
 ==============================================
-When there are known deterministic knowledge, they can be incorporated into the g-formula algorithm to avoid unnecessary
+When there are known priori deterministic knowledge, they can be incorporated into the g-formula algorithm to avoid unnecessary
 extrapolation. The package allows users to apply restrictions of the deterministic knowledge on the covariates,
 outcome or competing event.
 

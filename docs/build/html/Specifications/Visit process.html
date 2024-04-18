@@ -96,7 +96,7 @@
 clinic, the times at which the time-varying covariates are measured will vary by subject. In this setting,
 it is typical to construct the data such that (i) at a time when there is no visit/measurement,
 the last measured value of a covariate is carried forward, and (ii) a subject is censored after a certain number of consecutive times
-with no visit/measurement <a class="footnote-reference brackets" href="#id4" id="id2">1</a> <a class="footnote-reference brackets" href="#id5" id="id3">2</a>.</p>
+with no visit/measurement <a class="footnote-reference brackets" href="#id4" id="id2">1</a> <sup>,</sup> <a class="footnote-reference brackets" href="#id5" id="id3">2</a>.</p>
 <p>In pygformula, the deterministic knowledge (i) and (ii) can be incorporated via the argument ‘‘visitprocess’’.
 Each vector in ‘‘visitprocess’’ contains three parameters that attach a visit process to one covariate.
 The first parameter is the name of a time-varying indicator in the input data set of whether a covariate was measured in each interval

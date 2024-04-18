@@ -3,6 +3,8 @@
 # Code Authors: Jing Li (jing_li@hsph.harvard.edu), the first author to develop the package.
 #               Ryan O’Dea (ryanodea@hsph.harvard.edu), co-authored the pytruncreg used in this package.
 
+# Date created: 2024-04-18
+
 # Copyright (c) 2024 CAUSALab
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy

@@ -156,7 +156,7 @@ if users don’t want to compute the natural course estimate using IPW.</p>
 <p>For survival outcome, the outcome Y_k+1 on the line where individual is censored (C_k+1 = 1) can be coded NA or 0.
 This choice will make no difference to estimates in the algorithm when intervals are made small enough
 such that there are no failures in intervals where there are censoring events. It depends on
-whether to count such subjects in the time k risk set or not <a class="footnote-reference brackets" href="#id4" id="id2">1</a> <a class="footnote-reference brackets" href="#id5" id="id3">2</a>. For fixed binary/continuous end of follow-up, the
+whether to count such subjects in the time k risk set or not <a class="footnote-reference brackets" href="#id4" id="id2">1</a> <sup>,</sup> <a class="footnote-reference brackets" href="#id5" id="id3">2</a>. For fixed binary/continuous end of follow-up, the
 outcome Y_k+1 should be coded NA.</p>
 <p>Here is an example of input data structure with a censoring event (identified by ‘‘C’’). The subject contains 8 records on the measurements of
 two time-varying covariates ‘‘L’’, ‘‘A’’, the outcome ‘‘Y’’ and is censored at time index k+1=8. See <a class="reference external" href="https://github.com/CausalInference/pygformula/blob/master/datasets/example_data_censor.csv">“example_data_censor”</a> for complete example data.</p>

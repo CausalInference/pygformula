@@ -5,11 +5,11 @@
 
 ## Overview
 The pygformula package implements the non-iterative conditional expectation (NICE) algorithm of the g-formula algorithm
-(Robins, 1986). The g-formula can estimate an outcome’s counterfactual mean or risk under hypothetical treatment strategies
+(Robins, 1986). The g-formula can estimate the counterfactual mean or risk of an outcome under hypothetical treatment strategies
 (interventions) when there is sufficient information on time-varying treatments and confounders.
 
 
-### Features: 
+### Features
 
 * Treatments: discrete or continuous time-varying treatments.
 * Outcomes: failure time outcomes or continuous/binary end of follow-up outcomes.
@@ -22,7 +22,7 @@ The pygformula package implements the non-iterative conditional expectation (NIC
 
 ## Requirements
 
-The package requires python ≥ 3.8 and these necessary dependencies:
+The package requires python 3.8+ and these necessary dependencies:
 
 - joblib
 - lifelines
@@ -39,7 +39,7 @@ and an optional dependency:
 - cmprsk
 
 
-## Issues:
+## Issues
 
 If you have any issues, please open an [issue](https://github.com/CausalInference/pygformula/issues) on github, we will 
 regularly check the questions. For any additional questions or comments, please email jing_li@hsph.harvard.edu.

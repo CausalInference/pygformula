@@ -1,6 +1,5 @@
 import numpy as np
-import sys
-sys.path.append(r'..\..\pygformula')
+import pygformula
 from pygformula import ParametricGformula
 from pygformula.data import load_basicdata_nocomp
 

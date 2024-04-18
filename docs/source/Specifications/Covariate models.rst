@@ -38,6 +38,11 @@ An example for specifying the covariate model for covariate L1 based on the hist
 
       L1 ~ lag1_L1 + cumavg_L1 + lag_cumavg1_L1 + L3 + t0
 
+
+Note: for more covariate transformations (e.g., polynomial terms, spline terms), see `patsy <https://patsy.readthedocs.io/en/latest/index.html>`_
+for specification.
+
+
 Custom histories
 ----------------------
 If users wish to use history functions that are not in the three pre-coded history functions, the package provides
@@ -531,7 +536,8 @@ are set to the minimum or maximum of the observed range.
 
       g = ParametricGformula(..., covnames = covnames, covtypes = covtypes, covmodels = covmodels, trunc_params=trunc_params, ...)
 
-The elements in the ‘‘trunc_params’’ list also follows the same order as ‘‘covnames’’,
+The package supports covariates with one-sided truncation. To specify the covariates,
+the elements in the ‘‘trunc_params’’ list should follow the same order as ‘‘covnames’’,
 in the position where its corresponding covariate is truncated normal, it should be a list with two elements,
 otherwise it should be 'NA'. In the list of two elements, the first one should be the truncated value of the covariate,
 and the second one should be the truncated direction ('left' or 'right') of the covariate.

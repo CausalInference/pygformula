@@ -5,7 +5,7 @@ Interventions
 =========================
 
 The package supports natural course intervention, static and dynamic interventions, as well as
-threshold interventions [1]_ [2]_ . It provides pre-coded intervention functions and options for users
+threshold interventions [1]_ :sup:`,` [2]_ . It provides pre-coded intervention functions and options for users
 to define other custom interventions that are beyond the interventions
 provided.
 

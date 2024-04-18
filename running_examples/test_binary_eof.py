@@ -1,5 +1,4 @@
-import sys
-sys.path.append(r'..\..\pygformula')
+import pygformula
 from pygformula import ParametricGformula
 from pygformula.parametric_gformula.interventions import threshold
 from pygformula.data import load_binary_eof

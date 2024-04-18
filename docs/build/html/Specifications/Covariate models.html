@@ -140,6 +140,8 @@ if there is no pre-baseline times.</p></li>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">L1</span> <span class="o">~</span> <span class="n">lag1_L1</span> <span class="o">+</span> <span class="n">cumavg_L1</span> <span class="o">+</span> <span class="n">lag_cumavg1_L1</span> <span class="o">+</span> <span class="n">L3</span> <span class="o">+</span> <span class="n">t0</span>
 </pre></div>
 </div>
+<p>Note: for more covariate transformations (e.g., polynomial terms, spline terms), see <a class="reference external" href="https://patsy.readthedocs.io/en/latest/index.html">patsy</a>
+for specification.</p>
 </section>
 <section id="custom-histories">
 <h3>Custom histories<a class="headerlink" href="#custom-histories" title="Permalink to this headline"></a></h3>
@@ -579,7 +581,8 @@ are set to the minimum or maximum of the observed range.</p>
 <span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">covnames</span> <span class="o">=</span> <span class="n">covnames</span><span class="p">,</span> <span class="n">covtypes</span> <span class="o">=</span> <span class="n">covtypes</span><span class="p">,</span> <span class="n">covmodels</span> <span class="o">=</span> <span class="n">covmodels</span><span class="p">,</span> <span class="n">trunc_params</span><span class="o">=</span><span class="n">trunc_params</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The elements in the ‘‘trunc_params’’ list also follows the same order as ‘‘covnames’’,
+<p>The package supports covariates with one-sided truncation. To specify the covariates,
+the elements in the ‘‘trunc_params’’ list should follow the same order as ‘‘covnames’’,
 in the position where its corresponding covariate is truncated normal, it should be a list with two elements,
 otherwise it should be ‘NA’. In the list of two elements, the first one should be the truncated value of the covariate,
 and the second one should be the truncated direction (‘left’ or ‘right’) of the covariate.</p>

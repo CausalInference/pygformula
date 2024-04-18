@@ -8,7 +8,7 @@ events as censoring events. When competing events are treated as censoring event
 risks under different interventions are calculated under elimination of
 competing events, and are obtained by the Kaplan–Meier estimator.
 When competing events are not treated as censoring events, risks under different interventions are calculated without elimination of
-competing events, and are obtained by using an estimate of the subdistribution cumulative incidence function [1]_ [2]_.
+competing events, and are obtained by using an estimate of the subdistribution cumulative incidence function [1]_ :sup:`,` [2]_.
 
 The arguments for competing events:
 

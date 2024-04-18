@@ -2,18 +2,19 @@
 Welcome to pygformula's documentation!
 ======================================
 
-The `pygformula <https://github.com/CausalInference/pygformula>`_ package implements the parametric g-formula
-algorithm [1]_ [2]_. The g-formula can be used to estimate the causal effects of hypothetical time-varying
-treatment interventions on the mean or risk of an outcome from longitudinal data with time-varying confounding.
-This package allows: 1) binary or continuous/multi-level time-varying treatments; 2) different types of outcomes
-(survival or continuous/binary end of follow-up); 3) data with competing events or truncation by death and loss
-to follow-up and other types of censoring events; 4) different options for handling competing events in the case
-of survival outcomes; 5) a random measurement/visit process; 6) joint interventions on multiple treatments; and
-7) general incorporation of a priori knowledge of the data structure.
+The `pygformula <https://github.com/CausalInference/pygformula>`_ package implements the non-iterative
+conditional expectation (NICE) algorithm of the g-formula algorithm [1]_ :sup:`,` [2]_. The g-formula can estimate an
+outcome’s counterfactual mean or risk under hypothetical treatment strategies (interventions) when there
+is sufficient information on time-varying treatments and confounders.
 
-For a quick review of how to use the pygformula, see a simple example in :doc:`Get Started`.
+This package can be used for discrete or continuous time-varying treatments and for failure time outcomes or
+continuous/binary end of follow-up outcomes. The package can handle a random measurement/visit process and a
+priori knowledge of the data structure, as well as censoring (e.g., by loss to follow-up) and two options for
+handling competing events for failure time outcomes. Interventions can be flexibly specified, both as
+interventions on a single treatment or as joint interventions on multiple treatments.
+
+For a quick overview of how to use the pygformula, see a simple example in :doc:`Get Started`.
 For a detailed list of options, see :doc:`Specifications/index`.
-
 
 .. toctree::
    :maxdepth: 2

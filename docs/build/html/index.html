@@ -78,15 +78,16 @@
              
   <section id="welcome-to-pygformula-s-documentation">
 <h1>Welcome to pygformula’s documentation!<a class="headerlink" href="#welcome-to-pygformula-s-documentation" title="Permalink to this headline"></a></h1>
-<p>The <a class="reference external" href="https://github.com/CausalInference/pygformula">pygformula</a> package implements the parametric g-formula
-algorithm <a class="footnote-reference brackets" href="#id3" id="id1">1</a> <a class="footnote-reference brackets" href="#id4" id="id2">2</a>. The g-formula can be used to estimate the causal effects of hypothetical time-varying
-treatment interventions on the mean or risk of an outcome from longitudinal data with time-varying confounding.
-This package allows: 1) binary or continuous/multi-level time-varying treatments; 2) different types of outcomes
-(survival or continuous/binary end of follow-up); 3) data with competing events or truncation by death and loss
-to follow-up and other types of censoring events; 4) different options for handling competing events in the case
-of survival outcomes; 5) a random measurement/visit process; 6) joint interventions on multiple treatments; and
-7) general incorporation of a priori knowledge of the data structure.</p>
-<p>For a quick review of how to use the pygformula, see a simple example in <a class="reference internal" href="Get%20Started.html"><span class="doc">Get Started</span></a>.
+<p>The <a class="reference external" href="https://github.com/CausalInference/pygformula">pygformula</a> package implements the non-iterative
+conditional expectation (NICE) algorithm of the g-formula algorithm <a class="footnote-reference brackets" href="#id3" id="id1">1</a> <sup>,</sup> <a class="footnote-reference brackets" href="#id4" id="id2">2</a>. The g-formula can estimate an
+outcome’s counterfactual mean or risk under hypothetical treatment strategies (interventions) when there
+is sufficient information on time-varying treatments and confounders.</p>
+<p>This package can be used for discrete or continuous time-varying treatments and for failure time outcomes or
+continuous/binary end of follow-up outcomes. The package can handle a random measurement/visit process and a
+priori knowledge of the data structure, as well as censoring (e.g., by loss to follow-up) and two options for
+handling competing events for failure time outcomes. Interventions can be flexibly specified, both as
+interventions on a single treatment or as joint interventions on multiple treatments.</p>
+<p>For a quick overview of how to use the pygformula, see a simple example in <a class="reference internal" href="Get%20Started.html"><span class="doc">Get Started</span></a>.
 For a detailed list of options, see <a class="reference internal" href="Specifications/index.html"><span class="doc">Specifications</span></a>.</p>
 <div class="toctree-wrapper compound">
 <ul>

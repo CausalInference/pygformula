@@ -62,7 +62,7 @@ if users don't want to compute the natural course estimate using IPW.
 For survival outcome, the outcome Y_k+1 on the line where individual is censored (C_k+1 = 1) can be coded NA or 0.
 This choice will make no difference to estimates in the algorithm when intervals are made small enough
 such that there are no failures in intervals where there are censoring events. It depends on
-whether to count such subjects in the time k risk set or not [1]_ [2]_. For fixed binary/continuous end of follow-up, the
+whether to count such subjects in the time k risk set or not [1]_ :sup:`,` [2]_. For fixed binary/continuous end of follow-up, the
 outcome Y_k+1 should be coded NA.
 
 Here is an example of input data structure with a censoring event (identified by ‘‘C’’). The subject contains 8 records on the measurements of
