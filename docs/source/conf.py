@@ -18,7 +18,7 @@
 # -- Project information -----------------------------------------------------
 
 project = 'pygformula'
-copyright = '2024, CAUSALab'
+copyright = '2024, The President and Fellows of Harvard College'
 
 # The full version, including alpha/beta/rc tags
 release = '0.0.1'
