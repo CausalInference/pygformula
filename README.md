@@ -1,5 +1,8 @@
 # pygformula: a python implementation of the parametric g-formula
 
+[![PyPI version](https://badge.fury.io/py/pygformula.svg)](https://pypi.org/project/pygformula)
+[![Documentation Status](https://readthedocs.org/projects/pygformula/badge/?version=latest)](https://pygformula.readthedocs.io)
+
 **Authors: Jing Li, Sophia Rein, Sean McGrath, Roger Logan, Ryan O’Dea, Miguel Hernán**
 
 
@@ -38,6 +41,9 @@ and an optional dependency:
 
 - cmprsk
 
+## Documentation
+
+The online documentation is available at [pygformula documentation](https://pygformula.readthedocs.io).
 
 ## Issues
 
