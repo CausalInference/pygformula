@@ -5,7 +5,7 @@
 
 # Date created: 2024-04-18
 
-# Copyright (c) 2024 CAUSALab
+# Copyright (c) 2024 The President and Fellows of Harvard College
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
