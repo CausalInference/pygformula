@@ -1,13 +1,12 @@
 import numpy as np
-import sys
-sys.path.append(r'..\..\pygformula')
+import pygformula
 from pygformula import ParametricGformula
 from pygformula.parametric_gformula.interventions import threshold
 from pygformula.data import load_threshold_data
 
 obs_data = load_threshold_data()
 time_name = 't0'
-id_name = 'id'
+id = 'id'
 
 covnames = ['L1', 'L2', 'A']
 covtypes = ['binary', 'bounded normal', 'normal']
@@ -20,11 +19,11 @@ time_points = np.max(np.unique(obs_data[time_name])) + 1
 int_descript = ['Threshold intervention']
 
 outcome_name = 'Y'
-outcome_model = 'Y ~ L1 + L2 + A'
+ymodel = 'Y ~ L1 + L2 + A'
 
-g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name, time_points = time_points,
+g = ParametricGformula(obs_data = obs_data, id = id, time_name=time_name, time_points = time_points,
              covnames=covnames,  covtypes=covtypes, covmodels=covmodels,
              int_descript = int_descript,
              Intervention1_A = [threshold, [0.5, float('inf')]],
-             outcome_name=outcome_name, outcome_model=outcome_model, outcome_type='survival')
+             outcome_name=outcome_name, ymodel=ymodel, outcome_type='survival')
 g.fit()

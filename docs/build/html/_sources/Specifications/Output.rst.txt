@@ -37,9 +37,9 @@ The package provides the following outputs:
         ip_weights = g.summary_dict['IP_weights']
 
 
-
-+ **The fitted models**: The package gives the fitted model for each covariate, outcome, competing event (if applicable), censoring event (if applicable).
-  First the argument ‘‘model_fits’’ should be set to True, then the fitted models can be obtained by:
++ **The model summary**: The package gives the model summary for each covariate, outcome,
+  competing event (if applicable), censoring event (if applicable).
+  First the argument ‘‘model_fits’’ should be set to True, then the model summary can be obtained by:
 
      .. code::
 
@@ -51,52 +51,52 @@ The package provides the following outputs:
 
         fitted_model = g.summary_dict['model_fits_summary'][variable_name]
 
-+ **The coefficients**: The package gives the parameter estimates of all the fitted models, which can be obtained by:
++ **The coefficients**: The package gives the parameter estimates of all the models, which can be obtained by:
 
      .. code::
 
         model_coeffs = g.summary_dict['model_coeffs']
 
-  To get the coefficients of the fitted model for a particular variable, please use:
+  To get the coefficients of the model for a particular variable, please use:
 
      .. code::
 
         model_coeffs = g.summary_dict['model_coeffs'][variable_name]
 
 
-+ **The standard errors**: The package gives the standard errors of the parameter estimates of all the fitted models, which can be obtained by:
++ **The standard errors**: The package gives the standard errors of the parameter estimates of all the models, which can be obtained by:
 
      .. code::
 
         model_stderrs = g.summary_dict['model_stderrs']
 
-  To get the standard errors of the fitted model for a particular variable, please use:
+  To get the standard errors of the model for a particular variable, please use:
 
      .. code::
 
         model_stderrs = g.summary_dict['model_stderrs'][variable_name]
 
-+ **The variance-covariance matrices**: The package gives the variance-covariance matrices of the parameter estimates of all the fitted models,
++ **The variance-covariance matrices**: The package gives the variance-covariance matrices of the parameter estimates of all the models,
   which can be obtained by:
 
      .. code::
 
         model_vcovs = g.summary_dict['model_vcovs']
 
-  To get the variance-covariance matrix of the parameter estimates of the fitted model for a particular variable, please use:
+  To get the variance-covariance matrix of the parameter estimates of the model for a particular variable, please use:
 
      .. code::
 
         model_vcovs = g.summary_dict['model_vcovs'][variable_name]
 
 
-+ **The root mean square error**: The package gives the RMSE values of the fitted models, which can be obtained by:
++ **The root mean square error**: The package gives the RMSE values of the models, which can be obtained by:
 
      .. code::
 
         rmses = g.summary_dict['rmses']
 
-  To get the RMSE of the fitted model for a particular variable, please use:
+  To get the RMSE of the model for a particular variable, please use:
 
      .. code::
 
@@ -135,7 +135,7 @@ The package provides the following outputs:
 
 The package also implement nonparametric bootstrapping to obtain 95% confidence intervals for risk/mean estimates
 by repeating the algorithm for many bootstrap samples. Users can choose the argument ‘‘nsamples’’ to specify the number of new generated bootstrap samples.
-Users may choose the argument ‘‘parallel’’ to parallelize bootstrapping and simulation step under each intervention to
+Users may choose the argument ‘‘parallel’’ to parallelize bootstrapping and simulation steps under each intervention to
 make the algorithm run faster. The argument ‘‘ncores’’ can be used to specify the desired number of CPU cores
 in parallarization.
 
@@ -162,7 +162,7 @@ the standard deviation of the bootstrap estimates to get the normal approximatio
   where id is the sample id which should be an integer between 0 and ‘‘nsamples’’ - 1.
 
 
-+ **The coefficients of bootstrap samples**: The package gives the parameter estimates of all the fitted models for all generated
++ **The coefficients of bootstrap samples**: The package gives the parameter estimates of all the models for all generated
   bootstrap samples, which can be obtained by:
 
      .. code-block::
@@ -171,7 +171,7 @@ the standard deviation of the bootstrap estimates to get the normal approximatio
         g.fit()
         bootcoeffs = g.summary_dict['bootcoeffs']
 
-Note that the ‘‘boot_diag’’ should be set to true when to obtain the coefficients, standard errors or variance-covariance matrices
+Note that the ‘‘boot_diag’’ should be set to true if users want to obtain the coefficients, standard errors or variance-covariance matrices
 of bootstrap samples.
 
   To get the coefficients of a particular bootstrap sample, please use:
@@ -180,7 +180,7 @@ of bootstrap samples.
 
         g.summary_dict['bootcoeffs']['sample_{id}_coeffs']
 
-+ **The standard errors of bootstrap samples**: The package gives the standard errors of the parameter estimates of all the fitted models for all generated
++ **The standard errors of bootstrap samples**: The package gives the standard errors of the parameter estimates of all the models for all generated
   bootstrap samples, which can be obtained by:
 
      .. code-block::
@@ -196,7 +196,7 @@ of bootstrap samples.
         g.summary_dict['bootstderrs']['sample_{id}_stderrs']
 
 
-+ **The variance-covariance matrices of bootstrap samples**: The package gives the variance-covariance matrices of the parameter estimates of all the fitted models for all generated
++ **The variance-covariance matrices of bootstrap samples**: The package gives the variance-covariance matrices of the parameter estimates of all the models for all generated
   bootstrap samples, which can be obtained by:
 
      .. code-block::
@@ -233,11 +233,12 @@ argument ‘‘save_path’’:
     * - Arguments
       - Description
     * - n_simul
-      - (Optional) An integer indicating the number of subjects for whom to simulate data. The default is the number of subjects in the input data.
+      - (Optional) An integer indicating the number of subjects for whom to simulate data. It is set equal to the number (M) of
+        subjects in obs_data, if not specified by users.
     * - ref_int
-      - (Optional) An integer indicating the intervention to be used as the reference for calculating the end-of-follow-up mean
-        ratio and mean difference. 0 denotes the natural course, while subsequent integers denote user-specified
-        interventions in the order that they are named in interventions.
+      - (Optional) An integer indicating the intervention to be used as the reference for calculating the end-of-follow-up mean/risk
+        ratio and mean/risk difference. 0 denotes the natural course, while subsequent integers denote user-specified
+        interventions in the order that they are named in interventions. It is set to 0 if not specified by users.
     * - nsamples
       - (Optional) An integer specifying the number of bootstrap samples to generate.
     * - parallel
@@ -245,10 +246,10 @@ argument ‘‘save_path’’:
     * - ncores
       - (Optional) An integer indicating the number of cores used in parallelization. It is set to 1 if not specified by users.
     * - model_fits
-      - (Optional) A boolean value indicating whether to return the fitted models.
+      - (Optional) A boolean value indicating whether to return the parameter estimates of the models.
     * - ci_method
       - (Optional) A string specifying the method for calculating the bootstrap 95% confidence intervals, if applicable.
-        The options are "percentile" and "normal".
+        The options are "percentile" and "normal". It is set to "percentile" if not specified by users.
     * - boot_diag
       - (Optional) A boolean value indicating whether to return the parametric g-formula estimates as well as the coefficients,
         standard errors, and variance-covariance matrices of the parameters of the fitted models in the bootstrap samples.
@@ -258,7 +259,7 @@ argument ‘‘save_path’’:
       - (Optional) A path to save all the returned results. A folder will be created automatically in the current working directory
         if the save_path is not specified by users.
     * - seed
-      - (Optional) An integar indicating the starting seed for simulations and bootstrapping.
+      - (Optional) An integer indicating the starting seed for simulations and bootstrapping. It is set to 1234 if not specified by users.
 
 
 
@@ -271,14 +272,14 @@ Graphical results
 
 
 The package also provides two plotting functions: "plot_natural_course" and "plot_interventions".
-The plot_natural_course function plots the curves of each covariate mean (for all types of outcome) and risk (for survival outcomes only) under g-formula parametric and
+The plot_natural_course function plots the curves of each covariate mean (for all types of outcomes) and risk (for survival outcomes only) under g-formula parametric and
 non-parametric estimation.
 
 .. autosummary:: plot_natural_course
 .. autofunction:: plot_natural_course
 
 
-The plot_interventions fucntion plots the curves of risk under interventions of interest (for survival outcomes only).
+The plot_interventions function plots the curves of risk under interventions of interest (for survival outcomes only).
 
 
 .. autosummary:: plot_interventions

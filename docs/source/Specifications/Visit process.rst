@@ -4,11 +4,11 @@
 Visit process
 =================
 
-When the data are not recorded at regular intervals, e.g., data are recorded everytime the patient visits the clinic.
-Therefore, the times at which the time-varying covariates are measured will vary by subject. In this setting,
+When the data are not recorded at regular intervals but rather are recorded everytime the patient visits the
+clinic, the times at which the time-varying covariates are measured will vary by subject. In this setting,
 it is typical to construct the data such that (i) at a time when there is no visit/measurement,
 the last measured value of a covariate is carried forward, and (ii) a subject is censored after a certain number of consecutive times
-with no visit/measurement [1]_ [2]_.
+with no visit/measurement [1]_ :sup:`,` [2]_.
 
 In pygformula, the deterministic knowledge (i) and (ii) can be incorporated via the argument ‘‘visitprocess’’.
 Each vector in ‘‘visitprocess’’ contains three parameters that attach a visit process to one covariate.
@@ -73,7 +73,7 @@ the ‘‘binary’’ covariate type in ‘‘covtypes’’.
 
         obs_data = load_visit_process()
         time_name = 'month'
-        id_name = 'id'
+        id = 'id'
 
         covnames = ['visit_cd4', 'visit_rna', 'cd4_v', 'rna_v', 'everhaart']
         covtypes = ['binary', 'binary', 'normal', 'normal', 'binary']
@@ -88,20 +88,20 @@ the ‘‘binary’’ covariate type in ‘‘covtypes’’.
         visitprocess = [['visit_cd4', 'cd4_v', 3], ['visit_rna', 'rna_v', 3]]
 
         outcome_name = 'event'
-        outcome_model = 'event ~ cd4_v + rna_v + everhaart + sex + race + month'
+        ymodel = 'event ~ cd4_v + rna_v + everhaart + sex + race + month'
 
         time_points = np.max(np.unique(obs_data[time_name])) + 1
 
         int_descript = ['Never treat', 'Always treat']
 
-
-        g = ParametricGformula(obs_data = obs_data, id_name = id_name,  time_name = time_name,
+        g = ParametricGformula(obs_data = obs_data, id = id,  time_name = time_name,
             visitprocess = visitprocess,
             int_descript = int_descript,
             Intervention1_everhaart = [static, np.zeros(time_points)],
             Intervention2_everhaart = [static, np.ones(time_points)],
-            covnames=covnames,  covtypes=covtypes, covmodels=covmodels, basecovs = basecovs,
-            outcome_name=ou tcome_name, outcome_model=outcome_model, outcome_type='survival')
+            covnames=covnames, covtypes=covtypes,
+            covmodels=covmodels, basecovs = basecovs,
+            outcome_name=ou tcome_name, ymodel=ymodel, outcome_type='survival')
         g.fit()
 
 

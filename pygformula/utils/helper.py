@@ -2,7 +2,7 @@ import re
 import numpy as np
 
 
-def get_cov_hist_info(covnames, covmodels, covtypes, outcome_model, compevent_model=None, censor_model=None,
+def get_cov_hist_info(covnames, covmodels, covtypes, ymodel, compevent_model=None, censor_model=None,
                       visit_covs=None, ts_visit_names=None):
     """
     This is an internal function to get the lagged term and its number indicator, cumavg term, and lagavg term and its number
@@ -23,7 +23,7 @@ def get_cov_hist_info(covnames, covmodels, covtypes, outcome_model, compevent_mo
         "binary", "normal", "categorical", "bounded normal", "zero-inflated normal", "truncated normal", "absorbing",
         "categorical time", "square time" and "custom". The list must be the same length as covnames and in the same order.
 
-    outcome_model : Str
+    ymodel : Str
         A string specifying the model statement for the outcome variable.
 
     compevent_model : Str, (default=None)
@@ -54,7 +54,7 @@ def get_cov_hist_info(covnames, covmodels, covtypes, outcome_model, compevent_mo
     all_variables = []
     for model in covmodels:
         all_variables.extend(re.split('[~|+]', model.replace(' ', '')))
-    all_variables.extend(re.split('[~|+]', outcome_model.replace(' ', '')))
+    all_variables.extend(re.split('[~|+]', ymodel.replace(' ', '')))
 
     if compevent_model is not None:
         all_variables.extend(re.split('[~|+]', compevent_model.replace(' ', '')))

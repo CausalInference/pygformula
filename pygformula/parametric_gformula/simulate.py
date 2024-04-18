@@ -21,7 +21,7 @@ def truc_sample(mean, rmse, a, b):
     return truncnorm.rvs((a - mean) / rmse, (b - mean) / rmse, loc=mean, scale=rmse)
 
 
-def simulate(seed, time_points, time_name, id_name, obs_data, basecovs,
+def simulate(seed, time_points, time_name, id, obs_data, basecovs,
              outcome_type, rmses, bounds, intervention,
              custom_histvars, custom_histories, covpredict_custom, outcome_fit, outcome_name,
              competing, compevent_name, compevent_model, compevent_fit, compevent_cens, trunc_params,
@@ -35,7 +35,7 @@ def simulate(seed, time_points, time_name, id_name, obs_data, basecovs,
     Parameters
     ----------
     seed: Int
-        An integar indicating the starting seed for simulations and bootstrapping.
+        An integer indicating the starting seed for simulations and bootstrapping.
 
     time_points: Int
         An integer indicating the number of time points to simulate. It is set equal to the maximum number of records
@@ -44,7 +44,7 @@ def simulate(seed, time_points, time_name, id_name, obs_data, basecovs,
     time_name: Str
         A string specifying the name of the time variable in obs_data.
 
-    id_name: Str
+    id: Str
         A string specifying the name of the id variable in obs_data.
 
     covtypes: List
@@ -60,9 +60,8 @@ def simulate(seed, time_points, time_name, id_name, obs_data, basecovs,
         A list of strings specifying the names of the time-varying covariates in obs_data.
 
     basecovs: List
-        A vector of strings specifying the names of baseline covariates in obs_data. These covariates are not
-        simulated using a model but keep the same value at all time steps. These covariates should not be included
-        in covnames.
+        A list of strings specifying the names of baseline covariates in obs_data. These covariates should not be
+        included in covnames.
 
     covmodels: List
         A list of strings, where each string is the model statement of the time-varying covariate. The list
@@ -89,21 +88,22 @@ def simulate(seed, time_points, time_name, id_name, obs_data, basecovs,
         A list that contains the bound for all time-varying covariates in the obs_data.
 
     intervention: List
-        A list of lists, the k-th list contains the intervention list on k-th treatment name in the intervention.
+        List of lists. The k-th list contains the intervention list on k-th treatment name in the intervention.
         The intervention list contains a function implementing a particular intervention on the treatment variable,
         required values for the intervention function and a list of time points in which the intervention
         is applied.
 
     custom_histvars: List
-        A list of strings, each specifying the names of the time-varying covariates with user-specified custom histories.
+        A list of strings, each of which specifies the names of the time-varying covariates with user-specified custom histories.
 
-    custom_histories: List, default is None
-        A list of function, each function is the user-specified custom history functions for covariates. The list must
-        be the same length as custom_histvars and in the same order.
+    custom_histories: List
+        A list of functions, each function is the user-specified custom history functions for covariates. The list
+        should be the same length as custom_histvars and in the same order.
 
-    covpredict_custom: List, default is None
-        A list, at the index where the covtype is set to "custom", the element is a user-specified predict function,
-        otherwise it should be set to 'NA'.
+    covpredict_custom: List
+        A list, each element could be 'NA' or a user-specified predict function. The non-NA value is set
+        for the covariates with custom type. The 'NA' value is set for other covariates. The list must be the
+        same length as covnames and in the same order.
 
     outcome_fit: Class
         A class object of the fitted model for outcome.
@@ -126,11 +126,11 @@ def simulate(seed, time_points, time_name, id_name, obs_data, basecovs,
     compevent_cens: Bool
         A boolean value indicating whether to treat competing events as censoring events.
 
-    trunc_params: List, default is None
-        A list, at the index where the covtype is set to "truncated normal", the list contains two elements.
-        The first element specifies the truncated value and the second element specifies the truncated direction
-        (‘left’ or ‘right’). The values at remaining indexes are set to 'NA'. The list must be the same length as
-        covnames and in the same order.
+    trunc_params: List
+        A list, each element could be 'NA' or a two-element list. If not 'NA', the first element specifies the truncated
+        value and the second element specifies the truncated direction (‘left’ or ‘right’). The non-NA value is set
+        for the truncated normal covariates. The 'NA' value is set for other covariates. The list should be the same
+        length as covnames and in the same order.
 
     visit_names: List
         A list, each of which is a string specifying the covariate name of a visit process.
@@ -143,12 +143,12 @@ def simulate(seed, time_points, time_name, id_name, obs_data, basecovs,
         individual is censored.
 
     max_visits: List
-        A list of integers, each integar indicates the maximum number of consecutive missed visits for one covariate that
+        A list of integers, each integer indicates the maximum number of consecutive missed visits for one covariate that
         has a visit process.
 
     time_thresholds: List
-        A list of integers that splits the time points into different intervals. It is used to create the time variable
-        of "categorical time".
+        A list of integers that splits the time points into different intervals. It is used to create the variable
+        "categorical time".
 
     baselags: Bool
         A boolean value specifying the convention used for lagi and lag_cumavgi terms in the model statements when
@@ -161,18 +161,18 @@ def simulate(seed, time_points, time_name, id_name, obs_data, basecovs,
         A boolean value indicating if the obs_data contains pre-baseline times.
 
     restrictions: List
-        A list with lists, each inner list contains its first entry the covariate name of that its deterministic knowledge
+        List of lists. Each inner list contains its first entry the covariate name of that its deterministic knowledge
         is known; its second entry is a dictionary whose key is the conditions which should be True when the covariate
         is modeled, the third entry is the value that is set to the covariate during simulation when the conditions
         in the second entry are not True.
 
     yrestrictions: List
-        A list with lists, for each inner list, its first entry is a dictionary whose key is the conditions which
+        List of lists. For each inner list, its first entry is a dictionary whose key is the conditions which
         should be True when the outcome is modeled, the second entry is the value that is set to the outcome during
         simulation when the conditions in the first entry are not True.
 
     compevent_restrictions: List, default is None
-        A list with lists, for each inner list, its first entry is a dictionary whose key is the conditions which
+        List of lists. For each inner list, its first entry is a dictionary whose key is the conditions which
         should be True when the competing event is modeled, the second entry is the value that is set to the competing
         event during simulation when the conditions in the first entry are not True. Only applicable for survival outcomes.
 
@@ -188,9 +188,9 @@ def simulate(seed, time_points, time_name, id_name, obs_data, basecovs,
 
     np.random.seed(seed)
     if basecovs:
-        column_names = [id_name] + [time_name] + covnames + basecovs if covnames is not None else [id_name] + [time_name] + basecovs
+        column_names = [id] + [time_name] + covnames + basecovs if covnames is not None else [id] + [time_name] + basecovs
     else:
-        column_names = [id_name] + [time_name] + covnames if covnames is not None else [id_name] + [time_name]
+        column_names = [id] + [time_name] + covnames if covnames is not None else [id] + [time_name]
     if ts_visit_names:
         column_names.extend(ts_visit_names)
     pool = obs_data.loc[:, column_names]
@@ -204,10 +204,10 @@ def simulate(seed, time_points, time_name, id_name, obs_data, basecovs,
 
             pool.loc[pool[time_name] == t] = new_df
             if covnames is not None:
-                update_precoded_history(pool, covnames, cov_hist, covtypes, time_name, id_name, below_zero_indicator,
+                update_precoded_history(pool, covnames, cov_hist, covtypes, time_name, id, below_zero_indicator,
                                       baselags, ts_visit_names)
                 if custom_histvars is not None:
-                    update_custom_history(pool, custom_histvars, custom_histories, time_name, t, id_name)
+                    update_custom_history(pool, custom_histvars, custom_histories, time_name, t, id)
             new_df = pool[pool[time_name] == t].copy()
 
             if competing and not compevent_cens:
@@ -253,7 +253,7 @@ def simulate(seed, time_points, time_name, id_name, obs_data, basecovs,
                 new_df.loc[new_df[compevent_name] == 1, outcome_name] = 'NA'
 
             pool = pd.concat([pool[pool[time_name] < t], new_df])
-            pool.sort_values([id_name, time_name], ascending=[True, True], inplace=True)
+            pool.sort_values([id, time_name], ascending=[True, True], inplace=True)
 
         else:
             new_df = pool[pool[time_name] == t-1].copy()
@@ -265,13 +265,13 @@ def simulate(seed, time_points, time_name, id_name, obs_data, basecovs,
                 if 'square time' in covtypes:
                     new_df.loc[new_df[time_name] == t, 'square_' + time_name] = new_df[time_name] * new_df[time_name]
             pool = pd.concat([pool, new_df])
-            pool.sort_values([id_name, time_name], ascending=[True, True], inplace=True)
+            pool.sort_values([id, time_name], ascending=[True, True], inplace=True)
 
             if covnames is not None:
-                update_precoded_history(pool, covnames, cov_hist, covtypes, time_name, id_name, below_zero_indicator,
+                update_precoded_history(pool, covnames, cov_hist, covtypes, time_name, id, below_zero_indicator,
                                       baselags, ts_visit_names)
                 if custom_histvars is not None:
-                    update_custom_history(pool, custom_histvars, custom_histories, time_name, t, id_name)
+                    update_custom_history(pool, custom_histvars, custom_histories, time_name, t, id)
                 new_df = pool[pool[time_name] == t].copy()
                 for k, cov in enumerate(covnames):
                     if covmodels[k] != 'NA':
@@ -372,19 +372,19 @@ def simulate(seed, time_points, time_name, id_name, obs_data, basecovs,
 
                     pool.loc[pool[time_name] == t] = new_df
                     if len(cov_hist[cov]['cumavg']) > 0:
-                        update_precoded_history(pool, covnames, cov_hist, covtypes, time_name, id_name, below_zero_indicator, baselags, ts_visit_names)
+                        update_precoded_history(pool, covnames, cov_hist, covtypes, time_name, id, below_zero_indicator, baselags, ts_visit_names)
                     if custom_histvars is not None and cov in custom_histvars:
-                        update_custom_history(pool, custom_histvars, custom_histories, time_name, t, id_name)
+                        update_custom_history(pool, custom_histvars, custom_histories, time_name, t, id)
                     new_df = pool[pool[time_name] == t].copy()
 
             intervention_func(new_df=new_df, pool=pool, intervention=intervention, time_name=time_name, t=t)
 
             pool.loc[pool[time_name] == t] = new_df
             if covnames is not None:
-                update_precoded_history(pool, covnames, cov_hist, covtypes, time_name, id_name, below_zero_indicator,
+                update_precoded_history(pool, covnames, cov_hist, covtypes, time_name, id, below_zero_indicator,
                                       baselags, ts_visit_names)
                 if custom_histvars is not None:
-                    update_custom_history(pool, custom_histvars, custom_histories, time_name, t, id_name)
+                    update_custom_history(pool, custom_histvars, custom_histories, time_name, t, id)
             new_df = pool[pool[time_name] == t].copy()
 
             if competing and not compevent_cens:
@@ -436,19 +436,19 @@ def simulate(seed, time_points, time_name, id_name, obs_data, basecovs,
 
     if outcome_type == 'survival':
         if competing and not compevent_cens:
-            pool['cumprob0'] = pool.groupby([id_name])['prob0'].cumprod()
+            pool['cumprob0'] = pool.groupby([id])['prob0'].cumprod()
             pool['prob_D0'] = 1 - pool['prob_D']
-            pool['cumprob_D0'] = pool.groupby([id_name])['prob_D0'].cumprod()
-            pool['prodp1'] = np.where(pool[time_name] > 0,pool.groupby([id_name])['cumprob0'].shift(1) * pool['cumprob_D0'].shift(1)
+            pool['cumprob_D0'] = pool.groupby([id])['prob_D0'].cumprod()
+            pool['prodp1'] = np.where(pool[time_name] > 0,pool.groupby([id])['cumprob0'].shift(1) * pool['cumprob_D0'].shift(1)
                                       * pool['prob1'] * (1 - pool['prob_D']),
                                       pool['prob1'] * (1 - pool['prob_D']))
-            pool['risk'] = pool.groupby([id_name])['prodp1'].cumsum()
+            pool['risk'] = pool.groupby([id])['prodp1'].cumsum()
             pool['survival'] = 1 - pool['risk']
             g_result = pool.groupby(time_name, group_keys=False)['risk'].mean().tolist()
         else:
-            pool['cumprod0'] = pool.groupby([id_name])['prob0'].cumprod()
-            pool['prodp1'] = np.where(pool[time_name] > 0, pool.groupby([id_name])['cumprod0'].shift(1) * pool['prob1'], pool['prob1'])
-            pool['risk'] = pool.groupby([id_name])['prodp1'].cumsum()
+            pool['cumprod0'] = pool.groupby([id])['prob0'].cumprod()
+            pool['prodp1'] = np.where(pool[time_name] > 0, pool.groupby([id])['cumprod0'].shift(1) * pool['prob1'], pool['prob1'])
+            pool['risk'] = pool.groupby([id])['prodp1'].cumsum()
             pool['survival'] = 1 - pool['risk']
             g_result = pool.groupby(time_name, group_keys=False)['risk'].mean().tolist()
 

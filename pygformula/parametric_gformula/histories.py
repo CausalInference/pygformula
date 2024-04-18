@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 
-def update_precoded_history(pool, covnames, cov_hist, covtypes, time_name, id_name, below_zero_indicator, baselags,
+def update_precoded_history(pool, covnames, cov_hist, covtypes, time_name, id, below_zero_indicator, baselags,
                    ts_visit_names=None):
     """
     This internal function is used to add new columns to the original pool for the three precoded historical terms (the
@@ -11,8 +11,8 @@ def update_precoded_history(pool, covnames, cov_hist, covtypes, time_name, id_na
     Parameters
     ----------
     pool : DataFrame
-        A DataFrame that contains data table whose historical terms to be updated up to the maximum time step of the
-        data table.
+        A DataFrame that contains the observed or simulated data up to the maximum time step of the data table.
+        The historical terms at all time steps in the data table are to be updated.
 
     covnames : List
         A list of strings specifying the names of the time-varying covariates.
@@ -33,7 +33,7 @@ def update_precoded_history(pool, covnames, cov_hist, covtypes, time_name, id_na
     time_name : Str
         A string specifying the name of the time variable in obs_data.
 
-    id_name : Str
+    id : Str
         A string specifying the name of the id variable in obs_data.
 
     below_zero_indicator : Bool
@@ -46,7 +46,7 @@ def update_precoded_history(pool, covnames, cov_hist, covtypes, time_name, id_na
         non-categorical covariates) or the reference level (for categorical covariates). If this argument is set to
         True, the value of lagi and lag_cumavgi terms are set to their values at time 0.
 
-    ts_visit_names : List, default is None
+    ts_visit_names : List
         A list of strings, each of which indicates the number of consecutive missed visits for one covariate before an
         individual is censored.
 
@@ -71,40 +71,40 @@ def update_precoded_history(pool, covnames, cov_hist, covtypes, time_name, id_na
             for i, lagged_cov in enumerate(lagged_covs):
                 if cov_type == 'categorical':
                     if below_zero_indicator:
-                        pool[lagged_cov] = np.array(pool.groupby([id_name])[cov].shift(lagged_nums[i]))
+                        pool[lagged_cov] = np.array(pool.groupby([id])[cov].shift(lagged_nums[i]))
                     else:
-                        fill_values = pool.groupby([id_name])[cov].transform('first') if baselags else \
+                        fill_values = pool.groupby([id])[cov].transform('first') if baselags else \
                             pd.Categorical(pool[cov]).categories[0]
                         pool[lagged_cov] = np.where(pool[time_name] >= lagged_nums[i],
-                                                        pool.groupby([id_name])[cov].shift(lagged_nums[i]), fill_values)
+                                                        pool.groupby([id])[cov].shift(lagged_nums[i]), fill_values)
                     pool[lagged_cov] = pd.Categorical(pool[lagged_cov])
                 else:
                     if below_zero_indicator:
-                        pool[lagged_cov] = np.array(pool.groupby([id_name])[cov].shift(lagged_nums[i]))
+                        pool[lagged_cov] = np.array(pool.groupby([id])[cov].shift(lagged_nums[i]))
                     else:
-                        fill_values = pool.groupby(id_name)[cov].transform('first') if baselags else 0
+                        fill_values = pool.groupby(id)[cov].transform('first') if baselags else 0
                         pool[lagged_cov] = np.where(pool[time_name] >= lagged_nums[i],
-                                                    pool.groupby([id_name])[cov].shift(lagged_nums[i]), fill_values)
+                                                    pool.groupby([id])[cov].shift(lagged_nums[i]), fill_values)
 
         if len(cov_hist[cov]['cumavg']) > 0:  # create cumavg variable
-            pool['_'.join(['cumavg', str(cov)])] = np.array(pool.groupby([id_name])[cov].expanding().mean())
+            pool['_'.join(['cumavg', str(cov)])] = np.array(pool.groupby([id])[cov].expanding().mean())
 
         lagavg_covs = cov_hist[cov]['lagavg'][0]
         lagavg_nums = cov_hist[cov]['lagavg'][1]
         if len(lagavg_covs) > 0:  # create lagavg variable
             if len(cov_hist[cov]['cumavg']) == 0:  # if cumavg variable has not been created yet, create cumavg variable
-                pool['_'.join(['cumavg', str(cov)])] = np.array(pool.groupby([id_name])[cov].expanding().mean())
+                pool['_'.join(['cumavg', str(cov)])] = np.array(pool.groupby([id])[cov].expanding().mean())
 
             for i, lagavg_cov in enumerate(lagavg_covs):
                 if below_zero_indicator:
-                    pool[lagavg_cov] = np.array(pool.groupby([id_name])['_'.join(['cumavg', str(cov)])].shift(lagavg_nums[i]))
+                    pool[lagavg_cov] = np.array(pool.groupby([id])['_'.join(['cumavg', str(cov)])].shift(lagavg_nums[i]))
                 else:
-                    fill_values = pool.groupby(id_name)[cov].transform('first') if baselags else 0
+                    fill_values = pool.groupby(id)[cov].transform('first') if baselags else 0
                     pool[lagavg_cov] = np.where(pool[time_name] >= lagavg_nums[i],
-                                           pool.groupby([id_name])['_'.join(['cumavg', str(cov)])].shift(lagavg_nums[i]), fill_values)
+                                           pool.groupby([id])['_'.join(['cumavg', str(cov)])].shift(lagavg_nums[i]), fill_values)
 
 
-def ave_last3(pool, histvar, time_name, t, id_name):
+def ave_last3(pool, histvar, time_name, t, id):
     """
     This is an example historical function which generates the average of the three most recent values for a specified
     covariate.
@@ -112,8 +112,8 @@ def ave_last3(pool, histvar, time_name, t, id_name):
     Parameters
     ----------
     pool : DataFrame
-        A DataFrame that contains data table up to time t. The historical term at time t in the data table is to be
-        updated.
+        A DataFrame that contains the observed or simulated data up to time t. The historical term at time t in the data
+        table is to be updated.
 
     histvar : Str
         A string that specifies the name of the variable for which the history function is to be applied.
@@ -124,7 +124,7 @@ def ave_last3(pool, histvar, time_name, t, id_name):
     t : Int
          An integer specifying the current time index.
 
-    id_name : Str
+    id : Str
         A string specifying the name of the id variable in the obs_data.
 
     Returns
@@ -139,12 +139,12 @@ def ave_last3(pool, histvar, time_name, t, id_name):
             avg_values = np.mean((df[(df[time_name] > t - 3) & (df[time_name] <= t)][histvar]))
         return avg_values
 
-    valid_pool = pool.groupby(id_name).filter(lambda x: max(x[time_name]) >= t)
-    pool.loc[pool[time_name] == t, '_'.join(['ave_last3', str(histvar)])] = list(valid_pool.groupby(id_name).apply(
+    valid_pool = pool.groupby(id).filter(lambda x: max(x[time_name]) >= t)
+    pool.loc[pool[time_name] == t, '_'.join(['ave_last3', str(histvar)])] = list(valid_pool.groupby(id).apply(
         avg_func, time_name=time_name, t=t, histvar=histvar))
 
 
-def update_custom_history(pool, histvars, histories, time_name, t, id_name):
+def update_custom_history(pool, histvars, histories, time_name, t, id):
     """
     This internal function is used to add new columns to the original pool for the user-specified custom historical
     terms.
@@ -152,8 +152,8 @@ def update_custom_history(pool, histvars, histories, time_name, t, id_name):
     Parameters
     ----------
     pool :  DataFrame
-        A DataFrame that contains data table up to time t. The historical term at time t in the data table is to be
-        updated.
+        A DataFrame that contains the observed or simulated data up to time t. The historical term at time t in the data
+        table is to be updated.
 
     histvars : List
         A list of strings, each of which specifies the name of the variable for which its custom history function
@@ -168,7 +168,7 @@ def update_custom_history(pool, histvars, histories, time_name, t, id_name):
     t : Int
          An integer specifying the current time index.
 
-    id_name : Str
+    id : Str
         A string specifying the name of the id variable in obs_data.
 
     Returns
@@ -177,4 +177,4 @@ def update_custom_history(pool, histvars, histories, time_name, t, id_name):
 
     """
     for i in range(len(histvars)):
-        histories[i](pool=pool, histvar=histvars[i], time_name=time_name, t=t, id_name=id_name)
+        histories[i](pool=pool, histvar=histvars[i], time_name=time_name, t=t, id=id)

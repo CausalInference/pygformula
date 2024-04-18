@@ -1,25 +1,28 @@
 # pygformula: a python implementation of the parametric g-formula
 
+**Authors: Jing Li, Sophia Rein, Sean McGrath, Roger Logan, Ryan O’Dea, Miguel Hernán**
+
 
 ## Overview
-The pygformula is a python package that implements the parametric g-formula to estimate the effects of sustained treatment strategies.
-Specifically, it implements the noniterative conditional expectation estimator of parametric g-formula which accommodates 
-different types of covariates, different types of outcomes, different types of interventions, as well as more complicated scenarios such as competing events
-, censoring events and visit process etc.
+The pygformula package implements the non-iterative conditional expectation (NICE) algorithm of the g-formula algorithm
+(Robins, 1986). The g-formula can estimate an outcome’s counterfactual mean or risk under hypothetical treatment strategies
+(interventions) when there is sufficient information on time-varying treatments and confounders.
 
-### Features: 
 
-* Covariates: binary, normal, categorical, bounded normal, zero-inflated normal, truncated normal, absorbing and time variable. 
-* Outcomes: survival outcomes, fixed binary end of follow-up outcomes, and fixed continuous end of follow-up outcomes.
-* Interventions: natural course intervention, static interventions, dynamic interventions, and threshold interventions.
-* Competing events.
+### Features
+
+* Treatments: discrete or continuous time-varying treatments.
+* Outcomes: failure time outcomes or continuous/binary end of follow-up outcomes.
+* Interventions: interventions on a single treatment or joint interventions on multiple treatments.
+* Random measurement/visit process.
+* Incorporation of a priori knowledge of the data structure.
 * Censoring events.
-* Visit process.
+* Competing events.
 
 
 ## Requirements
 
-The package supports python ≥ 3.8. It requires these necessary dependencies:
+The package requires python 3.8+ and these necessary dependencies:
 
 - joblib
 - lifelines
@@ -34,3 +37,9 @@ The package supports python ≥ 3.8. It requires these necessary dependencies:
 and an optional dependency:
 
 - cmprsk
+
+
+## Issues
+
+If you have any issues, please open an [issue](https://github.com/CausalInference/pygformula/issues) on github, we will 
+regularly check the questions. For any additional questions or comments, please email jing_li@hsph.harvard.edu.

@@ -1,11 +1,11 @@
-.. _Intervention:
+.. _Interventions:
 
 
-Intervention
+Interventions
 =========================
 
 The package supports natural course intervention, static and dynamic interventions, as well as
-threshold interventions [1]_ [2]_ . It provides pre-coded intervention functions and options for users
+threshold interventions [1]_ :sup:`,` [2]_ . It provides pre-coded intervention functions and options for users
 to define other custom interventions that are beyond the interventions
 provided.
 
@@ -36,17 +36,17 @@ When users specify each intervention, they should specify the intervention id (m
 and the id should start from 1) and treatment name in the argument name.
 
 For static interventions, the value of the argument name is a list where the first element is the static intervention function, the second element
-is the intervened values, the third element is a list specifying the time points to apply the intervention
+is the intervened values at all time points, the third element is a list specifying the time points to apply the intervention
 (if not specified, the default is intervening on all time points);
 
-An example of intervening on ‘‘A’’ in the first three time points with ‘‘Never treat’’ intervention:
+An example of intervening on ‘‘A’’ in the first three time points with the ‘‘Never treat’’ intervention:
 
 .. code-block::
 
       Intervention1_A = [static, np.zeros(time_points), [0, 1, 2]]
 
-For dynamic interventions, the value of the argument name is a list where the first element is the dynamic intervention function, the second element
-is the intervened values, the second element is a list specifying the time points to apply the intervention.
+For dynamic interventions, the value of the argument name is a list where the first element is the dynamic intervention function,
+the second element is a list specifying the time points to apply the intervention (if not specified, the default is intervening on all time points).
 
 An example of intervening on ‘‘A’’ in the first three time points with a dynamic intervention:
 
@@ -63,9 +63,9 @@ An example of intervening on ‘‘A’’ in the first three time points with t
 
       Intervention1_A = [threshold, [0.5, float('inf')], [0, 1, 2]]
 
-If users want to specify multiple interventions, they should use different id for different interventions.
+If users want to specify multiple interventions, they should use different IDs for different interventions.
 
-An example of intervening on ‘‘A’’ with different interventions:
+An example of intervening on ‘‘A’’ with 3 different interventions:
 
 .. code-block::
 
@@ -96,34 +96,34 @@ the parametric g-formula by comparing the two estimates [3]_.
 
 .. code-block::
 
-      import numpy as np
-      import pygformula
-      from pygformula import ParametricGformula
-      from pygformula.data import load_basicdata_nocomp
+        import numpy as np
+        import pygformula
+        from pygformula import ParametricGformula
+        from pygformula.data import load_basicdata_nocomp
 
-      obs_data = load_basicdata_nocomp()
-      time_name = 't0'
-      id_name = 'id'
+        obs_data = load_basicdata_nocomp()
+        time_name = 't0'
+        id = 'id'
 
-      covnames = ['L1', 'L2', 'A']
-      covtypes = ['binary', 'bounded normal', 'binary']
-      covmodels = ['L1 ~ lag1_A + lag2_A + lag_cumavg1_L1 + lag_cumavg1_L2 + L3 + t0',
-                 'L2 ~ lag1_A + L1 + lag_cumavg1_L1 + lag_cumavg1_L2 + L3 + t0',
-                 'A ~ lag1_A + L1 + L2 + lag_cumavg1_L1 + lag_cumavg1_L2 + L3 + t0']
+        covnames = ['L1', 'L2', 'A']
+        covtypes = ['binary', 'bounded normal', 'binary']
+        covmodels = ['L1 ~ lag1_A + lag2_A + lag_cumavg1_L1 + lag_cumavg1_L2 + L3 + t0',
+                   'L2 ~ lag1_A + L1 + lag_cumavg1_L1 + lag_cumavg1_L2 + L3 + t0',
+                   'A ~ lag1_A + L1 + L2 + lag_cumavg1_L1 + lag_cumavg1_L2 + L3 + t0']
 
-      basecovs = ['L3']
+        basecovs = ['L3']
 
-      outcome_name = 'Y'
-      outcome_model = 'Y ~ L1 + L2 + L3 + A + lag1_A + lag1_L1 + lag1_L2 + t0'
-      outcome_type = 'survival'
+        outcome_name = 'Y'
+        ymodel = 'Y ~ L1 + L2 + L3 + A + lag1_A + lag1_L1 + lag1_L2 + t0'
+        outcome_type = 'survival'
 
-      time_points = np.max(np.unique(obs_data[time_name])) + 1
+        time_points = np.max(np.unique(obs_data[time_name])) + 1
 
-      g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name,
-          time_points = time_points, covnames=covnames, covtypes=covtypes,
-          covmodels=covmodels, basecovs=basecovs, outcome_name=outcome_name,
-          outcome_model=outcome_model, outcome_type=outcome_type)
-      g.fit()
+        g = ParametricGformula(obs_data = obs_data, id = id, time_name=time_name,
+                 time_points = time_points, covnames=covnames, covtypes=covtypes,
+                 covmodels=covmodels, basecovs=basecovs, outcome_name=outcome_name,
+                 ymodel=ymodel, outcome_type=outcome_type)
+        g.fit()
 
 
 **Output**:
@@ -164,7 +164,7 @@ the treatment value at each time step k will be replaced by the kth value in the
 
     obs_data = load_basicdata_nocomp()
     time_name = 't0'
-    id_name = 'id'
+    id = 'id'
 
     covnames = ['L1', 'L2', 'A']
     covtypes = ['binary', 'bounded normal', 'binary']
@@ -176,18 +176,15 @@ the treatment value at each time step k will be replaced by the kth value in the
 
     time_points = np.max(np.unique(obs_data[time_name])) + 1
     int_descript = ['Always treat']
-    interventions = [[[static, np.ones(time_points)]]]
-    intvars = [['A']]
-    int_times = [[0, 1, 4]]
 
     outcome_name = 'Y'
-    outcome_model = 'Y ~ L1 + L2 + L3 + A + lag1_A + lag1_L1 + lag1_L2 + t0'
+    ymodel = 'Y ~ L1 + L2 + L3 + A + lag1_A + lag1_L1 + lag1_L2 + t0'
 
-    g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name,
-        time_points = time_points, covnames=covnames, covtypes=covtypes,
-        covmodels=covmodels, basecovs=basecovs, int_descript = int_descript,
-        Intervention1_A = [static, np.ones(time_points), [0, 1, 4]],
-        outcome_name=outcome_name, outcome_model=outcome_model, outcome_type='survival')
+    g = ParametricGformula(obs_data = obs_data, id = id, time_name=time_name,
+                  time_points = time_points, covnames=covnames, covtypes=covtypes,
+                  covmodels=covmodels, basecovs=basecovs, int_descript = int_descript,
+                  Intervention1_A = [static, np.ones(time_points), [0, 1, 4]],
+                  outcome_name=outcome_name, ymodel=ymodel, outcome_type='survival')
     g.fit()
 
 
@@ -209,7 +206,7 @@ the treatment value at each time step k will be replaced by the kth value in the
 
     obs_data = load_multiple_treatments_data()
     time_name = 't0'
-    id_name = 'id'
+    id = 'id'
 
     covnames = ['L1', 'L2', 'A1', 'A2']
     covtypes = ['binary', 'bounded normal', 'binary', 'binary']
@@ -220,18 +217,17 @@ the treatment value at each time step k will be replaced by the kth value in the
 
     time_points = np.max(np.unique(obs_data[time_name])) + 1
     int_descript = ['Always treat on A1 & A2']
-    interventions = [[[static, np.ones(time_points)], [static, np.ones(time_points)]]]
-    intvars = [['A1', 'A2']]
+
 
     outcome_name = 'Y'
-    outcome_model = 'Y ~ L1 + L2 + A1 + A2'
+    ymodel = 'Y ~ L1 + L2 + A1 + A2'
 
-    g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name,
-        time_points = time_points, covnames=covnames, covtypes=covtypes,
-        covmodels=covmodels, int_descript = int_descript,
-        Intervention1_A1 = [static, np.ones(time_points)],
-        Intervention1_A2 = [static, np.ones(time_points)],
-        outcome_name=outcome_name, outcome_model=outcome_model, outcome_type='survival')
+    g = ParametricGformula(obs_data = obs_data, id = id, time_name=time_name,
+                 time_points = time_points, covnames=covnames, covtypes=covtypes,
+                 covmodels=covmodels, int_descript = int_descript,
+                 Intervention1_A1 = [static, np.ones(time_points)],
+                 Intervention1_A2 = [static, np.ones(time_points)],
+                 outcome_name=outcome_name, ymodel=ymodel, outcome_type='survival')
     g.fit()
 
 
@@ -245,38 +241,40 @@ the treatment value at each time step k will be replaced by the kth value in the
 
 .. code-block::
 
-      import numpy as np
-      import pygformula
-      from pygformula import ParametricGformula
-      from pygformula.parametric_gformula.interventions import static
-      from pygformula.data import load_basicdata_nocomp
+        import numpy as np
+        import pygformula
+        from pygformula import ParametricGformula
+        from pygformula.parametric_gformula.interventions import static
+        from pygformula.data import load_basicdata_nocomp
 
-      obs_data = load_basicdata_nocomp()
-      time_name = 't0'
-      id_name = 'id'
+        obs_data = load_basicdata_nocomp()
+        time_name = 't0'
+        id = 'id'
 
-      covnames = ['L1', 'L2', 'A']
-      covtypes = ['binary', 'bounded normal', 'binary']
-      covmodels = ['L1 ~ lag1_A + lag2_A + lag_cumavg1_L1 + lag_cumavg1_L2 + L3 + t0',
+        covnames = ['L1', 'L2', 'A']
+        covtypes = ['binary', 'bounded normal', 'binary']
+        covmodels = ['L1 ~ lag1_A + lag2_A + lag_cumavg1_L1 + lag_cumavg1_L2 + L3 + t0',
                    'L2 ~ lag1_A + L1 + lag_cumavg1_L1 + lag_cumavg1_L2 + L3 + t0',
                    'A ~ lag1_A + L1 + L2 + lag_cumavg1_L1 + lag_cumavg1_L2 + L3 + t0']
 
-      basecovs = ['L3']
+        basecovs = ['L3']
 
-      outcome_name = 'Y'
-      outcome_model = 'Y ~ L1 + L2 + L3 + A + lag1_A + lag1_L1 + lag1_L2 + t0'
-      outcome_type = 'survival'
+        outcome_name = 'Y'
+        ymodel = 'Y ~ L1 + L2 + L3 + A + lag1_A + lag1_L1 + lag1_L2 + t0'
+        outcome_type = 'survival'
 
-      time_points = np.max(np.unique(obs_data[time_name])) + 1
-      int_descript = ['Never treat', 'Always treat']
+        time_points = np.max(np.unique(obs_data[time_name])) + 1
+        int_descript = ['Never treat', 'Always treat']
 
-      g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name,
-        time_points = time_points, covnames=covnames, covtypes=covtypes,
-        covmodels=covmodels, int_descript = int_descript,
-        Intervention1_A1 = [static, np.ones(time_points)],
-        Intervention1_A2 = [static, np.ones(time_points)],
-        outcome_name=outcome_name, outcome_model=outcome_model, outcome_type='survival')
-      g.fit()
+
+        g = ParametricGformula(obs_data = obs_data, id = id, time_name=time_name,
+                     time_points = time_points, int_descript = int_descript,
+                     covnames=covnames, covtypes=covtypes,
+                     covmodels=covmodels, basecovs=basecovs,
+                     outcome_name=outcome_name, ymodel=ymodel, outcome_type=outcome_type,
+                     Intervention1_A = [static, np.zeros(time_points)],
+                     Intervention2_A = [static, np.ones(time_points)])
+        g.fit()
 
 
 **Output**:
@@ -289,7 +287,7 @@ the treatment value at each time step k will be replaced by the kth value in the
 Dynamic interventions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-For dynamic intervention, users need to define a dynamic function which encodes the dynamic strategy for
+For dynamic intervention, users need to define a dynamic function which encodes the dynamic treatment strategy for
 one treatment variable and then pass it into the g-formula method by the intervention argument.
 
 Example dynamic intervention: treatment is assgined (A = 1) for individuals where the covariate L2 is above a certain threshold 0.75.
@@ -300,9 +298,9 @@ Otherwise, the treatment is assigned 0.
 
 .. code-block::
 
-      def dynamic_intervention(new_df, pool, intvar, int_type, int_values, time_name, t):
-          new_df.loc[new_df[time_name] == t, intvar] = 0
-          new_df.loc[new_df['L2'] > 0.75, intvar] = 1
+      def dynamic_intervention(new_df, pool, int_var, time_name, t):
+          new_df.loc[new_df[time_name] == t, int_var] = 0
+          new_df.loc[new_df['L2'] > 0.75, int_var] = 1
 
       int_descript = ['Dynamic intervention']
       Intervention1_A = [dynamic_intervention]
@@ -311,13 +309,13 @@ Otherwise, the treatment is assigned 0.
                             Intervention1_A = [dynamic_intervention], ...)
 
 
-The dynamic intervention function should contain the following input parameters (these parameters are not all need to be specified in the function).
+The dynamic intervention function should contain the following input parameters (these parameters do not all need to be specified in the function).
 The function should modify the data table ‘‘new_df’’ in place, no output is returned.
 
 + new_df: data table of the simulated data at current time t.
 + pool: data table of the simulated data up to current time t.
-+ int_var: the name of treatment variable to be intervened.
-+ time_name: the name of time variable.
++ int_var: name of the treatment variable to be intervened.
++ time_name: name of the time variable.
 + t: current time index.
 
 
@@ -327,12 +325,11 @@ The function should modify the data table ‘‘new_df’’ in place, no output
 
         import pygformula
         from pygformula import ParametricGformula
-        from pygformula.parametric_gformula.interventions import static
         from pygformula.data import load_basicdata_nocomp
 
         obs_data = load_basicdata_nocomp()
         time_name = 't0'
-        id_name = 'id'
+        id = 'id'
 
         covnames = ['L1', 'L2', 'A']
         covtypes = ['binary', 'bounded normal', 'binary']
@@ -350,15 +347,14 @@ The function should modify the data table ‘‘new_df’’ in place, no output
 
         int_descript = ['Dynamic intervention']
 
-
         outcome_name = 'Y'
-        outcome_model = 'Y ~ L1 + L2 + L3 + A + lag1_A + lag1_L1 + lag1_L2 + t0'
+        ymodel = 'Y ~ L1 + L2 + L3 + A + lag1_A + lag1_L1 + lag1_L2 + t0'
 
-        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name,
-            time_points = time_points, covnames=covnames, covtypes=covtypes,
-            covmodels=covmodels, basecovs=basecovs, int_descript = int_descript,
-            Intervention1_A = [dynamic_intervention],
-            outcome_name=outcome_name, outcome_model=outcome_model, outcome_type='survival')
+        g = ParametricGformula(obs_data = obs_data, id = id, time_name=time_name,
+                     time_points = time_points, covnames=covnames, covtypes=covtypes,
+                     covmodels=covmodels, basecovs=basecovs, int_descript = int_descript,
+                     Intervention1_A = [dynamic_intervention],
+                     outcome_name=outcome_name, ymodel=ymodel, outcome_type='survival')
         g.fit()
 
 
@@ -369,13 +365,13 @@ The function should modify the data table ‘‘new_df’’ in place, no output
 
 
 The package also provides two pre-coded dynamic interventions with grace period: natural grace period intervention
-and uniform grace period intervention. When specifying intervention with grace period, the list of the intervention
+and uniform grace period intervention. When specifying an intervention with a grace period, the list of the intervention
 argument should contain the grace period intervention function in the first element, a two-element list with the
 duration of grace period and conditions in the second element. (If users want to intervene on particular
 time points, the third element should be specified.)
 
 
-**Natural grace period intervention**: once a conditional covariate meets a threshold level, the treatment
+**Natural grace period intervention**: once a covariate meets a threshold level, the treatment
 is initiated within a duration of the grace period. During the grace period, the treatment takes its natural value.
 
 .. automodule:: pygformula.parametric_gformula.interventions
@@ -403,7 +399,8 @@ in the first entry and the condition of the covariate in the second entry.
       g = ParametricGformula(..., int_descript = int_descript,
           Intervention1_A = [natural_grace_period, [3, {'L1': lambda x: x == 1}]], ...)
 
-An examle of grace period intervention where the treatment is initiated when multiple conditions are met:
+An example of grace period intervention where the treatment is initiated when multiple conditions
+(the covariate ‘‘L1’’ equals 1, and the covariate ‘‘L2’’ is greater than 2) are met:
 
 .. code-block::
 
@@ -428,7 +425,7 @@ An examle of grace period intervention where the treatment is initiated when mul
 
         obs_data = load_basicdata_nocomp()
         time_name = 't0'
-        id_name = 'id'
+        id = 'id'
 
         covnames = ['L1', 'L2', 'A']
         covtypes = ['binary', 'bounded normal', 'binary']
@@ -442,16 +439,16 @@ An examle of grace period intervention where the treatment is initiated when mul
 
         int_descript = ['natural grace period intervention']
 
-
         outcome_name = 'Y'
-        outcome_model = 'Y ~ L1 + L2 + L3 + A + lag1_A + lag1_L1 + lag1_L2 + t0'
+        ymodel = 'Y ~ L1 + L2 + L3 + A + lag1_A + lag1_L1 + lag1_L2 + t0'
 
-        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name,
-            time_points = time_points, covnames=covnames, covtypes=covtypes,
-            covmodels=covmodels, basecovs=basecovs, int_descript = int_descript,
-            Intervention1_A = [natural_grace_period, [3, {'L1': lambda x: x == 1}]],
-            outcome_name=outcome_name, outcome_model=outcome_model, outcome_type='survival')
+        g = ParametricGformula(obs_data = obs_data, id = id, time_name=time_name,
+                       time_points = time_points,covnames=covnames, covtypes=covtypes,
+                       covmodels=covmodels, basecovs=basecovs, int_descript = int_descript,
+                       Intervention1_A = [natural_grace_period, [3, {'L1': lambda x: x == 1}]],
+                       outcome_name=outcome_name, ymodel=ymodel, outcome_type='survival')
         g.fit()
+
 
 **Output**:
 
@@ -460,7 +457,7 @@ An examle of grace period intervention where the treatment is initiated when mul
 
 
 
-**Uniform grace period intervention**  Once a conditional covariate meets a threshold level, the treatment
+**Uniform grace period intervention**: once a covariate meets a threshold level, the treatment
 is initiated within a duration of the grace period. During grace period, treatment initiation is
 randomly allocated with a uniform probability of starting treatment in each time interval of the grace period.
 
@@ -502,7 +499,7 @@ in the first entry and the condition of the covariate in the second entry.
 
         obs_data = load_basicdata_nocomp()
         time_name = 't0'
-        id_name = 'id'
+        id = 'id'
 
         covnames = ['L1', 'L2', 'A']
         covtypes = ['binary', 'bounded normal', 'binary']
@@ -517,13 +514,13 @@ in the first entry and the condition of the covariate in the second entry.
         int_descript = ['uniform grace period intervention']
 
         outcome_name = 'Y'
-        outcome_model = 'Y ~ L1 + L2 + L3 + A + lag1_A + lag1_L1 + lag1_L2 + t0'
+        ymodel = 'Y ~ L1 + L2 + L3 + A + lag1_A + lag1_L1 + lag1_L2 + t0'
 
-        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name,
-            time_points = time_points, covnames=covnames, covtypes=covtypes,
-            covmodels=covmodels, basecovs=basecovs, int_descript = int_descript,
-            Intervention1_A = [uniform_grace_period, [3, {'L1': lambda x: x == 1}]],
-            outcome_name=outcome_name, outcome_model=outcome_model, outcome_type='survival')
+        g = ParametricGformula(obs_data = obs_data, id = id, time_name=time_name,
+                    time_points = time_points, covnames=covnames, covtypes=covtypes,
+                    covmodels=covmodels, basecovs=basecovs,int_descript = int_descript,
+                    Intervention1_A = [uniform_grace_period, [3, {'L1': lambda x: x == 1}]],
+                    outcome_name=outcome_name, ymodel=ymodel, outcome_type='survival')
         g.fit()
 
 
@@ -536,8 +533,8 @@ in the first entry and the condition of the covariate in the second entry.
 Threshold interventions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 The threshold interventions in the package implement interventions that depend on the natural value of treatment.
-In a threshold intervention, if a subject’s natural value of treatment at time k is below/above a particular threshold
-, then set treatment to this threshold value. Otherwise, do not intervene on this subject at k.
+In a threshold intervention, if a subject’s natural value of treatment at time k is below/above a
+particular threshold, then set treatment to this threshold value. Otherwise, do not intervene on this subject at k.
 The natural value of treatment at time k is the value of treatment that would have been observed at
 time k were the intervention discontinued right before k.
 
@@ -582,7 +579,7 @@ set the treatment the threshold value.
 
         obs_data = load_threshold_data()
         time_name = 't0'
-        id_name = 'id'
+        id = 'id'
 
         covnames = ['L1', 'L2', 'A']
         covtypes = ['binary', 'bounded normal', 'normal']
@@ -595,13 +592,13 @@ set the treatment the threshold value.
         int_descript = ['Threshold intervention']
 
         outcome_name = 'Y'
-        outcome_model = 'Y ~ L1 + L2 + A'
+        ymodel = 'Y ~ L1 + L2 + A'
 
-        g = ParametricGformula(obs_data = obs_data, id_name = id_name, time_name=time_name,
-            time_points = time_points, covnames=covnames, covtypes=covtypes,
-            covmodels=covmodels, int_descript = int_descript,
-            Intervention1_A = [threshold, [0.5, float('inf')]],
-            outcome_name=outcome_name, outcome_model=outcome_model, outcome_type='survival')
+        g = ParametricGformula(obs_data = obs_data, id = id, time_name=time_name,
+                      time_points = time_points, covnames=covnames, covtypes=covtypes,
+                      covmodels=covmodels, int_descript = int_descript,
+                      Intervention1_A = [threshold, [0.5, float('inf')]],
+                      outcome_name=outcome_name, ymodel=ymodel, outcome_type='survival')
         g.fit()
 
 

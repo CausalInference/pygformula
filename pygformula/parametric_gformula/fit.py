@@ -4,7 +4,7 @@ import math
 import re
 import statsmodels.api as sm
 import statsmodels.formula.api as smf
-from .truncreg import truncreg
+from pytruncreg import truncreg
 
 
 def fit_covariate_model(covmodels, covnames, covtypes, covfits_custom, time_name, obs_data, return_fits,
@@ -30,30 +30,31 @@ def fit_covariate_model(covmodels, covnames, covtypes, covfits_custom, time_name
         as covnames and in the same order.
 
     covfits_custom: List
-        A list, at the index where the covtype is set to "custom", the element is a user-specified fit function,
-        otherwise it should be set to 'NA'. The list must be the same length as covnames and in the same order.
+        A list, each element could be 'NA' or a user-specified fit function. The non-NA value is set
+        for the covariates with custom type. The 'NA' value is set for other covariates. The list must be the
+        same length as covnames and in the same order.
 
     time_name: Str
         A string specifying the name of the time variable in obs_data.
 
     obs_data: DataFrame
-        Data used to estimate the parameters of the covariate models.
+        Observed data or resampled data used to estimate the parameters of the covariate models.
 
     return_fits: Bool
         A boolean value indicating whether to get the coefficients, standard errors, variance-covariance matrices of the
         fitted model.
 
-    trunc_params: List, default is None
-        A list, at the index where the covtype is set to "truncated normal", the list contains two elements.
-        The first element specifies the truncated value and the second element specifies the truncated direction
-        (‘left’ or ‘right’). The values at remaining indexes are set to 'NA'. The list must be the same length as
-        covnames and in the same order.
+    trunc_params:  List
+        A list, each element could be 'NA' or a two-element list. If not 'NA', the first element specifies the truncated
+        value and the second element specifies the truncated direction (‘left’ or ‘right’). The non-NA value is set
+        for the truncated normal covariates. The 'NA' value is set for other covariates. The list should be the same
+        length as covnames and in the same order.
 
     visit_names: List
         A list, each of which is a string specifying the covariate name of a visit process.
 
     max_visits: List
-        A list of integars, each integer indicates the maximum number of consecutive missed visits for one covariate that
+        A list of integers, each integer indicates the maximum number of consecutive missed visits for one covariate that
         has a visit process.
 
     ts_visit_names: List
@@ -63,8 +64,8 @@ def fit_covariate_model(covmodels, covnames, covtypes, covfits_custom, time_name
     visit_covs: List
         A list of strings, each of which specifying the name of a covariate whose modeling depends on the visit process.
 
-    restrictions: List, default is None
-        A list with lists, each inner list contains its first entry the covariate name of that its deterministic knowledge
+    restrictions: List
+        List of lists. Each inner list contains its first entry the covariate name of that its deterministic knowledge
         is known; its second entry is a dictionary whose key is the conditions which should be True when the covariate
         is modeled, the third entry is the value that is set to the covariate during simulation when the conditions
         in the second entry are not True.
@@ -240,14 +241,14 @@ def fit_covariate_model(covmodels, covnames, covtypes, covfits_custom, time_name
     return covariate_fits, bounds, rmses, model_coeffs, model_stderrs, model_vcovs, model_fits_summary
 
 
-def fit_outcome_model(outcome_model, outcome_type, outcome_name, time_name, obs_data, competing, compevent_name,
+def fit_ymodel(ymodel, outcome_type, outcome_name, time_name, obs_data, competing, compevent_name,
                       return_fits, yrestrictions):
     """
     This is a function to fit parametric model for the outcome.
 
     Parameters
     ----------
-    outcome_model: Str
+    ymodel: Str
         A string specifying the model statement for the outcome variable.
 
     outcome_type: Str
@@ -260,7 +261,7 @@ def fit_outcome_model(outcome_model, outcome_type, outcome_name, time_name, obs_
         A string specifying the name of the time variable in obs_data.
 
     obs_data: DataFrame
-        Data used to estimate the parameters of the outcome model.
+        Observed data or resampled data used to estimate the parameters of the outcome model.
 
     competing: Bool
         A boolean value indicating if there is a competing event in obs_data.
@@ -272,8 +273,8 @@ def fit_outcome_model(outcome_model, outcome_type, outcome_name, time_name, obs_
         A boolean value indicating whether to get the coefficients, standard errors, variance-covariance matrices of the
         fitted outcome model.
 
-    yrestrictions: List, default is None
-        A list with lists, for each inner list, its first entry is a dictionary whose key is the conditions which
+    yrestrictions: List
+        List of lists. For each inner list, its first entry is a dictionary whose key is the conditions which
         should be True when the outcome is modeled, the second entry is the value that is set to the outcome during
         simulation when the conditions in the first entry are not True.
 
@@ -317,9 +318,9 @@ def fit_outcome_model(outcome_model, outcome_type, outcome_name, time_name, obs_
     else:
         fit_data = fit_data[fit_data[outcome_name].notna()]
     if outcome_type == 'survival' or outcome_type == 'binary_eof':
-        outcome_fit = smf.glm(outcome_model, fit_data, family=sm.families.Binomial()).fit()
+        outcome_fit = smf.glm(ymodel, fit_data, family=sm.families.Binomial()).fit()
     elif outcome_type == 'continuous_eof':
-        outcome_fit = smf.glm(outcome_model, data=fit_data, family=sm.families.Gaussian()).fit()
+        outcome_fit = smf.glm(ymodel, data=fit_data, family=sm.families.Gaussian()).fit()
     if return_fits:
         model_coeffs[outcome_name] = outcome_fit.params
         model_stderrs[outcome_name] = outcome_fit.bse
@@ -345,14 +346,14 @@ def fit_compevent_model(compevent_model, compevent_name, time_name, obs_data, re
         A string specifying the name of the time variable in obs_data.
 
     obs_data: DataFrame
-        Data used to estimate the parameters of the compevent model.
+        Observed data or resampled data used to estimate the parameters of the compevent model.
 
     return_fits: Bool
         A boolean value indicating whether to get the coefficients, standard errors, variance-covariance matrices of the
         fitted compevent model.
 
     compevent_restrictions: List
-        A list with lists, for each inner list, its first entry is a dictionary whose key is the conditions which
+        List of lists. For each inner list, its first entry is a dictionary whose key is the conditions which
         should be True when the competing event is modeled, the second entry is the value that is set to the competing
         event during simulation when the conditions in the first entry are not True. Only applicable for survival outcomes.
 
@@ -420,7 +421,7 @@ def fit_censor_model(censor_model, censor_name, time_name, obs_data, return_fits
         A string specifying the name of the time variable in obs_data.
 
     obs_data: DataFrame
-        Data used to estimate the parameters of the censor model.
+        Observed data or resampled data used to estimate the parameters of the censor model.
 
     return_fits: Bool
         A boolean value indicating whether to get the coefficients, standard errors, variance-covariance matrices of the

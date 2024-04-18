@@ -48,8 +48,8 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Specifications</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="Input%20data.html">Input data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Intervention.html">Intervention</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Covariate%20model.html">Covariate model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Interventions.html">Interventions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Covariate%20models.html">Covariate models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Outcome%20model.html">Outcome model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Censoring%20event.html">Censoring event</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Competing%20event.html">Competing event</a></li>
@@ -92,11 +92,11 @@
              
   <section id="visit-process">
 <span id="id1"></span><h1>Visit process<a class="headerlink" href="#visit-process" title="Permalink to this headline"></a></h1>
-<p>When the data are not recorded at regular intervals, e.g., data are recorded everytime the patient visits the clinic.
-Therefore, the times at which the time-varying covariates are measured will vary by subject. In this setting,
+<p>When the data are not recorded at regular intervals but rather are recorded everytime the patient visits the
+clinic, the times at which the time-varying covariates are measured will vary by subject. In this setting,
 it is typical to construct the data such that (i) at a time when there is no visit/measurement,
 the last measured value of a covariate is carried forward, and (ii) a subject is censored after a certain number of consecutive times
-with no visit/measurement <a class="footnote-reference brackets" href="#id4" id="id2">1</a> <a class="footnote-reference brackets" href="#id5" id="id3">2</a>.</p>
+with no visit/measurement <a class="footnote-reference brackets" href="#id4" id="id2">1</a> <sup>,</sup> <a class="footnote-reference brackets" href="#id5" id="id3">2</a>.</p>
 <p>In pygformula, the deterministic knowledge (i) and (ii) can be incorporated via the argument ‘‘visitprocess’’.
 Each vector in ‘‘visitprocess’’ contains three parameters that attach a visit process to one covariate.
 The first parameter is the name of a time-varying indicator in the input data set of whether a covariate was measured in each interval
@@ -156,7 +156,7 @@ the ‘‘binary’’ covariate type in ‘‘covtypes’’.</p>
 
 <span class="n">obs_data</span> <span class="o">=</span> <span class="n">load_visit_process</span><span class="p">()</span>
 <span class="n">time_name</span> <span class="o">=</span> <span class="s1">&#39;month&#39;</span>
-<span class="n">id_name</span> <span class="o">=</span> <span class="s1">&#39;id&#39;</span>
+<span class="nb">id</span> <span class="o">=</span> <span class="s1">&#39;id&#39;</span>
 
 <span class="n">covnames</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;visit_cd4&#39;</span><span class="p">,</span> <span class="s1">&#39;visit_rna&#39;</span><span class="p">,</span> <span class="s1">&#39;cd4_v&#39;</span><span class="p">,</span> <span class="s1">&#39;rna_v&#39;</span><span class="p">,</span> <span class="s1">&#39;everhaart&#39;</span><span class="p">]</span>
 <span class="n">covtypes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;binary&#39;</span><span class="p">,</span> <span class="s1">&#39;binary&#39;</span><span class="p">,</span> <span class="s1">&#39;normal&#39;</span><span class="p">,</span> <span class="s1">&#39;normal&#39;</span><span class="p">,</span> <span class="s1">&#39;binary&#39;</span><span class="p">]</span>
@@ -171,20 +171,20 @@ the ‘‘binary’’ covariate type in ‘‘covtypes’’.</p>
 <span class="n">visitprocess</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;visit_cd4&#39;</span><span class="p">,</span> <span class="s1">&#39;cd4_v&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;visit_rna&#39;</span><span class="p">,</span> <span class="s1">&#39;rna_v&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">]]</span>
 
 <span class="n">outcome_name</span> <span class="o">=</span> <span class="s1">&#39;event&#39;</span>
-<span class="n">outcome_model</span> <span class="o">=</span> <span class="s1">&#39;event ~ cd4_v + rna_v + everhaart + sex + race + month&#39;</span>
+<span class="n">ymodel</span> <span class="o">=</span> <span class="s1">&#39;event ~ cd4_v + rna_v + everhaart + sex + race + month&#39;</span>
 
 <span class="n">time_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">obs_data</span><span class="p">[</span><span class="n">time_name</span><span class="p">]))</span> <span class="o">+</span> <span class="mi">1</span>
 
 <span class="n">int_descript</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Never treat&#39;</span><span class="p">,</span> <span class="s1">&#39;Always treat&#39;</span><span class="p">]</span>
 
-
-<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="n">obs_data</span> <span class="o">=</span> <span class="n">obs_data</span><span class="p">,</span> <span class="n">id_name</span> <span class="o">=</span> <span class="n">id_name</span><span class="p">,</span>  <span class="n">time_name</span> <span class="o">=</span> <span class="n">time_name</span><span class="p">,</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="n">obs_data</span> <span class="o">=</span> <span class="n">obs_data</span><span class="p">,</span> <span class="nb">id</span> <span class="o">=</span> <span class="nb">id</span><span class="p">,</span>  <span class="n">time_name</span> <span class="o">=</span> <span class="n">time_name</span><span class="p">,</span>
     <span class="n">visitprocess</span> <span class="o">=</span> <span class="n">visitprocess</span><span class="p">,</span>
     <span class="n">int_descript</span> <span class="o">=</span> <span class="n">int_descript</span><span class="p">,</span>
     <span class="n">Intervention1_everhaart</span> <span class="o">=</span> <span class="p">[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">time_points</span><span class="p">)],</span>
     <span class="n">Intervention2_everhaart</span> <span class="o">=</span> <span class="p">[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">time_points</span><span class="p">)],</span>
-    <span class="n">covnames</span><span class="o">=</span><span class="n">covnames</span><span class="p">,</span>  <span class="n">covtypes</span><span class="o">=</span><span class="n">covtypes</span><span class="p">,</span> <span class="n">covmodels</span><span class="o">=</span><span class="n">covmodels</span><span class="p">,</span> <span class="n">basecovs</span> <span class="o">=</span> <span class="n">basecovs</span><span class="p">,</span>
-    <span class="n">outcome_name</span><span class="o">=</span><span class="n">ou</span> <span class="n">tcome_name</span><span class="p">,</span> <span class="n">outcome_model</span><span class="o">=</span><span class="n">outcome_model</span><span class="p">,</span> <span class="n">outcome_type</span><span class="o">=</span><span class="s1">&#39;survival&#39;</span><span class="p">)</span>
+    <span class="n">covnames</span><span class="o">=</span><span class="n">covnames</span><span class="p">,</span> <span class="n">covtypes</span><span class="o">=</span><span class="n">covtypes</span><span class="p">,</span>
+    <span class="n">covmodels</span><span class="o">=</span><span class="n">covmodels</span><span class="p">,</span> <span class="n">basecovs</span> <span class="o">=</span> <span class="n">basecovs</span><span class="p">,</span>
+    <span class="n">outcome_name</span><span class="o">=</span><span class="n">ou</span> <span class="n">tcome_name</span><span class="p">,</span> <span class="n">ymodel</span><span class="o">=</span><span class="n">ymodel</span><span class="p">,</span> <span class="n">outcome_type</span><span class="o">=</span><span class="s1">&#39;survival&#39;</span><span class="p">)</span>
 <span class="n">g</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
 </pre></div>
 </div>

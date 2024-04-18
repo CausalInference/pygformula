@@ -3,10 +3,10 @@
 Input data
 ============================
 
-The input dataset is specified by the ‘‘obs_data’’ argument which should contain: ‘‘id_name’’ specifying
-the individual identifier, ‘‘time_name’’ specifying the time index, ‘‘covnames’’ specifying the names of covariate variables,
-‘‘outcome_name’’ specifying the name of the outcome of interest, ‘‘compevent_name’’ indicating the competing
-event status (if present), ‘‘censoring_name’’ indicating the censoring event status (if present).
+The input dataset is specified by the ‘‘obs_data’’ argument which should contain: ‘‘id’’ specifying
+the individual identifier, ‘‘time_name’’ specifying the time index, ‘‘covnames’’ specifying the names of
+time-varying covariates, ‘‘outcome_name’’ specifying the name of the outcome of interest, ‘‘compevent_name’’
+indicating the competing event status (if present), ‘‘censor_name’’ indicating the censoring event status (if present).
 
 
 **The related arguments**:
@@ -17,27 +17,28 @@ event status (if present), ‘‘censoring_name’’ indicating the censoring e
     * - Arguments
       - Description
     * - obs_data
-      - (Required) A data table (should be pandas.DataFrame type) containing the observed data.
-    * - id_name
+      - (Required) A data frame containing the observed data.
+    * - id
       - (Required) A string specifying the name of the id variable in obs_data.
     * - time_name
       - (Required) A string specifying the name of the time variable in obs_data.
     * - outcome_name
       - (Required) A string specifying the name of the outcome variable in obs_data.
     * - covnames
-      - (Optional) A list of strings specifying the names of the time-varying covariates in obs_data. If not specified, no confounders are adjusted.
+      - (Required) A list of strings specifying the names of the time-varying covariates in obs_data.
     * - compevent_name
       - (Optional) A string specifying the name of the competing event variable in obs_data. Only applicable for survival outcomes.
     * - censor_name
-      - (Optional) A string specifying the name of the censoring variable in obs_data. Only applicable for survival outcomes.
+      - (Optional) A string specifying the name of the censoring variable in obs_data. Only applicable when using inverse
+        probability weights to estimate the natural course means / risk from the observed data.
     * - time_points
-      - (Optional) Number of time points to simulate. By default, this argument is set equal to the maximum
-        number of records that obs_data contains for any individual plus 1.
+      - (Optional) An integer indicating the number of time points to simulate. It is set equal to the maximum number of records (K)
+        that obs_data contains for any individual plus 1, if not specified by users.
 
 
 The input data should contain one record for each follow-up time k for each subject (identified by the individual identifier).
 The time index k for each subject should increment by 1 for each subsequent interval (the starting index is 0 in the following
-examples).
+examples, pre-baseline times are also allowed).
 The record at each line in the data corresponds to an interval k, which contains the
 covariate measurements at interval k and the outcome measurement at interval k+1.
 
@@ -51,15 +52,17 @@ one baseline covariate ‘‘L3’’ and the outcome ‘‘Y’’. See `"examp
          :width: 5.2in
          :height: 1.8in
 
-**Censoring events.** When there are censoring events in the data, there should be a variable in the input data set that is an
-indicator of censoring in the time between covariate measurements in interval k and interval k+1, where
+**Censoring events.** When there are censoring events, and users want to compute nature course estimate via
+inverse probability weighting, there should be a variable in the input data set that is an
+indicator of censoring in the time between covariate measurements in interval k and interval k+1.
 1 indicates the subject is censored (C_k+1 = 1) and 0 indicates the subject is not censored (C_k+1 = 0).
-Subjects have no more records after they are censored.
+Subjects have no more records after they are censored. Note that the censoring indicator is not needed
+if users don't want to compute the natural course estimate using IPW.
 
 For survival outcome, the outcome Y_k+1 on the line where individual is censored (C_k+1 = 1) can be coded NA or 0.
 This choice will make no difference to estimates in the algorithm when intervals are made small enough
 such that there are no failures in intervals where there are censoring events. It depends on
-whether to count such subjects in the time k risk set or not [1]_ [2]_. For fixed binary/continuous end of follow-up, the
+whether to count such subjects in the time k risk set or not [1]_ :sup:`,` [2]_. For fixed binary/continuous end of follow-up, the
 outcome Y_k+1 should be coded NA.
 
 Here is an example of input data structure with a censoring event (identified by ‘‘C’’). The subject contains 8 records on the measurements of
@@ -90,7 +93,8 @@ The subject experiences a competing event after measurement of interval k=6 cova
 
 
 +  Note that the ‘‘time_points’’ argument specifies the desired end of follow-up (a
-   follow-up interval k that is no more than the maximum number of records for an individual in the dataset) , and is applicable for survival outcome.
+   follow-up interval k that is no more than the maximum number of records for an individual in the dataset),
+   and is only applicable for survival outcome.
 
 
 .. [1] McGrath S, Lin V, Zhang Z, Petito LC, Logan RW, Hernán MA, Young JG. gfoRmula: An R Package for Estimating the Effects of Sustained Treatment Strategies via the Parametric g-formula. Patterns (N Y). 2020;1(3):100008. `gfoRmula <https://github.com/CausalInference/gfoRmula>`_.

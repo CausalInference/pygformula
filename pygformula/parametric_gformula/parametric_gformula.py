@@ -1,3 +1,31 @@
+# Pygformula: a python implementation of the parametric g-formula
+
+# Code Authors: Jing Li (jing_li@hsph.harvard.edu), the first author to develop the package.
+#               Ryan O’Dea (ryanodea@hsph.harvard.edu), co-authored the pytruncreg used in this package.
+
+# Date created: 2024-04-18
+
+# Copyright (c) 2024 The President and Fellows of Harvard College
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+
 import numpy as np
 import pandas as pd
 import random
@@ -6,7 +34,7 @@ import os
 from joblib import Parallel, delayed
 from tqdm import tqdm
 from lifelines import CoxPHFitter
-from .fit import fit_covariate_model, fit_outcome_model, fit_compevent_model, fit_censor_model
+from .fit import fit_covariate_model, fit_ymodel, fit_compevent_model, fit_censor_model
 from .histories import update_precoded_history, update_custom_history
 from .simulate import simulate
 from .bootstrap import Bootstrap
@@ -26,7 +54,7 @@ class ParametricGformula:
     obs_data: DataFrame
         A data frame containing the observed data.
 
-    id_name: Str
+    id: Str
         A string specifying the name of the id variable in obs_data.
 
     time_name: Str
@@ -35,7 +63,7 @@ class ParametricGformula:
     outcome_name: Str
          A string specifying the name of the outcome variable in obs_data.
 
-    outcome_model: Str
+    ymodel: Str
         A string specifying the model statement for the outcome variable.
 
     covnames: List, default is None
@@ -59,18 +87,20 @@ class ParametricGformula:
         A list of strings, each of which specifies the names of the time-varying covariates with user-specified custom histories.
 
     custom_histories: List, default is None
-        A list of function, each function is the user-specified custom history functions for covariates. The list
-        must be the same length as custom_histvars and in the same order.
+        A list of functions, each function is the user-specified custom history functions for covariates. The list
+        should be the same length as custom_histvars and in the same order.
 
     covfits_custom: List, default is None
-        A list, at the index where the covtype is set to "custom", the element is a user-specified fit function,
-        otherwise it should be set to 'NA'. The list must be the same length as covnames and in the same order.
+        A list, each element could be 'NA' or a user-specified fit function. The non-NA value is set
+        for the covariates with custom type. The 'NA' value is set for other covariates. The list must be the
+        same length as covnames and in the same order.
 
     covpredict_custom: List, default is None
-        A list, at the index where the covtype is set to "custom", the element is a user-specified predict function,
-        otherwise it should be set to 'NA'.
+        A list, each element could be 'NA' or a user-specified predict function. The non-NA value is set
+        for the covariates with custom type. The 'NA' value is set for other covariates. The list must be the
+        same length as covnames and in the same order.
 
-    nsamples: Int, default is 0.
+    nsamples: Int, default is 0
         An integer specifying the number of bootstrap samples to generate.
 
     compevent_name: Str, default is None
@@ -94,37 +124,37 @@ class ParametricGformula:
         probability weights to estimate the natural course means / risk from the observed data.
 
     model_fits: Bool, default is False
-        A boolean value indicating whether to return the fitted models.
+        A boolean value indicating whether to return the parameter estimates of the models.
 
     boot_diag: Bool, default is False
         A boolean value indicating whether to return the parametric g-formula estimates as well as the coefficients,
         standard errors, and variance-covariance matrices of the parameters of the fitted models in the bootstrap samples.
 
     ipw_cutoff_quantile: Float, default is None
-        A percentile by which to truncate inverse probability weights.
+        Percentile value for truncation of the inverse probability weights.
 
     ipw_cutoff_value: Float, default is None
-        A cutoff value by which to truncate inverse probability weights.
+        Absolute value for truncation of the inverse probability weights.
 
     outcome_type: Str, default is None
         A string specifying the "type" of outcome. The possible "types" are: "survival", "continuous_eof", and "binary_eof".
 
     trunc_params: List, default is None
-        A list, at the index where the covtype is set to "truncated normal", the list contains two elements.
-        The first element specifies the truncated value and the second element specifies the truncated direction
-        (‘left’ or ‘right’). The values at remaining indexes are set to 'NA'. The list must be the same length as
-        covnames and in the same order.
+        A list, each element could be 'NA' or a two-element list. If not 'NA', the first element specifies the truncated
+        value and the second element specifies the truncated direction (‘left’ or ‘right’). The non-NA value is set
+        for the truncated normal covariates. The 'NA' value is set for other covariates. The list should be the same
+        length as covnames and in the same order.
 
     time_thresholds: List, default is None
-        A list of integers that splits the time points into different intervals. It is used to create the time variable
-        of "categorical time".
+        A list of integers that splits the time points into different intervals. It is used to create the variable
+        "categorical time".
 
-    time_points: Int, default is None
-        An integer indicating the number of time points to simulate. It is set equal to the maximum number of records
+    time_points: Int, default is K+1
+        An integer indicating the number of time points to simulate. It is set equal to the maximum number of records (K)
         that obs_data contains for any individual plus 1, if not specified by users.
 
-    n_simul: Int, default is None
-        An integer indicating the number of subjects for whom to simulate data. It is set equal to the number of
+    n_simul: Int, default is M
+        An integer indicating the number of subjects for whom to simulate data. It is set equal to the number (M) of
         subjects in obs_data, if not specified by users.
 
     baselags: Bool, default is False
@@ -140,43 +170,42 @@ class ParametricGformula:
         of consecutive visits that can be missed before an individual is censored.
 
     restrictions: List, default is None
-        A list with lists, each inner list contains its first entry the covariate name of that its deterministic knowledge
+        List of lists. Each inner list contains its first entry the covariate name of that its deterministic knowledge
         is known; its second entry is a dictionary whose key is the conditions which should be True when the covariate
         is modeled, the third entry is the value that is set to the covariate during simulation when the conditions
         in the second entry are not True.
 
     yrestrictions: List, default is None
-        A list with lists, for each inner list, its first entry is a dictionary whose key is the conditions which
+        List of lists. For each inner list, its first entry is a dictionary whose key is the conditions which
         should be True when the outcome is modeled, the second entry is the value that is set to the outcome during
         simulation when the conditions in the first entry are not True.
 
     compevent_restrictions: List, default is None
-        A list with lists, for each inner list, its first entry is a dictionary whose key is the conditions which
+        List of lists. For each inner list, its first entry is a dictionary whose key is the conditions which
         should be True when the competing event is modeled, the second entry is the value that is set to the competing
         event during simulation when the conditions in the first entry are not True. Only applicable for survival outcomes.
 
     basecovs: List, default is None
-        A vector of strings specifying the names of baseline covariates in obs_data. These covariates are not
-        simulated using a model but keep the same value at all time points. These covariates should not be included
-        in covnames.
+        A list of strings specifying the names of baseline covariates in obs_data. These covariates should not be
+        included in covnames.
 
     parallel: Bool, default is False
         A boolean value indicating whether to parallelize simulations of different interventions to multiple cores.
 
-    ncores: Int, default is None
+    ncores: Int, default is 1
         An integer indicating the number of cores used in parallelization. It is set to 1 if not specified by users.
 
-    ref_int: Int, default is None
+    ref_int: Int, default is 0
         An integer indicating the intervention to be used as the reference for calculating the end-of-follow-up mean/risk
         ratio and mean/risk difference. 0 denotes the natural course, while subsequent integers denote user-specified
         interventions in the order that they are named in interventions. It is set to 0 if not specified by users.
 
-    ci_method: Str, default is None
+    ci_method: Str, default is "percentile"
         A string specifying the method for calculating the bootstrap 95% confidence intervals, if applicable.
         The options are "percentile" and "normal". It is set to "percentile" if not specified by users.
 
-    seed: Int, default is None
-        An integar indicating the starting seed for simulations and bootstrapping. It is set to 1234 if not specified by users.
+    seed: Int, default is 1234
+        An integer indicating the starting seed for simulations and bootstrapping. It is set to 1234 if not specified by users.
 
     save_path: Path, default is None
         A path to save all the returned results. A folder will be created automatically in the current working directory
@@ -193,10 +222,10 @@ class ParametricGformula:
             """
     def __init__(self,
                  obs_data,
-                 id_name,
+                 id,
                  time_name,
                  outcome_name,
-                 outcome_model,
+                 ymodel,
                  covnames = None,
                  covtypes = None,
                  covmodels=None,
@@ -238,13 +267,13 @@ class ParametricGformula:
                  ):
 
         self.obs_data = obs_data
-        self.id_name = id_name
+        self.id = id
         self.time_name = time_name
         self.outcome_name = outcome_name
         self.covnames = covnames
         self.covtypes = covtypes
         self.covmodels = covmodels
-        self.outcome_model = outcome_model
+        self.ymodel = ymodel
         self.int_descript = int_descript
         self.interventions = interventions
         self.custom_histvars = custom_histvars
@@ -288,7 +317,7 @@ class ParametricGformula:
             self.time_points = np.max(np.unique(self.obs_data[self.time_name])) + 1
 
         if self.n_simul is None:
-            self.n_simul = len(np.unique(self.obs_data[self.id_name]))
+            self.n_simul = len(np.unique(self.obs_data[self.id]))
 
         if self.ncores is None:
             self.ncores = 1
@@ -316,7 +345,7 @@ class ParametricGformula:
 
             self.ts_visit_names = ['ts_' + cov for cov in self.visit_covs]
             for i, cov in enumerate(self.visit_covs):
-                self.obs_data = self.obs_data.groupby(self.id_name, group_keys=False).apply(visit_func,
+                self.obs_data = self.obs_data.groupby(self.id, group_keys=False).apply(visit_func,
                                          time_name=self.time_name, visit_name=self.visit_names[i],
                                          ts_visit_name=self.ts_visit_names[i])
         else:
@@ -326,7 +355,7 @@ class ParametricGformula:
             self.ts_visit_names = None
 
         if self.covmodels is not None:
-            self.cov_hist = get_cov_hist_info(self.covnames, self.covmodels, self.covtypes, self.outcome_model,
+            self.cov_hist = get_cov_hist_info(self.covnames, self.covmodels, self.covtypes, self.ymodel,
                                          self.compevent_model, self.censor_model, self.visit_covs, self.ts_visit_names)
         else:
             self.cov_hist = None
@@ -334,13 +363,13 @@ class ParametricGformula:
         keywords_check(self.interventions)
         self.intervention_dicts = read_intervention_input(self.interventions, self.int_descript)
 
-        error_catch(obs_data=self.obs_data, id_name=self.id_name, time_points=self.time_points, time_name=self.time_name,
+        error_catch(obs_data=self.obs_data, id=self.id, time_points=self.time_points, time_name=self.time_name,
                     interventions=self.interventions, intervention_dicts=self.intervention_dicts,
                     int_descript=self.int_descript, custom_histvars = self.custom_histvars,
                     custom_histories = self.custom_histories,
                     covfits_custom = self.covfits_custom, covpredict_custom = covpredict_custom,
                     outcome_name=self.outcome_name, covnames=self.covnames, covtypes=self.covtypes,
-                    covmodels=self.covmodels, outcome_model=self.outcome_model,
+                    covmodels=self.covmodels, ymodel=self.ymodel,
                     compevent_name=self.compevent_name, compevent_model=self.compevent_model,
                     intcomp=self.intcomp, time_thresholds=self.time_thresholds,
                     censor_name=self.censor_name, censor_model=self.censor_model,
@@ -386,13 +415,13 @@ class ParametricGformula:
                 if not os.path.exists(self.save_path):
                     os.makedirs(self.save_path)
             config_parameters_dict={
-                'id_name': self.id_name,
+                'id': self.id,
                 'time_name': self.time_name,
                 'outcome_name': self.outcome_name,
                 'covnames': self.covnames,
                 'covtypes': self.covtypes,
                 'covmodels': self.covmodels,
-                'outcome_model': self.outcome_model,
+                'ymodel': self.ymodel,
                 'int_descript': self.int_descript,
                 'nsamples': self.nsamples,
                 'competing': self.competing,
@@ -435,12 +464,12 @@ class ParametricGformula:
 
     def update_history(self):
         update_precoded_history(self.obs_data, self.covnames, self.cov_hist, self.covtypes,
-                                                             self.time_name, self.id_name, self.below_zero_indicator,
+                                                             self.time_name, self.id, self.below_zero_indicator,
                                                              self.baselags, self.ts_visit_names)
         if self.custom_histvars is not None:
             for t in range(self.time_points):
                 update_custom_history(self.obs_data, self.custom_histvars, self.custom_histories,
-                                      self.time_name, t, self.id_name)
+                                      self.time_name, t, self.id)
 
     def fit(self):
 
@@ -466,15 +495,15 @@ class ParametricGformula:
             bounds = None
             rmses = None
 
-        outcome_fit, outcome_model_coeffs, outcome_model_stderrs, outcome_model_vcovs, outcome_model_fits_summary = \
-            fit_outcome_model(outcome_model=self.outcome_model, outcome_type=self.outcome_type,
+        outcome_fit, ymodel_coeffs, ymodel_stderrs, ymodel_vcovs, ymodel_fits_summary = \
+            fit_ymodel(ymodel=self.ymodel, outcome_type=self.outcome_type,
                               outcome_name=self.outcome_name, time_name=self.time_name, obs_data=self.obs_data,
                               competing=self.competing, compevent_name=self.compevent_name, return_fits=self.model_fits,
                               yrestrictions = self.yrestrictions)
-        model_coeffs.update(outcome_model_coeffs)
-        model_stderrs.update(outcome_model_stderrs)
-        model_vcovs.update(outcome_model_vcovs)
-        model_fits_summary.update(outcome_model_fits_summary)
+        model_coeffs.update(ymodel_coeffs)
+        model_stderrs.update(ymodel_stderrs)
+        model_vcovs.update(ymodel_vcovs)
+        model_fits_summary.update(ymodel_fits_summary)
 
         if self.competing:
             compevent_fit, comp_model_coeffs, comp_model_stderrs, comp_model_vcovs, comp_model_fits_summary = \
@@ -499,14 +528,14 @@ class ParametricGformula:
         else:
             censor_fit = None
 
-        if self.n_simul != len(np.unique(self.obs_data[self.id_name])):
-            data_list = dict(list(self.obs_data.groupby(self.id_name, group_keys=True)))
-            ids = np.unique(self.obs_data[self.id_name])
+        if self.n_simul != len(np.unique(self.obs_data[self.id])):
+            data_list = dict(list(self.obs_data.groupby(self.id, group_keys=True)))
+            ids = np.unique(self.obs_data[self.id])
             new_ids = np.random.choice(ids, self.n_simul, replace=True)
             new_df = []
             for index, new_id in enumerate(new_ids):
                 new_id_df = data_list[new_id].copy()
-                new_id_df[self.id_name] = index
+                new_id_df[self.id] = index
                 new_df.append(new_id_df)
             data = pd.concat(new_df, ignore_index=True)
         else:
@@ -517,7 +546,7 @@ class ParametricGformula:
             self.all_simulate_results = (
                 Parallel(n_jobs=self.ncores)
                 (delayed(simulate)(seed=self.simul_seed, time_points=self.time_points, time_name=self.time_name,
-                                   id_name=self.id_name, covnames=self.covnames, basecovs=self.basecovs,
+                                   id=self.id, covnames=self.covnames, basecovs=self.basecovs,
                                    covmodels=self.covmodels,  covtypes=self.covtypes, cov_hist=self.cov_hist,
                                    covariate_fits=covariate_fits, rmses=rmses, bounds=bounds, outcome_type=self.outcome_type,
                                    obs_data=data, intervention=self.intervention_dicts[intervention_name],
@@ -539,7 +568,7 @@ class ParametricGformula:
             self.all_simulate_results = []
             for intervention_name in self.int_descript:
                 simulate_result = simulate(seed=self.simul_seed, time_points=self.time_points, time_name=self.time_name,
-                                   id_name=self.id_name, covnames=self.covnames, basecovs=self.basecovs,
+                                   id=self.id, covnames=self.covnames, basecovs=self.basecovs,
                                    covmodels=self.covmodels,  covtypes=self.covtypes, cov_hist=self.cov_hist,
                                    covariate_fits=covariate_fits, rmses=rmses, bounds=bounds, outcome_type=self.outcome_type,
                                    obs_data=data, intervention=self.intervention_dicts[intervention_name],
@@ -574,7 +603,7 @@ class ParametricGformula:
         # compute non-parametric and parametric covariates means and risks
         self.obs_means, self.est_means, self.obs_res, self.IP_weights = comparison_calculate(
             obs_data=self.obs_data[self.obs_data[self.time_name] >= 0], time_name=self.time_name,
-            time_points=self.time_points, id_name=self.id_name, covnames=self.covnames, covtypes=self.covtypes,
+            time_points=self.time_points, id=self.id, covnames=self.covnames, covtypes=self.covtypes,
             outcome_name=self.outcome_name, outcome_type=self.outcome_type, nc_pool=self.natural_course_pool,
             nc_risk=self.natural_course_risk, competing=self.competing, compevent_name=self.compevent_name,
             compevent_cens=self.compevent_cens, censor=self.censor,
@@ -589,9 +618,9 @@ class ParametricGformula:
             if self.competing and not self.compevent_cens:
                 import cmprsk.cmprsk as cmprsk
 
-                new_pool1 = pool1.groupby(self.id_name, group_keys=False).apply(hr_comp_data_helper,
+                new_pool1 = pool1.groupby(self.id, group_keys=False).apply(hr_comp_data_helper,
                                            outcome_name=self.outcome_name, compevent_name=self.compevent_name)
-                new_pool2 = pool2.groupby(self.id_name, group_keys=False).apply(hr_comp_data_helper,
+                new_pool2 = pool2.groupby(self.id, group_keys=False).apply(hr_comp_data_helper,
                                            outcome_name=self.outcome_name, compevent_name=self.compevent_name)
                 new_pool1['regime'] = 0
                 new_pool2['regime'] = 1
@@ -604,9 +633,9 @@ class ParametricGformula:
                 crr_res = cmprsk.crr(failure_time=ftime, failure_status=fstatus, static_covariates=concat_data[['regime']])
                 self.hazard_ratio = crr_res.hazard_ratio()[0][0]
             else:
-                new_pool1 = pool1.groupby(self.id_name, group_keys=False).apply(hr_data_helper,
+                new_pool1 = pool1.groupby(self.id, group_keys=False).apply(hr_data_helper,
                                                                                 outcome_name=self.outcome_name)
-                new_pool2 = pool2.groupby(self.id_name, group_keys=False).apply(hr_data_helper,
+                new_pool2 = pool2.groupby(self.id, group_keys=False).apply(hr_data_helper,
                                                                                 outcome_name=self.outcome_name)
                 new_pool1['regime'] = 0
                 new_pool2['regime'] = 1
@@ -635,12 +664,12 @@ class ParametricGformula:
                                                  intervention_dicts = self.intervention_dicts,
                                                  covnames=self.covnames, basecovs=self.basecovs, cov_hist=self.cov_hist,
                                                  time_points=self.time_points, n_simul=self.n_simul,
-                                                 time_name=self.time_name, id_name=self.id_name,
+                                                 time_name=self.time_name, id=self.id,
                                                  custom_histvars=self.custom_histvars, custom_histories=self.custom_histories,
                                                  covpredict_custom=self.covpredict_custom,
                                                  covmodels=self.covmodels, hazardratio=self.hazardratio,
                                                  intcomp=self.intcomp, covtypes=self.covtypes,
-                                                 covfits_custom=self.covfits_custom, outcome_model=self.outcome_model,
+                                                 covfits_custom=self.covfits_custom, ymodel=self.ymodel,
                                                  outcome_type=self.outcome_type, outcome_name=self.outcome_name,
                                                  competing=self.competing, compevent_name=self.compevent_name,
                                                  compevent_model=self.compevent_model, compevent_cens=self.compevent_cens,
@@ -662,12 +691,12 @@ class ParametricGformula:
                                                  intervention_dicts=self.intervention_dicts,
                                                  covnames=self.covnames, basecovs=self.basecovs, cov_hist=self.cov_hist,
                                                  time_points=self.time_points, n_simul=self.n_simul,
-                                                 time_name=self.time_name, id_name=self.id_name,
+                                                 time_name=self.time_name, id=self.id,
                                                  custom_histvars=self.custom_histvars, custom_histories=self.custom_histories,
                                                  covpredict_custom=self.covpredict_custom,
                                                  covmodels=self.covmodels, hazardratio=self.hazardratio,
                                                  intcomp=self.intcomp, covtypes=self.covtypes,
-                                                 covfits_custom=self.covfits_custom, outcome_model=self.outcome_model,
+                                                 covfits_custom=self.covfits_custom, ymodel=self.ymodel,
                                                  outcome_type=self.outcome_type, outcome_name=self.outcome_name,
                                                  competing=self.competing, compevent_name=self.compevent_name,
                                                  compevent_model=self.compevent_model, compevent_cens=self.compevent_cens,
