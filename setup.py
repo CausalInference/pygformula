@@ -5,7 +5,7 @@ with open('README.md', 'r') as f:
 
 setuptools.setup(
   name='pygformula',
-  version='0.0.1',
+  version='1.0.1',
   maintainer='Jing Li',
   maintainer_email='jing_li@hsph.harvard.edu',
   description='A python implementation of the parametric g-formula',
