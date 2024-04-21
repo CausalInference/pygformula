@@ -45,7 +45,7 @@ covariate measurements at interval k and the outcome measurement at interval k+1
 
 Here is an example of input data structure for one subject which contains 7 records on
 the measurements of three time-varying covariates ‘‘L1’’, ‘‘L2’’, ‘‘A’’,
-one baseline covariate ‘‘L3’’ and the outcome ‘‘Y’’. See `"example_data_basicdata_nocomp" <https://github.com/CausalInference/pygformula/blob/master/datasets/example_data_basicdata_nocomp.csv>`_ for complete example data.
+one baseline covariate ‘‘L3’’ and the outcome ‘‘Y’’. See `"example_data_basicdata_nocomp" <https://github.com/CausalInference/pygformula/blob/main/datasets/example_data_basicdata_nocomp.csv>`_ for complete example data.
 
     .. image:: ../media/data_example.png
          :align: center
@@ -84,7 +84,7 @@ Note that the competing case is only applicable for survival outcome.
 
 Here is an example of input data structure with a competing event (identified by ‘‘D’’). The subject contains 7 records on
 three time-varying covariates ‘‘L1’’, ‘‘L2’’, ‘‘A’’, one baseline covariate ‘‘L3’’ and the outcome ‘‘Y’’.
-The subject experiences a competing event after measurement of interval k=6 covariates. See `"example_data_basicdata" <https://github.com/CausalInference/pygformula/blob/master/datasets/example_data_basicdata.csv>`_ for complete example data.
+The subject experiences a competing event after measurement of interval k=6 covariates. See `"example_data_basicdata" <https://github.com/CausalInference/pygformula/blob/main/datasets/example_data_basicdata.csv>`_ for complete example data.
 
     .. image:: ../media/data_example_competing.png
          :align: center

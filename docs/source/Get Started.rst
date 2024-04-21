@@ -42,7 +42,7 @@ Arguments:
 Example
 ===================
 The observational dataset
-`example_data_basicdata_nocomp <https://github.com/CausalInference/pygformula/blob/master/datasets/example_data_basicdata_nocomp.csv>`_ consists of 13,170 observations on 2,500 individuals with a maximum of 7 follow-up
+`example_data_basicdata_nocomp <https://github.com/CausalInference/pygformula/blob/main/datasets/example_data_basicdata_nocomp.csv>`_ consists of 13,170 observations on 2,500 individuals with a maximum of 7 follow-up
 times. The dataset contains the following variables:
 
  - id: Unique identifier for each individual.
