@@ -14,7 +14,8 @@ def read_intervention_input(interventions, int_descript):
         prefix = intervention_key.split('_', 1)[0]  # Get the prefix (e.g., 'Intervention1', 'Intervention2')
         intervention_id = int(prefix[12:])  # Get id
         intervention_name = int_descript[intervention_id - 1]
-        treatment_name = intervention_key.split('_')[1]  # Get the treatment name
+        index = intervention_key.find('_') # Get the treatment name
+        treatment_name = intervention_key[index+1:]
 
         intervention.insert(0, treatment_name)
         if intervention_name not in intervention_dicts:
