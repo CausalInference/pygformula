@@ -62,7 +62,7 @@ Note that for the visit indicator ‘‘visit_cd4’’, it should come before t
 the ‘‘binary’’ covariate type in ‘‘covtypes’’.
 
 
-**Running example**:
+**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_visit_process.py>`_:
 
 .. code-block::
 
