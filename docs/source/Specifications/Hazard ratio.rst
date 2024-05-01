@@ -67,7 +67,7 @@ The integer i in ‘‘intcomp’’ denotes the i-th intervention in the user-s
 
     import pygformula
     from pygformula import ParametricGformula
-    from pygformula.parametric_gformula.interventions import static
+    from pygformula.interventions import static
     from pygformula.data import load_basicdata_nocomp
 
     obs_data = load_basicdata_nocomp()

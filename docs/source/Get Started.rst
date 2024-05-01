@@ -100,7 +100,7 @@ to 0 at all times) and ‘‘Always treat’’ (set treatment to 1 at all times
 
   .. code-block::
 
-      from pygformula.parametric_gformula.interventions import static
+      from pygformula.interventions import static
 
       time_points = np.max(np.unique(obs_data[time_name])) + 1
       int_descript = ['Never treat', 'Always treat']
@@ -204,7 +204,7 @@ the risks and covariate means under natural course by:
 
     import numpy as np
     from pygformula import ParametricGformula
-    from pygformula.parametric_gformula.interventions import static
+    from pygformula.interventions import static
     from pygformula.data import load_basicdata_nocomp
 
     obs_data = load_basicdata_nocomp()

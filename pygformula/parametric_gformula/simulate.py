@@ -8,7 +8,7 @@ import operator
 from scipy.stats import truncnorm
 from .histories import update_precoded_history, update_custom_history
 from ..utils.helper import categorical_func
-from .interventions import intervention_func
+from ..interventions import intervention_func
 
 
 def binorm_sample(prob):

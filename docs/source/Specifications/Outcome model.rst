@@ -57,7 +57,7 @@ Users can also specify the follow-up time of interest for survival outcome by th
         import numpy as np
         import pygformula
         from pygformula import ParametricGformula
-        from pygformula.parametric_gformula.interventions import static
+        from pygformula.interventions import static
         from pygformula.data import load_basicdata_nocomp
 
         obs_data = load_basicdata_nocomp()
@@ -118,7 +118,7 @@ under different user-specified treatment strategies.
         import numpy as np
         import pygformula
         from pygformula import ParametricGformula
-        from pygformula.parametric_gformula.interventions import threshold
+        from pygformula.interventions import threshold
         from pygformula.data import load_binary_eof
 
         obs_data = load_binary_eof()
@@ -178,7 +178,7 @@ under different user-specified treatment strategies.
         import numpy as np
         import pygformula
         from pygformula import ParametricGformula
-        from pygformula.parametric_gformula.interventions import static
+        from pygformula.interventions import static
         from pygformula.data import load_continuous_eof
 
         obs_data = load_continuous_eof()

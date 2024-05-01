@@ -1,7 +1,7 @@
 import numpy as np
 import pygformula
 from pygformula import ParametricGformula
-from pygformula.parametric_gformula.interventions import static
+from pygformula.interventions import static
 from pygformula.data import load_continuous_eof
 
 obs_data = load_continuous_eof()

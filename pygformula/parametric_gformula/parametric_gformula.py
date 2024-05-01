@@ -38,7 +38,7 @@ from .fit import fit_covariate_model, fit_ymodel, fit_compevent_model, fit_censo
 from .histories import update_precoded_history, update_custom_history
 from .simulate import simulate
 from .bootstrap import Bootstrap
-from .interventions import natural
+from ..interventions import natural
 from ..utils.helper import get_cov_hist_info, visit_func, hr_data_helper, hr_comp_data_helper, categorical_func
 from ..utils.util import read_intervention_input, error_catch, keywords_check, save_config, save_results, get_output, get_hr_output
 from ..comparisons import comparison_calculate

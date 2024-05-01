@@ -1,7 +1,7 @@
 import numpy as np
 import pygformula
 from pygformula import ParametricGformula
-from pygformula.parametric_gformula.interventions import threshold
+from pygformula.interventions import threshold
 from pygformula.data import load_threshold_data
 
 obs_data = load_threshold_data()

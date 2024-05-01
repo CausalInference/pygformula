@@ -1,7 +1,7 @@
 import numpy as np
 import pygformula
 from pygformula import ParametricGformula
-from pygformula.parametric_gformula.interventions import static
+from pygformula.interventions import static
 from pygformula.data import load_multiple_treatments_data
 
 obs_data = load_multiple_treatments_data()
