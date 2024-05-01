@@ -1,7 +1,7 @@
 import numpy as np
 import pygformula
 from pygformula import ParametricGformula
-from pygformula.parametric_gformula.interventions import static
+from pygformula.interventions import static
 from pygformula.data import load_censor_data
 
 obs_data = load_censor_data()

@@ -1,7 +1,7 @@
 import numpy as np
 import pygformula
 from pygformula import ParametricGformula
-from pygformula.parametric_gformula.interventions import static
+from pygformula.interventions import static
 from pygformula.data import load_truncated_normal
 
 obs_data = load_truncated_normal()

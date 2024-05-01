@@ -1,6 +1,6 @@
 import pygformula
 from pygformula import ParametricGformula
-from pygformula.parametric_gformula.interventions import threshold
+from pygformula.interventions import threshold
 from pygformula.data import load_binary_eof
 
 obs_data = load_binary_eof()
