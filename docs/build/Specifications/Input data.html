@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Input data &mdash; pygformula 0.0.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Interventions" href="Interventions.html" />
+    <link rel="prev" title="Specifications" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            pygformula
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Get%20Started.html">Get Started</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Specifications</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Input data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Interventions.html">Interventions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Covariate%20models.html">Covariate models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Outcome%20model.html">Outcome model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Censoring%20event.html">Censoring event</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Competing%20event.html">Competing event</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Hazard%20ratio.html">Hazard ratio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Visit%20process.html">Visit process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Deterministic%20knowledge.html">Deterministic knowledge</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Output.html">Output</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../Datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Contact.html">Contact</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pygformula</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Specifications</a></li>
+      <li class="breadcrumb-item active">Input data</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/Specifications/Input data.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="input-data">
+<span id="id1"></span><h1>Input data<a class="headerlink" href="#input-data" title="Permalink to this headline"></a></h1>
+<p>The input dataset is specified by the ‘‘obs_data’’ argument which should contain: ‘‘id’’ specifying
+the individual identifier, ‘‘time_name’’ specifying the time index, ‘‘covnames’’ specifying the names of
+time-varying covariates, ‘‘outcome_name’’ specifying the name of the outcome of interest, ‘‘compevent_name’’
+indicating the competing event status (if present), ‘‘censor_name’’ indicating the censoring event status (if present).</p>
+<p><strong>The related arguments</strong>:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Arguments</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>obs_data</p></td>
+<td><p>(Required) A data frame containing the observed data.</p></td>
+</tr>
+<tr class="row-odd"><td><p>id</p></td>
+<td><p>(Required) A string specifying the name of the id variable in obs_data.</p></td>
+</tr>
+<tr class="row-even"><td><p>time_name</p></td>
+<td><p>(Required) A string specifying the name of the time variable in obs_data.</p></td>
+</tr>
+<tr class="row-odd"><td><p>outcome_name</p></td>
+<td><p>(Required) A string specifying the name of the outcome variable in obs_data.</p></td>
+</tr>
+<tr class="row-even"><td><p>covnames</p></td>
+<td><p>(Required) A list of strings specifying the names of the time-varying covariates in obs_data.</p></td>
+</tr>
+<tr class="row-odd"><td><p>compevent_name</p></td>
+<td><p>(Optional) A string specifying the name of the competing event variable in obs_data. Only applicable for survival outcomes.</p></td>
+</tr>
+<tr class="row-even"><td><p>censor_name</p></td>
+<td><p>(Optional) A string specifying the name of the censoring variable in obs_data. Only applicable when using inverse
+probability weights to estimate the natural course means / risk from the observed data.</p></td>
+</tr>
+<tr class="row-odd"><td><p>time_points</p></td>
+<td><p>(Optional) An integer indicating the number of time points to simulate. It is set equal to the maximum number of records (K)
+that obs_data contains for any individual plus 1, if not specified by users.</p></td>
+</tr>
+</tbody>
+</table>
+<p>The input data should contain one record for each follow-up time k for each subject (identified by the individual identifier).
+The time index k for each subject should increment by 1 for each subsequent interval (the starting index is 0 in the following
+examples, pre-baseline times are also allowed).
+The record at each line in the data corresponds to an interval k, which contains the
+covariate measurements at interval k and the outcome measurement at interval k+1.</p>
+<p>Here is an example of input data structure for one subject which contains 7 records on
+the measurements of three time-varying covariates ‘‘L1’’, ‘‘L2’’, ‘‘A’’,
+one baseline covariate ‘‘L3’’ and the outcome ‘‘Y’’. See <a class="reference external" href="https://github.com/CausalInference/pygformula/blob/master/datasets/example_data_basicdata_nocomp.csv">“example_data_basicdata_nocomp”</a> for complete example data.</p>
+<blockquote>
+<div><a class="reference internal image-reference" href="../_images/data_example.png"><img alt="../_images/data_example.png" class="align-center" src="../_images/data_example.png" style="width: 5.2in; height: 1.8in;" /></a>
+</div></blockquote>
+<p><strong>Censoring events.</strong> When there are censoring events, and users want to compute nature course estimate via
+inverse probability weighting, there should be a variable in the input data set that is an
+indicator of censoring in the time between covariate measurements in interval k and interval k+1.
+1 indicates the subject is censored (C_k+1 = 1) and 0 indicates the subject is not censored (C_k+1 = 0).
+Subjects have no more records after they are censored. Note that the censoring indicator is not needed
+if users don’t want to compute the natural course estimate using IPW.</p>
+<p>For survival outcome, the outcome Y_k+1 on the line where individual is censored (C_k+1 = 1) can be coded NA or 0.
+This choice will make no difference to estimates in the algorithm when intervals are made small enough
+such that there are no failures in intervals where there are censoring events. It depends on
+whether to count such subjects in the time k risk set or not <a class="footnote-reference brackets" href="#id4" id="id2">1</a> <sup>,</sup> <a class="footnote-reference brackets" href="#id5" id="id3">2</a>. For fixed binary/continuous end of follow-up, the
+outcome Y_k+1 should be coded NA.</p>
+<p>Here is an example of input data structure with a censoring event (identified by ‘‘C’’). The subject contains 8 records on the measurements of
+two time-varying covariates ‘‘L’’, ‘‘A’’, the outcome ‘‘Y’’ and is censored at time index k+1=8. See <a class="reference external" href="https://github.com/CausalInference/pygformula/blob/master/datasets/example_data_censor.csv">“example_data_censor”</a> for complete example data.</p>
+<blockquote>
+<div><a class="reference internal image-reference" href="../_images/data_example_censor.png"><img alt="../_images/data_example_censor.png" class="align-center" src="../_images/data_example_censor.png" style="width: 4.5in; height: 2in;" /></a>
+</div></blockquote>
+<p><strong>Competing events.</strong> When there are competing events in the data, if the user chooses to treat competing
+events as censoring events, the data should be structured as censoring case above. If competing events
+are not treated as censoring events, there should be a variable in the input data set that is an
+indicator of competing event between interval k and k+1 covariate measurements, where
+1 indicates there is a competing event for the subject (D_k+1 = 1) and 0 indicates no competing event (D_k+1 = 0).
+If D_k+1 = 1 on a record line k for a given subject, that subject will only have k+1 lines
+in the follow-up data with follow-up time k on the last line, and on that line, Y_k+1 should be coded NA.
+Note that the competing case is only applicable for survival outcome.</p>
+<p>Here is an example of input data structure with a competing event (identified by ‘‘D’’). The subject contains 7 records on
+three time-varying covariates ‘‘L1’’, ‘‘L2’’, ‘‘A’’, one baseline covariate ‘‘L3’’ and the outcome ‘‘Y’’.
+The subject experiences a competing event after measurement of interval k=6 covariates. See <a class="reference external" href="https://github.com/CausalInference/pygformula/blob/master/datasets/example_data_basicdata.csv">“example_data_basicdata”</a> for complete example data.</p>
+<blockquote>
+<div><a class="reference internal image-reference" href="../_images/data_example_competing.png"><img alt="../_images/data_example_competing.png" class="align-center" src="../_images/data_example_competing.png" style="width: 6in; height: 1.8in;" /></a>
+</div></blockquote>
+<ul class="simple">
+<li><p>Note that the ‘‘time_points’’ argument specifies the desired end of follow-up (a
+follow-up interval k that is no more than the maximum number of records for an individual in the dataset),
+and is only applicable for survival outcome.</p></li>
+</ul>
+<dl class="footnote brackets">
+<dt class="label" id="id4"><span class="brackets"><a class="fn-backref" href="#id2">1</a></span></dt>
+<dd><p>McGrath S, Lin V, Zhang Z, Petito LC, Logan RW, Hernán MA, Young JG. gfoRmula: An R Package for Estimating the Effects of Sustained Treatment Strategies via the Parametric g-formula. Patterns (N Y). 2020;1(3):100008. <a class="reference external" href="https://github.com/CausalInference/gfoRmula">gfoRmula</a>.</p>
+</dd>
+<dt class="label" id="id5"><span class="brackets"><a class="fn-backref" href="#id3">2</a></span></dt>
+<dd><p>Roger W. Logan, Jessica G. Young, Sarah Taubman, Yu-Han Chiu, Sara Lodi, Sally Picciotto, Goodarz Danaei, Miguel A. Hernán. <a class="reference external" href="https://github.com/CausalInference/GFORMULA-SAS">GFORMULA SAS</a>.</p>
+</dd>
+</dl>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Specifications" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Interventions.html" class="btn btn-neutral float-right" title="Interventions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, The President and Fellows of Harvard College.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

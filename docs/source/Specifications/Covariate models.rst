@@ -196,7 +196,7 @@ An example where the covariate ''L1'' is binomial distribution
         import numpy as np
         import pygformula
         from pygformula import ParametricGformula
-        from pygformula.parametric_gformula.interventions import static
+        from pygformula.interventions import static
         from pygformula.data import load_basicdata_nocomp
 
         obs_data = load_basicdata_nocomp()
@@ -269,7 +269,7 @@ from the fitted model. Values generated outside the observed range for the covar
         import numpy as np
         import pygformula
         from pygformula import ParametricGformula
-        from pygformula.parametric_gformula.interventions import static
+        from pygformula.interventions import static
         from pygformula.data import load_basicdata_nocomp
 
         obs_data = load_basicdata_nocomp()
@@ -338,7 +338,7 @@ e.g., in the example above, users need to add a ‘‘C( )’’ on the variable
         import numpy as np
         import pygformula
         from pygformula import ParametricGformula
-        from pygformula.parametric_gformula.interventions import static
+        from pygformula.interventions import static
         from pygformula.data import load_categorical
 
         obs_data = load_categorical()
@@ -406,7 +406,7 @@ and values generated outside the observed range for the covariate are set to the
         import numpy as np
         import pygformula
         from pygformula import ParametricGformula
-        from pygformula.parametric_gformula.interventions import static
+        from pygformula.interventions import static
         from pygformula.data import load_basicdata_nocomp
 
         obs_data = load_basicdata_nocomp()
@@ -478,7 +478,7 @@ of the covariate.
         import numpy as np
         import pygformula
         from pygformula import ParametricGformula
-        from pygformula.parametric_gformula.interventions import static
+        from pygformula.interventions import static
         from pygformula.data import load_zero_inflated_normal
 
         obs_data = load_zero_inflated_normal()
@@ -549,7 +549,7 @@ and the second one should be the truncated direction ('left' or 'right') of the 
 
         import numpy as np
         from pygformula import ParametricGformula
-        from pygformula.parametric_gformula.interventions import static
+        from pygformula.interventions import static
         from pygformula.data import load_truncated_normal
 
         obs_data = load_truncated_normal()
@@ -616,7 +616,7 @@ time and all subsequent times is set to 1.
         import numpy as np
         import pygformula
         from pygformula import ParametricGformula
-        from pygformula.parametric_gformula.interventions import static
+        from pygformula.interventions import static
         from pygformula.data import load_absorbing_data
 
         obs_data = load_absorbing_data()
@@ -695,7 +695,7 @@ the syntax example above, C() should be added.
         import numpy as np
         import pygformula
         from pygformula import ParametricGformula
-        from pygformula.parametric_gformula.interventions import static
+        from pygformula.interventions import static
         from pygformula.data import load_basicdata_nocomp
 
         obs_data = load_basicdata_nocomp()
@@ -761,7 +761,7 @@ of 'square' and the time name in the data, e.g., 'square_t0'.
         import numpy as np
         import pygformula
         from pygformula import ParametricGformula
-        from pygformula.parametric_gformula.interventions import static
+        from pygformula.interventions import static
         from pygformula.data import load_basicdata_nocomp
 
         obs_data = load_basicdata_nocomp()
@@ -880,7 +880,7 @@ The custom predict function for the random forest model:
         from sklearn.ensemble import RandomForestRegressor
         import pygformula
         from pygformula import ParametricGformula
-        from pygformula.parametric_gformula.interventions import static
+        from pygformula.interventions import static
         from pygformula.data import load_basicdata_nocomp
 
         obs_data = load_basicdata_nocomp()

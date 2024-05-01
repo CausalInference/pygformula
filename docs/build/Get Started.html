@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Get Started &mdash; pygformula 0.0.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Specifications" href="Specifications/index.html" />
+    <link rel="prev" title="Installation" href="Installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            pygformula
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Get Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#algorithm-outline">Algorithm outline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example">Example</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Specifications/index.html">Specifications</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contact.html">Contact</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pygformula</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Get Started</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/Get Started.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="get-started">
+<h1>Get Started<a class="headerlink" href="#get-started" title="Permalink to this headline"></a></h1>
+<section id="algorithm-outline">
+<h2>Algorithm outline<a class="headerlink" href="#algorithm-outline" title="Permalink to this headline"></a></h2>
+<p>The parametric g-formula estimator of the noniterative conditional expectation (NICE) requires
+the specification of models for the joint density of the confounders, treatments, and outcomes over time.
+The algorithm has three steps: (1) Parametric estimation, (2) Monte Carlo simulation
+, and (3) Calculation of risk/mean under each intervention.</p>
+<ul class="simple">
+<li><p><strong>Parametric estimation</strong>: (a) estimate the conditional densities of each covariate given past covariate history
+by fitting user-specified regression models, (b) estimate the discrete hazard (for survival outcome) or mean
+(for binary/continuous end of follow-up) of the outcome conditional on past covariate history by fitting a user-specified
+regression model, (c) if the event of interest is subject to competing events and competing events are not treated as censoring events, estimate the conditional probability of the competing event
+conditional on past covariate history by fitting user-specified regression model for the competing event.</p></li>
+<li><p><strong>Monte Carlo simulation</strong>: (a) generate a new dataset which is usually larger than original dataset, for each covariate,
+generate simulated values at each time step using the estimated covariate models from step (1), (b) for the
+covariates that are to undergo intervention, their values are assigned according to the user-specified intervention rule,
+(c) obtain the discrete hazard / mean of the outcome based on the estimated outcome model from step (1),
+(d) if the event of interest is subject to competing events and competing events are not treated as censoring events,
+obtain the discrete hazard of the competing event based on the estimated competing model from step (1).</p></li>
+<li><p><strong>Calculation of risk/mean under each intervention</strong>: for binary/continuous end of follow-up, the final estimate is the mean of
+the estimated outcome of all individuals in the new dataset computed from Step (2). For survival outcome,
+the final estimate is obtained by calculating the mean of cumulative risks for all individuals using the discrete hazards computed from step (2).</p></li>
+</ul>
+<p>Arguments:</p>
+<span class="target" id="module-pygformula.parametric_gformula"></span><table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pygformula.parametric_gformula.ParametricGformula" title="pygformula.parametric_gformula.ParametricGformula"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ParametricGformula</span></code></a>(obs_data, id, time_name, ...)</p></td>
+<td><p>G-formula estimation under parametric models.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="pygformula.parametric_gformula.ParametricGformula">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygformula.parametric_gformula.</span></span><span class="sig-name descname"><span class="pre">ParametricGformula</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obs_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outcome_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ymodel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">covnames</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">covtypes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">covmodels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">int_descript</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_histvars</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_histories</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">covfits_custom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">covpredict_custom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nsamples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compevent_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compevent_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compevent_cens</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intcomp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">censor_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">censor_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_fits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boot_diag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ipw_cutoff_quantile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ipw_cutoff_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outcome_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trunc_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_thresholds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_simul</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">baselags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">visitprocess</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">restrictions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yrestrictions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compevent_restrictions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basecovs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parallel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_int</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ci_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_results</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">interventions</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygformula.parametric_gformula.ParametricGformula" title="Permalink to this definition"></a></dt>
+<dd><p>G-formula estimation under parametric models.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obs_data</strong> (<em>DataFrame</em>) – A data frame containing the observed data.</p></li>
+<li><p><strong>id</strong> (<em>Str</em>) – A string specifying the name of the id variable in obs_data.</p></li>
+<li><p><strong>time_name</strong> (<em>Str</em>) – A string specifying the name of the time variable in obs_data.</p></li>
+<li><p><strong>outcome_name</strong> (<em>Str</em>) – A string specifying the name of the outcome variable in obs_data.</p></li>
+<li><p><strong>ymodel</strong> (<em>Str</em>) – A string specifying the model statement for the outcome variable.</p></li>
+<li><p><strong>covnames</strong> (<em>List</em><em>, </em><em>default is None</em>) – A list of strings specifying the names of the time-varying covariates in obs_data.</p></li>
+<li><p><strong>covtypes</strong> (<em>List</em><em>, </em><em>default is None</em>) – A list of strings specifying the “type” of each time-varying covariate included in covnames.
+The supported types: “binary”, “normal”, “categorical”, “bounded normal”, “zero-inflated normal”,
+“truncated normal”, “absorbing”, “categorical time”, “square time” and “custom”. The list must be the same
+length as covnames and in the same order.</p></li>
+<li><p><strong>covmodels</strong> (<em>List</em><em>, </em><em>default is None</em>) – A list of strings, where each string is the model statement of the time-varying covariate. The list
+must be the same length as covnames and in the same order. If a model is not required for a certain covariate,
+it should be set to ‘NA’ at that index.</p></li>
+<li><p><strong>int_descript</strong> (<em>List</em><em>, </em><em>default is None</em>) – A list of strings, each of which describes a user-specified intervention.</p></li>
+<li><p><strong>custom_histvars</strong> (<em>List</em><em>, </em><em>default is None</em>) – A list of strings, each of which specifies the names of the time-varying covariates with user-specified custom histories.</p></li>
+<li><p><strong>custom_histories</strong> (<em>List</em><em>, </em><em>default is None</em>) – A list of functions, each function is the user-specified custom history functions for covariates. The list
+should be the same length as custom_histvars and in the same order.</p></li>
+<li><p><strong>covfits_custom</strong> (<em>List</em><em>, </em><em>default is None</em>) – A list, each element could be ‘NA’ or a user-specified fit function. The non-NA value is set
+for the covariates with custom type. The ‘NA’ value is set for other covariates. The list must be the
+same length as covnames and in the same order.</p></li>
+<li><p><strong>covpredict_custom</strong> (<em>List</em><em>, </em><em>default is None</em>) – A list, each element could be ‘NA’ or a user-specified predict function. The non-NA value is set
+for the covariates with custom type. The ‘NA’ value is set for other covariates. The list must be the
+same length as covnames and in the same order.</p></li>
+<li><p><strong>nsamples</strong> (<em>Int</em><em>, </em><em>default is 0</em>) – An integer specifying the number of bootstrap samples to generate.</p></li>
+<li><p><strong>compevent_name</strong> (<em>Str</em><em>, </em><em>default is None</em>) – A string specifying the name of the competing event variable in obs_data. Only applicable for survival outcomes.</p></li>
+<li><p><strong>compevent_model</strong> (<em>Str</em><em>, </em><em>default is None</em>) – A string specifying the model statement for the competing event variable. Only applicable for survival outcomes.</p></li>
+<li><p><strong>compevent_cens</strong> (<em>Bool</em><em>, </em><em>default is False</em>) – A boolean value indicating whether to treat competing events as censoring events.</p></li>
+<li><p><strong>intcomp</strong> (<em>List</em><em>, </em><em>default is None</em>) – List of two numbers indicating a pair of interventions to be compared by a hazard ratio.</p></li>
+<li><p><strong>censor_name</strong> (<em>Str</em><em>, </em><em>default is None</em>) – A string specifying the name of the censoring variable in obs_data. Only applicable when using inverse
+probability weights to estimate the natural course means / risk from the observed data.</p></li>
+<li><p><strong>censor_model</strong> (<em>Str</em><em>, </em><em>default is None</em>) – A string specifying the model statement for the censoring variable. Only applicable when using inverse
+probability weights to estimate the natural course means / risk from the observed data.</p></li>
+<li><p><strong>model_fits</strong> (<em>Bool</em><em>, </em><em>default is False</em>) – A boolean value indicating whether to return the parameter estimates of the models.</p></li>
+<li><p><strong>boot_diag</strong> (<em>Bool</em><em>, </em><em>default is False</em>) – A boolean value indicating whether to return the parametric g-formula estimates as well as the coefficients,
+standard errors, and variance-covariance matrices of the parameters of the fitted models in the bootstrap samples.</p></li>
+<li><p><strong>ipw_cutoff_quantile</strong> (<em>Float</em><em>, </em><em>default is None</em>) – Percentile value for truncation of the inverse probability weights.</p></li>
+<li><p><strong>ipw_cutoff_value</strong> (<em>Float</em><em>, </em><em>default is None</em>) – Absolute value for truncation of the inverse probability weights.</p></li>
+<li><p><strong>outcome_type</strong> (<em>Str</em><em>, </em><em>default is None</em>) – A string specifying the “type” of outcome. The possible “types” are: “survival”, “continuous_eof”, and “binary_eof”.</p></li>
+<li><p><strong>trunc_params</strong> (<em>List</em><em>, </em><em>default is None</em>) – A list, each element could be ‘NA’ or a two-element list. If not ‘NA’, the first element specifies the truncated
+value and the second element specifies the truncated direction (‘left’ or ‘right’). The non-NA value is set
+for the truncated normal covariates. The ‘NA’ value is set for other covariates. The list should be the same
+length as covnames and in the same order.</p></li>
+<li><p><strong>time_thresholds</strong> (<em>List</em><em>, </em><em>default is None</em>) – A list of integers that splits the time points into different intervals. It is used to create the variable
+“categorical time”.</p></li>
+<li><p><strong>time_points</strong> (<em>Int</em><em>, </em><em>default is K+1</em>) – An integer indicating the number of time points to simulate. It is set equal to the maximum number of records (K)
+that obs_data contains for any individual plus 1, if not specified by users.</p></li>
+<li><p><strong>n_simul</strong> (<em>Int</em><em>, </em><em>default is M</em>) – An integer indicating the number of subjects for whom to simulate data. It is set equal to the number (M) of
+subjects in obs_data, if not specified by users.</p></li>
+<li><p><strong>baselags</strong> (<em>Bool</em><em>, </em><em>default is False</em>) – A boolean value specifying the convention used for lagi and lag_cumavgi terms in the model statements when
+pre-baseline times are not included in obs_data and when the current time index, t, is such that t &lt; i. If this
+argument is set to False, the value of all lagi and lag_cumavgi terms in this context are set to 0 (for
+non-categorical covariates) or the reference level (for categorical covariates). If this argument is set to
+True, the value of lagi and lag_cumavgi terms are set to their values at time 0. The default is False.</p></li>
+<li><p><strong>visitprocess</strong> (<em>List</em><em>, </em><em>default is None</em>) – List of lists. Each inner list contains its first entry the covariate name of a visit process; its second entry
+the name of a covariate whose modeling depends on the visit process; and its third entry the maximum number
+of consecutive visits that can be missed before an individual is censored.</p></li>
+<li><p><strong>restrictions</strong> (<em>List</em><em>, </em><em>default is None</em>) – List of lists. Each inner list contains its first entry the covariate name of that its deterministic knowledge
+is known; its second entry is a dictionary whose key is the conditions which should be True when the covariate
+is modeled, the third entry is the value that is set to the covariate during simulation when the conditions
+in the second entry are not True.</p></li>
+<li><p><strong>yrestrictions</strong> (<em>List</em><em>, </em><em>default is None</em>) – List of lists. For each inner list, its first entry is a dictionary whose key is the conditions which
+should be True when the outcome is modeled, the second entry is the value that is set to the outcome during
+simulation when the conditions in the first entry are not True.</p></li>
+<li><p><strong>compevent_restrictions</strong> (<em>List</em><em>, </em><em>default is None</em>) – List of lists. For each inner list, its first entry is a dictionary whose key is the conditions which
+should be True when the competing event is modeled, the second entry is the value that is set to the competing
+event during simulation when the conditions in the first entry are not True. Only applicable for survival outcomes.</p></li>
+<li><p><strong>basecovs</strong> (<em>List</em><em>, </em><em>default is None</em>) – A list of strings specifying the names of baseline covariates in obs_data. These covariates should not be
+included in covnames.</p></li>
+<li><p><strong>parallel</strong> (<em>Bool</em><em>, </em><em>default is False</em>) – A boolean value indicating whether to parallelize simulations of different interventions to multiple cores.</p></li>
+<li><p><strong>ncores</strong> (<em>Int</em><em>, </em><em>default is 1</em>) – An integer indicating the number of cores used in parallelization. It is set to 1 if not specified by users.</p></li>
+<li><p><strong>ref_int</strong> (<em>Int</em><em>, </em><em>default is 0</em>) – An integer indicating the intervention to be used as the reference for calculating the end-of-follow-up mean/risk
+ratio and mean/risk difference. 0 denotes the natural course, while subsequent integers denote user-specified
+interventions in the order that they are named in interventions. It is set to 0 if not specified by users.</p></li>
+<li><p><strong>ci_method</strong> (<em>Str</em><em>, </em><em>default is &quot;percentile&quot;</em>) – A string specifying the method for calculating the bootstrap 95% confidence intervals, if applicable.
+The options are “percentile” and “normal”. It is set to “percentile” if not specified by users.</p></li>
+<li><p><strong>seed</strong> (<em>Int</em><em>, </em><em>default is 1234</em>) – An integer indicating the starting seed for simulations and bootstrapping. It is set to 1234 if not specified by users.</p></li>
+<li><p><strong>save_path</strong> (<em>Path</em><em>, </em><em>default is None</em>) – A path to save all the returned results. A folder will be created automatically in the current working directory
+if the save_path is not specified by users.</p></li>
+<li><p><strong>save_results</strong> (<em>Bool</em><em>, </em><em>default is False</em>) – A boolean value indicating whether to save all the returned results to the save_path.</p></li>
+<li><p><strong>**interventions</strong> (<em>Dict</em><em>, </em><em>default is None</em>) – A dictionary whose key is the treatment name in the intervention with the format Intervention{id}_{treatment_name},
+value is a list that contains the intervention function, values required by the function, and a list of time
+points in which the intervention is applied.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="example">
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline"></a></h2>
+<p>The observational dataset
+<a class="reference external" href="https://github.com/CausalInference/pygformula/blob/master/datasets/example_data_basicdata_nocomp.csv">example_data_basicdata_nocomp</a> consists of 13,170 observations on 2,500 individuals with a maximum of 7 follow-up
+times. The dataset contains the following variables:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>id: Unique identifier for each individual.</p></li>
+<li><p>t0: Time index.</p></li>
+<li><p>L1: Binary time-varying covariate.</p></li>
+<li><p>L2: Continuous time-varying covariate.</p></li>
+<li><p>L3: Categorical baseline covariate.</p></li>
+<li><p>A: Binary treatment variable.</p></li>
+<li><p>Y: Outcome of interest; time-varying indicator of failure.</p></li>
+</ul>
+</div></blockquote>
+<p>We are interested in the risk by the end of follow-up under the static interventions ‘‘Never treat’’ (set treatment
+to 0 at all times) and ‘‘Always treat’’ (set treatment to 1 at all times).</p>
+<ul>
+<li><p>First, import the g-formula package:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pygformula</span>
+<span class="kn">from</span> <span class="nn">pygformula</span> <span class="kn">import</span> <span class="n">ParametricGformula</span>
+</pre></div>
+</div>
+</li>
+<li><p>Then, load the data (here is an example of loading simulated <a class="reference external" href="https://github.com/CausalInference/pygformula/blob/main/datasets/example_data_basicdata_nocomp.csv">data</a> in the package,
+users can also load their own data) as required pandas DataFrame type</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pygformula.data</span> <span class="kn">import</span> <span class="n">load_basicdata_nocomp</span>
+<span class="n">obs_data</span> <span class="o">=</span> <span class="n">load_basicdata_nocomp</span><span class="p">()</span>
+</pre></div>
+</div>
+</li>
+<li><p>Specify the name of the time variable, and the name of the individual identifier in the input data</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">time_name</span> <span class="o">=</span> <span class="s1">&#39;t0&#39;</span>
+<span class="nb">id</span> <span class="o">=</span> <span class="s1">&#39;id&#39;</span>
+</pre></div>
+</div>
+</li>
+<li><p>Specify covariate names, covariate types, and corresponding model statements</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">covnames</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L1&#39;</span><span class="p">,</span> <span class="s1">&#39;L2&#39;</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span><span class="p">]</span>
+<span class="n">covtypes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;binary&#39;</span><span class="p">,</span> <span class="s1">&#39;bounded normal&#39;</span><span class="p">,</span> <span class="s1">&#39;binary&#39;</span><span class="p">]</span>
+<span class="n">covmodels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L1 ~ lag1_A + lag2_A + lag_cumavg1_L1 + lag_cumavg1_L2 + L3 + t0&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;L2 ~ lag1_A + L1 + lag_cumavg1_L1 + lag_cumavg1_L2 + L3 + t0&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;A ~ lag1_A + L1 + L2 + lag_cumavg1_L1 + lag_cumavg1_L2 + L3 + t0&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>If there are baseline covariates (i.e., covariate with same value at all times) in the model statement, specify them in the
+‘‘basecovs’’ argument:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">basecovs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L3&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</li>
+<li><p>Specify the static interventions of interest:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pygformula.parametric_gformula.interventions</span> <span class="kn">import</span> <span class="n">static</span>
+
+<span class="n">time_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">obs_data</span><span class="p">[</span><span class="n">time_name</span><span class="p">]))</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="n">int_descript</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Never treat&#39;</span><span class="p">,</span> <span class="s1">&#39;Always treat&#39;</span><span class="p">]</span>
+
+<span class="n">Intervention1_A</span> <span class="o">=</span> <span class="p">[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">time_points</span><span class="p">)],</span>
+<span class="n">Intervention2_A</span> <span class="o">=</span> <span class="p">[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">time_points</span><span class="p">)],</span>
+</pre></div>
+</div>
+</li>
+<li><p>Specify the outcome name, outcome model statement, and the outcome type</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">outcome_name</span> <span class="o">=</span> <span class="s1">&#39;Y&#39;</span>
+<span class="n">ymodel</span> <span class="o">=</span> <span class="s1">&#39;Y ~ L1 + L2 + L3 + A + lag1_A + lag1_L1 + lag1_L2 + t0&#39;</span>
+<span class="n">outcome_type</span> <span class="o">=</span> <span class="s1">&#39;survival&#39;</span>
+</pre></div>
+</div>
+</li>
+<li><p>Speficy all the arguments in the “ParametricGformula” class and call its “fit” function:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="n">obs_data</span> <span class="o">=</span> <span class="n">obs_data</span><span class="p">,</span> <span class="nb">id</span> <span class="o">=</span> <span class="nb">id</span><span class="p">,</span> <span class="n">time_name</span><span class="o">=</span><span class="n">time_name</span><span class="p">,</span>
+    <span class="n">covnames</span><span class="o">=</span><span class="n">covnames</span><span class="p">,</span> <span class="n">covtypes</span><span class="o">=</span><span class="n">covtypes</span><span class="p">,</span>
+    <span class="n">covmodels</span><span class="o">=</span><span class="n">covmodels</span><span class="p">,</span> <span class="n">basecovs</span><span class="o">=</span><span class="n">basecovs</span><span class="p">,</span>
+    <span class="n">time_points</span><span class="o">=</span><span class="n">time_points</span><span class="p">,</span>
+    <span class="n">Intervention1_A</span> <span class="o">=</span> <span class="p">[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">time_points</span><span class="p">)],</span>
+    <span class="n">Intervention2_A</span> <span class="o">=</span> <span class="p">[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">time_points</span><span class="p">)],</span>
+    <span class="n">outcome_name</span><span class="o">=</span><span class="n">outcome_name</span><span class="p">,</span> <span class="n">ymodel</span><span class="o">=</span><span class="n">ymodel</span><span class="p">,</span>
+    <span class="n">outcome_type</span> <span class="o">=</span> <span class="n">outcome_type</span><span class="p">)</span>
+
+<span class="n">g</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+</pre></div>
+</div>
+</li>
+<li><p>Finally, get the output:</p>
+<img alt="_images/get_started_example.png" class="align-center" src="_images/get_started_example.png" />
+<ul class="simple">
+<li><p>“Intervention”: the name of natural course intervention and user-specified interventions.</p></li>
+<li><p>“NP-risk”: the nonparametric estimates of the natural course risk.</p></li>
+<li><p>“g-formula risk”: the parametric g-formula estimates of each interventions.</p></li>
+<li><p>“Risk Ratio (RR)”: the risk ratio comparing each intervention and reference intervention.</p></li>
+<li><p>“Risk Difference (RD)”: the risk difference comparing each intervention and reference intervention.</p></li>
+</ul>
+</li>
+</ul>
+<p>In the output table, the g-formula risk results under the specified interventions are shown, as well as the natural course.
+Furthermore, the nonparametric risk under the natural course is provided, which can be used to assess model misspecification of parametric
+g-formula. The risk ratio and risk difference comparing the specific intervention and the reference
+intervention (set to natural course by default) are also calculated.</p>
+<p>Users can also get the standard errors and 95% confidence intervals of the g-formula estimates by specifying the ‘‘nsamples’’ argument.
+For example, specifying ‘‘nsamples’’ as 20 with parallel processing using 8 cores:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="n">obs_data</span> <span class="o">=</span> <span class="n">obs_data</span><span class="p">,</span> <span class="nb">id</span> <span class="o">=</span> <span class="nb">id</span><span class="p">,</span> <span class="n">time_name</span><span class="o">=</span><span class="n">time_name</span><span class="p">,</span>
+    <span class="n">time_points</span> <span class="o">=</span> <span class="n">time_points</span><span class="p">,</span>
+    <span class="n">Intervention1_A</span> <span class="o">=</span> <span class="p">[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">time_points</span><span class="p">)],</span>
+    <span class="n">Intervention2_A</span> <span class="o">=</span> <span class="p">[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">time_points</span><span class="p">)],</span>
+    <span class="n">covnames</span><span class="o">=</span><span class="n">covnames</span><span class="p">,</span> <span class="n">covtypes</span><span class="o">=</span><span class="n">covtypes</span><span class="p">,</span>
+    <span class="n">covmodels</span><span class="o">=</span><span class="n">covmodels</span><span class="p">,</span> <span class="n">basecovs</span><span class="o">=</span><span class="n">basecovs</span><span class="p">,</span>
+    <span class="n">outcome_name</span><span class="o">=</span><span class="n">outcome_name</span><span class="p">,</span> <span class="n">ymodel</span><span class="o">=</span><span class="n">ymodel</span><span class="p">,</span> <span class="n">outcome_type</span><span class="o">=</span><span class="n">outcome_type</span><span class="p">,</span>
+    <span class="n">nsamples</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ncores</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>The package will return following results:</p>
+<blockquote>
+<div><a class="reference internal image-reference" href="_images/get_started_example_bootstrap.jpg"><img alt="_images/get_started_example_bootstrap.jpg" class="align-center" src="_images/get_started_example_bootstrap.jpg" style="width: 8.5in; height: 2in;" /></a>
+</div></blockquote>
+<p>The result table contains 95% lower bound and upper bound for the risk, risk difference and risk ratio for all interventions.</p>
+<p>The pygformula also provides plots for risk curves of interventions, which can be called by:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">g</span><span class="o">.</span><span class="n">plot_interventions</span><span class="p">()</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>It will return the g-formula risk (with 95% confidence intervals if using bootstrap samples) at all follow-up times under each intervention:</p>
+<blockquote>
+<div><a class="reference internal image-reference" href="_images/get_started_example_intervention_curve.jpg"><img alt="_images/get_started_example_intervention_curve.jpg" class="align-center" src="_images/get_started_example_intervention_curve.jpg" style="width: 5in; height: 4in;" /></a>
+</div></blockquote>
+<p>User can also get the plots of parametric and nonparametric estimates of
+the risks and covariate means under natural course by:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">g</span><span class="o">.</span><span class="n">plot_natural_course</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="_images/get_started_example_all.jpg" class="align-center" src="_images/get_started_example_all.jpg" />
+</div></blockquote>
+<p><strong>Running example</strong> <a class="reference external" href="https://github.com/CausalInference/pygformula/blob/main/running_examples/get_started_example.py">[code]</a>:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">pygformula</span> <span class="kn">import</span> <span class="n">ParametricGformula</span>
+<span class="kn">from</span> <span class="nn">pygformula.parametric_gformula.interventions</span> <span class="kn">import</span> <span class="n">static</span>
+<span class="kn">from</span> <span class="nn">pygformula.data</span> <span class="kn">import</span> <span class="n">load_basicdata_nocomp</span>
+
+<span class="n">obs_data</span> <span class="o">=</span> <span class="n">load_basicdata_nocomp</span><span class="p">()</span>
+<span class="n">time_name</span> <span class="o">=</span> <span class="s1">&#39;t0&#39;</span>
+<span class="nb">id</span> <span class="o">=</span> <span class="s1">&#39;id&#39;</span>
+
+<span class="n">covnames</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L1&#39;</span><span class="p">,</span> <span class="s1">&#39;L2&#39;</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span><span class="p">]</span>
+<span class="n">covtypes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;binary&#39;</span><span class="p">,</span> <span class="s1">&#39;bounded normal&#39;</span><span class="p">,</span> <span class="s1">&#39;binary&#39;</span><span class="p">]</span>
+<span class="n">covmodels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L1 ~ lag1_A + lag2_A + lag_cumavg1_L1 + lag_cumavg1_L2 + L3 + t0&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;L2 ~ lag1_A + L1 + lag_cumavg1_L1 + lag_cumavg1_L2 + L3 + t0&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;A ~ lag1_A + L1 + L2 + lag_cumavg1_L1 + lag_cumavg1_L2 + L3 + t0&#39;</span><span class="p">]</span>
+
+<span class="n">basecovs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L3&#39;</span><span class="p">]</span>
+
+<span class="n">outcome_name</span> <span class="o">=</span> <span class="s1">&#39;Y&#39;</span>
+<span class="n">ymodel</span> <span class="o">=</span> <span class="s1">&#39;Y ~ L1 + L2 + L3 + A + lag1_A + lag1_L1 + lag1_L2 + t0&#39;</span>
+<span class="n">outcome_type</span> <span class="o">=</span> <span class="s1">&#39;survival&#39;</span>
+
+<span class="n">time_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">obs_data</span><span class="p">[</span><span class="n">time_name</span><span class="p">]))</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="n">int_descript</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Never treat&#39;</span><span class="p">,</span> <span class="s1">&#39;Always treat&#39;</span><span class="p">]</span>
+
+<span class="n">g</span> <span class="o">=</span> <span class="n">ParametricGformula</span><span class="p">(</span><span class="n">obs_data</span> <span class="o">=</span> <span class="n">obs_data</span><span class="p">,</span> <span class="nb">id</span> <span class="o">=</span> <span class="nb">id</span><span class="p">,</span> <span class="n">time_name</span><span class="o">=</span><span class="n">time_name</span><span class="p">,</span>
+             <span class="n">time_points</span> <span class="o">=</span> <span class="n">time_points</span><span class="p">,</span> <span class="n">int_descript</span> <span class="o">=</span> <span class="n">int_descript</span><span class="p">,</span>
+             <span class="n">covnames</span><span class="o">=</span><span class="n">covnames</span><span class="p">,</span> <span class="n">covtypes</span><span class="o">=</span><span class="n">covtypes</span><span class="p">,</span>
+             <span class="n">covmodels</span><span class="o">=</span><span class="n">covmodels</span><span class="p">,</span> <span class="n">basecovs</span><span class="o">=</span><span class="n">basecovs</span><span class="p">,</span>
+             <span class="n">outcome_name</span><span class="o">=</span><span class="n">outcome_name</span><span class="p">,</span> <span class="n">ymodel</span><span class="o">=</span><span class="n">ymodel</span><span class="p">,</span> <span class="n">outcome_type</span><span class="o">=</span><span class="n">outcome_type</span><span class="p">,</span>
+             <span class="n">Intervention1_A</span> <span class="o">=</span> <span class="p">[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">time_points</span><span class="p">)],</span>
+             <span class="n">Intervention2_A</span> <span class="o">=</span> <span class="p">[</span><span class="n">static</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">time_points</span><span class="p">)],</span>
+             <span class="n">nsamples</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ncores</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+<span class="n">g</span><span class="o">.</span><span class="n">plot_natural_course</span><span class="p">()</span>
+<span class="n">g</span><span class="o">.</span><span class="n">plot_interventions</span><span class="p">()</span>
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Specifications/index.html" class="btn btn-neutral float-right" title="Specifications" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, The President and Fellows of Harvard College.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

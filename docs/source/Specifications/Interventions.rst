@@ -138,7 +138,7 @@ Static interventions
 
 The package has pre-coded static intervention.
 
-.. automodule:: pygformula.parametric_gformula.interventions
+.. automodule:: pygformula.interventions
 .. autosummary:: static
 .. autofunction:: static
 
@@ -146,7 +146,7 @@ which can be called by:
 
     .. code-block::
 
-        from pygformula.parametric_gformula.interventions import static
+        from pygformula.interventions import static
 
 When specifying the static intervention for one treatment,
 the treatment value at each time step k will be replaced by the kth value in the list of intervened values.
@@ -159,7 +159,7 @@ the treatment value at each time step k will be replaced by the kth value in the
     import numpy as np
     import pygformula
     from pygformula import ParametricGformula
-    from pygformula.parametric_gformula.interventions import static
+    from pygformula.interventions import static
     from pygformula.data import load_basicdata_nocomp
 
     obs_data = load_basicdata_nocomp()
@@ -201,7 +201,7 @@ the treatment value at each time step k will be replaced by the kth value in the
     import numpy as np
     import pygformula
     from pygformula import ParametricGformula
-    from pygformula.parametric_gformula.interventions import static
+    from pygformula.interventions import static
     from pygformula.data import load_multiple_treatments_data
 
     obs_data = load_multiple_treatments_data()
@@ -244,7 +244,7 @@ the treatment value at each time step k will be replaced by the kth value in the
         import numpy as np
         import pygformula
         from pygformula import ParametricGformula
-        from pygformula.parametric_gformula.interventions import static
+        from pygformula.interventions import static
         from pygformula.data import load_basicdata_nocomp
 
         obs_data = load_basicdata_nocomp()
@@ -374,7 +374,7 @@ time points, the third element should be specified.)
 **Natural grace period intervention**: once a covariate meets a threshold level, the treatment
 is initiated within a duration of the grace period. During the grace period, the treatment takes its natural value.
 
-.. automodule:: pygformula.parametric_gformula.interventions
+.. automodule:: pygformula.interventions
 .. autosummary:: natural_grace_period
 .. autofunction:: natural_grace_period
 
@@ -382,7 +382,7 @@ which can be called by:
 
 .. code-block::
 
-        from pygformula.parametric_gformula.interventions import natural_grace_period
+        from pygformula.interventions import natural_grace_period
 
 **Sample syntax of an example**:
 
@@ -392,7 +392,7 @@ in the first entry and the condition of the covariate in the second entry.
 
 .. code-block::
 
-      from pygformula.parametric_gformula.interventions import natural_grace_period
+      from pygformula.interventions import natural_grace_period
 
       int_descript = ['natural grace period intervention']
 
@@ -404,7 +404,7 @@ An example of grace period intervention where the treatment is initiated when mu
 
 .. code-block::
 
-      from pygformula.parametric_gformula.interventions import natural_grace_period
+      from pygformula.interventions import natural_grace_period
 
       int_descript = ['natural grace period intervention']
 
@@ -420,7 +420,7 @@ An example of grace period intervention where the treatment is initiated when mu
         import numpy as np
         import pygformula
         from pygformula import ParametricGformula
-        from pygformula.parametric_gformula.interventions import natural_grace_period
+        from pygformula.interventions import natural_grace_period
         from pygformula.data import load_basicdata_nocomp
 
         obs_data = load_basicdata_nocomp()
@@ -461,7 +461,7 @@ An example of grace period intervention where the treatment is initiated when mu
 is initiated within a duration of the grace period. During grace period, treatment initiation is
 randomly allocated with a uniform probability of starting treatment in each time interval of the grace period.
 
-.. automodule:: pygformula.parametric_gformula.interventions
+.. automodule:: pygformula.interventions
 .. autosummary:: uniform_grace_period
 .. autofunction:: uniform_grace_period
 
@@ -469,7 +469,7 @@ which can be called by:
 
 .. code-block::
 
-        from pygformula.parametric_gformula.interventions import uniform_grace_period
+        from pygformula.interventions import uniform_grace_period
 
 **Sample syntax of an example**:
 
@@ -479,7 +479,7 @@ in the first entry and the condition of the covariate in the second entry.
 
 .. code-block::
 
-      from pygformula.parametric_gformula.interventions import uniform_grace_period
+      from pygformula.interventions import uniform_grace_period
 
       int_descript = ['uniform grace period intervention']
 
@@ -494,7 +494,7 @@ in the first entry and the condition of the covariate in the second entry.
         import numpy as np
         import pygformula
         from pygformula import ParametricGformula
-        from pygformula.parametric_gformula.interventions import uniform_grace_period
+        from pygformula.interventions import uniform_grace_period
         from pygformula.data import load_basicdata_nocomp
 
         obs_data = load_basicdata_nocomp()
@@ -540,7 +540,7 @@ time k were the intervention discontinued right before k.
 
 The package provides pre-coded threshold function.
 
-.. automodule:: pygformula.parametric_gformula.interventions
+.. automodule:: pygformula.interventions
 .. autosummary:: threshold
 .. autofunction:: threshold
 
@@ -548,7 +548,7 @@ which can be called by
 
 .. code-block::
 
-    from pygformula.parametric_gformula.interventions import threshold
+    from pygformula.interventions import threshold
 
 Users should specify a two-element list (containing minimum and maximum values) of threshold values after the threshold function
 in the argument.
@@ -574,7 +574,7 @@ set the treatment the threshold value.
         import numpy as np
         import pygformula
         from pygformula import ParametricGformula
-        from pygformula.parametric_gformula.interventions import threshold
+        from pygformula.interventions import threshold
         from pygformula.data import load_threshold_data
 
         obs_data = load_threshold_data()

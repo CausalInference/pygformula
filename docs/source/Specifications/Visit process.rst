@@ -68,7 +68,7 @@ the ‘‘binary’’ covariate type in ‘‘covtypes’’.
 
         import pygformula
         from pygformula import ParametricGformula
-        from pygformula.parametric_gformula.interventions import static
+        from pygformula.interventions import static
         from pygformula.data import load_visit_process
 
         obs_data = load_visit_process()
