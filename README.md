@@ -2,6 +2,7 @@
 
 [![PyPI version](https://badge.fury.io/py/pygformula.svg)](https://pypi.org/project/pygformula)
 [![Documentation Status](https://readthedocs.org/projects/pygformula/badge/?version=latest)](https://pygformula.readthedocs.io)
+[![Downloads](https://static.pepy.tech/badge/pygformula)](https://pepy.tech/project/pygformula)
 
 **Authors: Jing Li, Sophia Rein, Sean McGrath, Roger Logan, Ryan O’Dea, Miguel Hernán**
 
