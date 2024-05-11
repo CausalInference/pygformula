@@ -1,11 +1,15 @@
 import setuptools
 
-with open('README.md', 'r') as f:
+version = {}
+with open("pygformula/version.py") as fp:
+    exec(fp.read(), version)
+
+with open('README.md', 'r', encoding='utf-8') as f:
   long_description = f.read()
 
 setuptools.setup(
   name='pygformula',
-  version='1.1.0',
+  version=version['__version__'],
   maintainer='Jing Li',
   maintainer_email='jing_li@hsph.harvard.edu',
   description='A python implementation of the parametric g-formula',
