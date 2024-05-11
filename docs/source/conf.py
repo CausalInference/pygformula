@@ -20,13 +20,14 @@
 project = 'pygformula'
 copyright = '2024, The President and Fellows of Harvard College'
 
-# The full version, including alpha/beta/rc tags
-release = '0.0.1'
-
 
 import os
 import sys
 sys.path.insert(0, os.path.abspath('../..'))
+
+from pygformula import __version__
+
+release = __version__
 
 # -- General configuration ---------------------------------------------------
 
