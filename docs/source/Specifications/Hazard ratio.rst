@@ -65,7 +65,6 @@ The integer i in ‘‘intcomp’’ denotes the i-th intervention in the user-s
 
 .. code-block::
 
-    import pygformula
     from pygformula import ParametricGformula
     from pygformula.interventions import static
     from pygformula.data import load_basicdata_nocomp

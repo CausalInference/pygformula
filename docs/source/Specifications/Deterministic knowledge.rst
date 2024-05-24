@@ -105,7 +105,6 @@ by its parametric model, otherwise, its previous value is carried forward.
 .. code-block::
 
         import numpy as np
-        import pygformula
         from pygformula.interventions import static
         from pygformula import ParametricGformula
         from pygformula.data import load_basicdata_nocomp
@@ -190,7 +189,6 @@ the probability of outcome Y is estimated by its parametric model, otherwise, it
 
 .. code-block::
 
-        import pygformula
         from pygformula import ParametricGformula
         from pygformula.interventions import static
         from pygformula.data import load_basicdata_nocomp
@@ -275,7 +273,6 @@ it is set to a value 0.1;
 
 .. code-block::
 
-        import pygformula
         from pygformula import ParametricGformula
         from pygformula.interventions import static
         from pygformula.data import load_basicdata

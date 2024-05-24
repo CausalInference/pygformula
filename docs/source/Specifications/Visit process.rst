@@ -66,7 +66,6 @@ the ‘‘binary’’ covariate type in ‘‘covtypes’’.
 
 .. code-block::
 
-        import pygformula
         from pygformula import ParametricGformula
         from pygformula.interventions import static
         from pygformula.data import load_visit_process
