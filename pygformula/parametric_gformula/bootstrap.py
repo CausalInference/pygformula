@@ -13,7 +13,7 @@ def Bootstrap(obs_data, boot_id, boot_seeds, int_descript, intervention_dicts, c
               covmodels, hazardratio, intcomp, covtypes, covfits_custom, covpredict_custom,
               ymodel, outcome_type, outcome_name, competing, compevent_name, compevent_model, compevent_cens,
               boot_diag, trunc_params, visit_names, visit_covs, ts_visit_names, max_visits, time_thresholds,
-              below_zero_indicator, baselags, restrictions, yrestrictions, compevent_restrictions):
+              below_zero_indicator, baselags, restrictions, yrestrictions, compevent_restrictions, sim_trunc):
     """
     This is an internal function to get the results of parametric g-formula for each bootstrap sample.
 
@@ -171,6 +171,9 @@ def Bootstrap(obs_data, boot_id, boot_seeds, int_descript, intervention_dicts, c
         should be True when the competing event is modeled, the second entry is the value that is set to the competing
         event during simulation when the conditions in the first entry are not True. Only applicable for survival outcomes.
 
+    sim_trunc: Bool
+        A boolean value indicating if the simulated values of normal covariates are truncated by the observed ranges.
+
     Returns
     -------
     boot_results_dict: Dict
@@ -259,7 +262,7 @@ def Bootstrap(obs_data, boot_id, boot_seeds, int_descript, intervention_dicts, c
                                        max_visits=max_visits, time_thresholds=time_thresholds,
                                        baselags=baselags, below_zero_indicator=below_zero_indicator,
                                        restrictions=restrictions, yrestrictions=yrestrictions,
-                                       compevent_restrictions=compevent_restrictions
+                                       compevent_restrictions=compevent_restrictions, sim_trunc=sim_trunc
                                    )
             boot_results.append(boot_result['g_result'])
             boot_pools.append(boot_result['pool'])
