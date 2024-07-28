@@ -8,7 +8,7 @@
 
 
 ## Overview
-The pygformula package implements the non-iterative conditional expectation (NICE) algorithm of the g-formula algorithm
+The pygformula package implements the non-iterative conditional expectation (NICE) estimator of the g-formula algorithm
 (Robins, 1986). The g-formula can estimate an outcome’s counterfactual mean or risk under hypothetical treatment strategies
 (interventions) when there is sufficient information on time-varying treatments and confounders.
 
