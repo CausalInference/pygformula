@@ -3,7 +3,7 @@ Welcome to pygformula's documentation!
 ======================================
 
 The `pygformula <https://github.com/CausalInference/pygformula>`_ package implements the non-iterative
-conditional expectation (NICE) algorithm of the g-formula algorithm [1]_ :sup:`,` [2]_. The g-formula can estimate an
+conditional expectation (NICE) estimator of the g-formula algorithm [1]_ :sup:`,` [2]_. The g-formula can estimate an
 outcome’s counterfactual mean or risk under hypothetical treatment strategies (interventions) when there
 is sufficient information on time-varying treatments and confounders.
 
