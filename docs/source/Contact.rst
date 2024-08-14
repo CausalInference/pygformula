@@ -3,7 +3,7 @@ Contact
 
 The pygformula package was developed in the CAUSALab by:
 
- - Jing Li (jing_li@hsph.harvard.edu)
+ - Jing Li, jing_li@hsph.harvard.edu
  - Sophia Rein, srein@hsph.harvard.edu
  - Sean McGrath, sean_mcgrath@g.harvard.edu
  - Roger Logan, rwlogan@hsph.harvard.edu
