@@ -1,3 +1,4 @@
+cmprsk>=1.1.0
 joblib>=1.2.0
 lifelines>=0.27.4
 matplotlib>=3.5.1
