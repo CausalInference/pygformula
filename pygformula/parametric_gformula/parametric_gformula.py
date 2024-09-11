@@ -100,10 +100,10 @@ class ParametricGformula:
         for the covariates with custom type. The 'NA' value is set for other covariates. The list must be the
         same length as covnames and in the same order.
 
-    ymodel_fit_custom: Function
+    ymodel_fit_custom: Function, default is None
         A user-specified fit function for the outcome variable.
 
-    ymodel_predict_custom: Function
+    ymodel_predict_custom: Function, default is None
         A user-specified predict function for the outcome variable.
 
     nsamples: Int, default is 0
