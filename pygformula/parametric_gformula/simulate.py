@@ -23,7 +23,7 @@ def truc_sample(mean, rmse, a, b):
 
 def simulate(seed, time_points, time_name, id, obs_data, basecovs,
              outcome_type, rmses, bounds, intervention,
-             custom_histvars, custom_histories, covpredict_custom, outcome_fit, outcome_name,
+             custom_histvars, custom_histories, covpredict_custom, ymodel_predict_custom, ymodel, outcome_fit, outcome_name,
              competing, compevent_name, compevent_model, compevent_fit, compevent_cens, trunc_params,
              visit_names, visit_covs, ts_visit_names, max_visits, time_thresholds, baselags, below_zero_indicator,
              restrictions, yrestrictions, compevent_restrictions, covnames, covtypes, covmodels,
@@ -104,6 +104,12 @@ def simulate(seed, time_points, time_name, id, obs_data, basecovs,
         A list, each element could be 'NA' or a user-specified predict function. The non-NA value is set
         for the covariates with custom type. The 'NA' value is set for other covariates. The list must be the
         same length as covnames and in the same order.
+
+    ymodel_predict_custom: Function
+        A user-specified predict function for the outcome variable.
+
+    ymodel: Str
+        A string specifying the model statement for the outcome variable.
 
     outcome_fit: Class
         A class object of the fitted model for outcome.
@@ -226,7 +232,10 @@ def simulate(seed, time_points, time_name, id, obs_data, basecovs,
 
                 new_df[compevent_name] = new_df['prob_D'].apply(binorm_sample)
 
-            pre_y = outcome_fit.predict(new_df)
+            if ymodel_predict_custom is not None:
+                pre_y = ymodel_predict_custom(ymodel=ymodel, new_df=new_df, fit=outcome_fit)
+            else:
+                pre_y = outcome_fit.predict(new_df)
 
             if outcome_type == 'survival':
                 new_df['prob1'] = pre_y
@@ -404,7 +413,10 @@ def simulate(seed, time_points, time_name, id, obs_data, basecovs,
 
                 new_df[compevent_name] = new_df['prob_D'].apply(binorm_sample)
 
-            pre_y = outcome_fit.predict(new_df)
+            if ymodel_predict_custom is not None:
+                pre_y = ymodel_predict_custom(ymodel=ymodel, new_df=new_df, fit=outcome_fit)
+            else:
+                pre_y = outcome_fit.predict(new_df)
 
             if outcome_type == 'survival':
                 new_df['prob1'] = pre_y

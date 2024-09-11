@@ -11,6 +11,7 @@ from ..utils.helper import hr_data_helper, hr_comp_data_helper
 def Bootstrap(obs_data, boot_id, boot_seeds, int_descript, intervention_dicts, covnames,
               basecovs, cov_hist, time_points, n_simul, time_name, id, custom_histvars, custom_histories,
               covmodels, hazardratio, intcomp, covtypes, covfits_custom, covpredict_custom,
+              ymodel_fit_custom, ymodel_predict_custom,
               ymodel, outcome_type, outcome_name, competing, compevent_name, compevent_model, compevent_cens,
               boot_diag, trunc_params, visit_names, visit_covs, ts_visit_names, max_visits, time_thresholds,
               below_zero_indicator, baselags, restrictions, yrestrictions, compevent_restrictions):
@@ -95,6 +96,12 @@ def Bootstrap(obs_data, boot_id, boot_seeds, int_descript, intervention_dicts, c
         A list, each element could be 'NA' or a user-specified predict function. The non-NA value is set
         for the covariates with custom type. The 'NA' value is set for other covariates. The list must be the
         same length as covnames and in the same order.
+
+    ymodel_fit_custom: Function
+        A user-specified fit function for the outcome variable.
+
+    ymodel_predict_custom: Function
+        A user-specified predict function for the outcome variable.
 
     ymodel: Str
         A string specifying the model statement for the outcome variable.
@@ -206,8 +213,8 @@ def Bootstrap(obs_data, boot_id, boot_seeds, int_descript, intervention_dicts, c
                                 visit_covs=visit_covs, restrictions=restrictions)
 
         outcome_fit, ymodel_coeffs, ymodel_stderrs, ymodel_vcovs, ymodel_fits_summary = \
-            fit_ymodel(ymodel=ymodel, outcome_type=outcome_type,
-                              outcome_name=outcome_name, time_name=time_name, obs_data=resample_data,
+            fit_ymodel(ymodel=ymodel, outcome_type=outcome_type, outcome_name=outcome_name,
+                              ymodel_fit_custom=ymodel_fit_custom, time_name=time_name, obs_data=resample_data,
                               competing=competing, compevent_name=compevent_name, return_fits=boot_diag,
                               yrestrictions=yrestrictions)
 
@@ -250,7 +257,8 @@ def Bootstrap(obs_data, boot_id, boot_seeds, int_descript, intervention_dicts, c
                                        obs_data=resample_data,
                                        intervention=intervention_dicts[intervention_name],
                                        custom_histvars = custom_histvars, custom_histories=custom_histories,
-                                       covpredict_custom=covpredict_custom,
+                                       covpredict_custom=covpredict_custom, ymodel=ymodel,
+                                       ymodel_predict_custom=ymodel_predict_custom,
                                        outcome_fit=outcome_fit, outcome_name=outcome_name,
                                        competing=competing, compevent_name=compevent_name,
                                        compevent_fit=compevent_fit, compevent_model=compevent_model,
