@@ -241,8 +241,8 @@ def fit_covariate_model(covmodels, covnames, covtypes, covfits_custom, time_name
     return covariate_fits, bounds, rmses, model_coeffs, model_stderrs, model_vcovs, model_fits_summary
 
 
-def fit_ymodel(ymodel, outcome_type, outcome_name, time_name, obs_data, competing, compevent_name,
-                      return_fits, yrestrictions):
+def fit_ymodel(ymodel, outcome_type, outcome_name, ymodel_fit_custom, time_name, obs_data,
+               competing, compevent_name, return_fits, yrestrictions):
     """
     This is a function to fit parametric model for the outcome.
 
@@ -256,6 +256,9 @@ def fit_ymodel(ymodel, outcome_type, outcome_name, time_name, obs_data, competin
 
     outcome_name: Str
         A string specifying the name of the outcome variable in obs_data.
+
+    ymodel_fit_custom: Function
+        A user-specified fit function for the outcome variable.
 
     time_name: Str
         A string specifying the name of the time variable in obs_data.
@@ -317,11 +320,20 @@ def fit_ymodel(ymodel, outcome_type, outcome_name, time_name, obs_data, competin
         fit_data = fit_data[(fit_data[outcome_name].notna()) & (fit_data[compevent_name] == 0)]
     else:
         fit_data = fit_data[fit_data[outcome_name].notna()]
+
     if outcome_type == 'survival' or outcome_type == 'binary_eof':
-        outcome_fit = smf.glm(ymodel, fit_data, family=sm.families.Binomial()).fit()
+        if ymodel_fit_custom is not None:
+            outcome_fit = ymodel_fit_custom(ymodel, fit_data)
+            print('outcome_fit', outcome_fit)
+        else:
+            outcome_fit = smf.glm(ymodel, fit_data, family=sm.families.Binomial()).fit()
     elif outcome_type == 'continuous_eof':
-        outcome_fit = smf.glm(ymodel, data=fit_data, family=sm.families.Gaussian()).fit()
-    if return_fits:
+        if ymodel_fit_custom is not None:
+            outcome_fit = ymodel_fit_custom(ymodel, fit_data)
+        else:
+            outcome_fit = smf.glm(ymodel, data=fit_data, family=sm.families.Gaussian()).fit()
+
+    if return_fits and not ymodel_fit_custom:
         model_coeffs[outcome_name] = outcome_fit.params
         model_stderrs[outcome_name] = outcome_fit.bse
         model_vcovs[outcome_name] = outcome_fit.cov_params()

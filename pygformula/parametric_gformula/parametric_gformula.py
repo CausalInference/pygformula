@@ -100,6 +100,12 @@ class ParametricGformula:
         for the covariates with custom type. The 'NA' value is set for other covariates. The list must be the
         same length as covnames and in the same order.
 
+    ymodel_fit_custom: Function, default is None
+        A user-specified fit function for the outcome variable.
+
+    ymodel_predict_custom: Function, default is None
+        A user-specified predict function for the outcome variable.
+
     nsamples: Int, default is 0
         An integer specifying the number of bootstrap samples to generate.
 
@@ -237,6 +243,8 @@ class ParametricGformula:
                  custom_histories=None,
                  covfits_custom=None,
                  covpredict_custom=None,
+                 ymodel_fit_custom=None,
+                 ymodel_predict_custom=None,
                  nsamples=0,
                  compevent_name=None,
                  compevent_model=None,
@@ -284,6 +292,8 @@ class ParametricGformula:
         self.custom_histories = custom_histories
         self.covfits_custom = covfits_custom
         self.covpredict_custom = covpredict_custom
+        self.ymodel_fit_custom = ymodel_fit_custom
+        self.ymodel_predict_custom = ymodel_predict_custom
         self.nsamples = nsamples
         self.compevent_name = compevent_name
         self.compevent_model = compevent_model
@@ -503,7 +513,8 @@ class ParametricGformula:
 
         outcome_fit, ymodel_coeffs, ymodel_stderrs, ymodel_vcovs, ymodel_fits_summary = \
             fit_ymodel(ymodel=self.ymodel, outcome_type=self.outcome_type,
-                              outcome_name=self.outcome_name, time_name=self.time_name, obs_data=self.obs_data,
+                              outcome_name=self.outcome_name, ymodel_fit_custom=self.ymodel_fit_custom,
+                              time_name=self.time_name, obs_data=self.obs_data,
                               competing=self.competing, compevent_name=self.compevent_name, return_fits=self.model_fits,
                               yrestrictions = self.yrestrictions)
         model_coeffs.update(ymodel_coeffs)
@@ -557,8 +568,8 @@ class ParametricGformula:
                                    covariate_fits=covariate_fits, rmses=rmses, bounds=bounds, outcome_type=self.outcome_type,
                                    obs_data=data, intervention=self.intervention_dicts[intervention_name],
                                    custom_histvars = self.custom_histvars, custom_histories=self.custom_histories,
-                                   covpredict_custom = self.covpredict_custom,
-                                   outcome_fit=outcome_fit, outcome_name=self.outcome_name,
+                                   covpredict_custom = self.covpredict_custom, ymodel_predict_custom=self.ymodel_predict_custom,
+                                   ymodel = self.ymodel, outcome_fit=outcome_fit, outcome_name=self.outcome_name,
                                    competing=self.competing, compevent_name=self.compevent_name,
                                    compevent_fit=compevent_fit, compevent_model=self.compevent_model,
                                    compevent_cens=self.compevent_cens,
@@ -580,8 +591,8 @@ class ParametricGformula:
                                    covariate_fits=covariate_fits, rmses=rmses, bounds=bounds, outcome_type=self.outcome_type,
                                    obs_data=data, intervention=self.intervention_dicts[intervention_name],
                                    custom_histvars = self.custom_histvars, custom_histories=self.custom_histories,
-                                   covpredict_custom = self.covpredict_custom,
-                                   outcome_fit=outcome_fit, outcome_name=self.outcome_name,
+                                   covpredict_custom = self.covpredict_custom, ymodel_predict_custom=self.ymodel_predict_custom,
+                                   ymodel = self.ymodel, outcome_fit=outcome_fit, outcome_name=self.outcome_name,
                                    competing=self.competing, compevent_name=self.compevent_name,
                                    compevent_fit=compevent_fit, compevent_model=self.compevent_model,
                                    compevent_cens=self.compevent_cens,
@@ -678,6 +689,8 @@ class ParametricGformula:
                                                  covmodels=self.covmodels, hazardratio=self.hazardratio,
                                                  intcomp=self.intcomp, covtypes=self.covtypes,
                                                  covfits_custom=self.covfits_custom, ymodel=self.ymodel,
+                                                 ymodel_fit_custom=self.ymodel_fit_custom,
+                                                 ymodel_predict_custom=self.ymodel_predict_custom,
                                                  outcome_type=self.outcome_type, outcome_name=self.outcome_name,
                                                  competing=self.competing, compevent_name=self.compevent_name,
                                                  compevent_model=self.compevent_model, compevent_cens=self.compevent_cens,
@@ -706,6 +719,8 @@ class ParametricGformula:
                                                  covmodels=self.covmodels, hazardratio=self.hazardratio,
                                                  intcomp=self.intcomp, covtypes=self.covtypes,
                                                  covfits_custom=self.covfits_custom, ymodel=self.ymodel,
+                                                 ymodel_fit_custom=self.ymodel_fit_custom,
+                                                 ymodel_predict_custom=self.ymodel_predict_custom,
                                                  outcome_type=self.outcome_type, outcome_name=self.outcome_name,
                                                  competing=self.competing, compevent_name=self.compevent_name,
                                                  compevent_model=self.compevent_model, compevent_cens=self.compevent_cens,
