@@ -97,7 +97,6 @@ the parametric g-formula by comparing the two estimates [3]_.
 .. code-block::
 
         import numpy as np
-        import pygformula
         from pygformula import ParametricGformula
         from pygformula.data import load_basicdata_nocomp
 
@@ -157,7 +156,6 @@ the treatment value at each time step k will be replaced by the kth value in the
 .. code-block::
 
     import numpy as np
-    import pygformula
     from pygformula import ParametricGformula
     from pygformula.interventions import static
     from pygformula.data import load_basicdata_nocomp
@@ -199,7 +197,6 @@ the treatment value at each time step k will be replaced by the kth value in the
 .. code-block::
 
     import numpy as np
-    import pygformula
     from pygformula import ParametricGformula
     from pygformula.interventions import static
     from pygformula.data import load_multiple_treatments_data
@@ -242,7 +239,6 @@ the treatment value at each time step k will be replaced by the kth value in the
 .. code-block::
 
         import numpy as np
-        import pygformula
         from pygformula import ParametricGformula
         from pygformula.interventions import static
         from pygformula.data import load_basicdata_nocomp
@@ -323,7 +319,6 @@ The function should modify the data table ‘‘new_df’’ in place, no output
 
 .. code-block::
 
-        import pygformula
         from pygformula import ParametricGformula
         from pygformula.data import load_basicdata_nocomp
 
@@ -418,7 +413,6 @@ An example of grace period intervention where the treatment is initiated when mu
 .. code-block::
 
         import numpy as np
-        import pygformula
         from pygformula import ParametricGformula
         from pygformula.interventions import natural_grace_period
         from pygformula.data import load_basicdata_nocomp
@@ -492,7 +486,6 @@ in the first entry and the condition of the covariate in the second entry.
 .. code-block::
 
         import numpy as np
-        import pygformula
         from pygformula import ParametricGformula
         from pygformula.interventions import uniform_grace_period
         from pygformula.data import load_basicdata_nocomp
@@ -572,7 +565,6 @@ set the treatment the threshold value.
 .. code-block::
 
         import numpy as np
-        import pygformula
         from pygformula import ParametricGformula
         from pygformula.interventions import threshold
         from pygformula.data import load_threshold_data

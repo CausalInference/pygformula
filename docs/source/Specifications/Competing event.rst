@@ -46,7 +46,6 @@ Setting ‘‘compevent_cens’’ as default (False):
 
 .. code-block::
 
-        import pygformula
         from pygformula import ParametricGformula
         from pygformula.interventions import static
         from pygformula.data import load_basicdata

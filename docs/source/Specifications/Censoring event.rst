@@ -55,7 +55,6 @@ Users can also specify a percentile value (in the argument ‘‘ipw_cutoff_quan
 .. code-block::
 
         import numpy as np
-        import pygformula
         from pygformula import ParametricGformula
         from pygformula.interventions import static
         from pygformula.data import load_censor_data

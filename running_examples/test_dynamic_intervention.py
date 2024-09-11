@@ -1,5 +1,4 @@
 import numpy as np
-import pygformula
 from pygformula import ParametricGformula
 from pygformula.data import load_basicdata_nocomp
 

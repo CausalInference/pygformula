@@ -2,12 +2,13 @@
 
 [![PyPI version](https://badge.fury.io/py/pygformula.svg)](https://pypi.org/project/pygformula)
 [![Documentation Status](https://readthedocs.org/projects/pygformula/badge/?version=latest)](https://pygformula.readthedocs.io)
+[![Downloads](https://static.pepy.tech/badge/pygformula)](https://pepy.tech/project/pygformula)
 
 **Authors: Jing Li, Sophia Rein, Sean McGrath, Roger Logan, Ryan O’Dea, Miguel Hernán**
 
 
 ## Overview
-The pygformula package implements the non-iterative conditional expectation (NICE) algorithm of the g-formula algorithm
+The pygformula package implements the non-iterative conditional expectation (NICE) estimator of the g-formula algorithm
 (Robins, 1986). The g-formula can estimate an outcome’s counterfactual mean or risk under hypothetical treatment strategies
 (interventions) when there is sufficient information on time-varying treatments and confounders.
 

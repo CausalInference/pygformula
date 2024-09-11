@@ -56,11 +56,10 @@ times. The dataset contains the following variables:
 We are interested in the risk by the end of follow-up under the static interventions ‘‘Never treat’’ (set treatment
 to 0 at all times) and ‘‘Always treat’’ (set treatment to 1 at all times).
 
-- First, import the g-formula package:
+- First, import the g-formula method ParametricGformula:
 
   .. code-block::
 
-      import pygformula
       from pygformula import ParametricGformula
 
 - Then, load the data (here is an example of loading simulated `data <https://github.com/CausalInference/pygformula/blob/main/datasets/example_data_basicdata_nocomp.csv>`_ in the package,

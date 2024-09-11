@@ -194,7 +194,6 @@ An example where the covariate ''L1'' is binomial distribution
 .. code-block::
 
         import numpy as np
-        import pygformula
         from pygformula import ParametricGformula
         from pygformula.interventions import static
         from pygformula.data import load_basicdata_nocomp
@@ -267,7 +266,6 @@ from the fitted model. Values generated outside the observed range for the covar
 .. code-block::
 
         import numpy as np
-        import pygformula
         from pygformula import ParametricGformula
         from pygformula.interventions import static
         from pygformula.data import load_basicdata_nocomp
@@ -336,7 +334,6 @@ e.g., in the example above, users need to add a ‘‘C( )’’ on the variable
 .. code-block::
 
         import numpy as np
-        import pygformula
         from pygformula import ParametricGformula
         from pygformula.interventions import static
         from pygformula.data import load_categorical
@@ -404,7 +401,6 @@ and values generated outside the observed range for the covariate are set to the
 .. code-block::
 
         import numpy as np
-        import pygformula
         from pygformula import ParametricGformula
         from pygformula.interventions import static
         from pygformula.data import load_basicdata_nocomp
@@ -476,7 +472,6 @@ of the covariate.
 .. code-block::
 
         import numpy as np
-        import pygformula
         from pygformula import ParametricGformula
         from pygformula.interventions import static
         from pygformula.data import load_zero_inflated_normal
@@ -614,7 +609,6 @@ time and all subsequent times is set to 1.
 .. code-block::
 
         import numpy as np
-        import pygformula
         from pygformula import ParametricGformula
         from pygformula.interventions import static
         from pygformula.data import load_absorbing_data
@@ -693,7 +687,6 @@ the syntax example above, C() should be added.
 .. code-block::
 
         import numpy as np
-        import pygformula
         from pygformula import ParametricGformula
         from pygformula.interventions import static
         from pygformula.data import load_basicdata_nocomp
@@ -759,7 +752,6 @@ of 'square' and the time name in the data, e.g., 'square_t0'.
 .. code-block::
 
         import numpy as np
-        import pygformula
         from pygformula import ParametricGformula
         from pygformula.interventions import static
         from pygformula.data import load_basicdata_nocomp
@@ -878,7 +870,6 @@ The custom predict function for the random forest model:
         import numpy as np
         import re
         from sklearn.ensemble import RandomForestRegressor
-        import pygformula
         from pygformula import ParametricGformula
         from pygformula.interventions import static
         from pygformula.data import load_basicdata_nocomp

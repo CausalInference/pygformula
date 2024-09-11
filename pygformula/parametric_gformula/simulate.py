@@ -27,7 +27,7 @@ def simulate(seed, time_points, time_name, id, obs_data, basecovs,
              competing, compevent_name, compevent_model, compevent_fit, compevent_cens, trunc_params,
              visit_names, visit_covs, ts_visit_names, max_visits, time_thresholds, baselags, below_zero_indicator,
              restrictions, yrestrictions, compevent_restrictions, covnames, covtypes, covmodels,
-             covariate_fits, cov_hist):
+             covariate_fits, cov_hist, sim_trunc):
 
     """
     This is an internal function to perform Monte Carlo simulation of the parametric g-formula.
@@ -182,6 +182,9 @@ def simulate(seed, time_points, time_name, id, obs_data, basecovs,
         should be True when the competing event is modeled, the second entry is the value that is set to the competing
         event during simulation when the conditions in the first entry are not True. Only applicable for survival outcomes.
 
+    sim_trunc: Bool
+        A boolean value indicating if the simulated values of normal covariates are truncated by the observed ranges.
+
     Returns
     -------
     g_result: List
@@ -300,8 +303,9 @@ def simulate(seed, time_points, time_name, id, obs_data, basecovs,
                         elif covtypes[k] == 'normal':
                             estimated_mean = covariate_fits[cov].predict(new_df)
                             prediction = estimated_mean.apply(norm_sample, rmse=rmses[cov])
-                            prediction = np.where(prediction < bounds[cov][0], bounds[cov][0], prediction)
-                            prediction = np.where(prediction > bounds[cov][1], bounds[cov][1], prediction)
+                            if sim_trunc:
+                                prediction = np.where(prediction < bounds[cov][0], bounds[cov][0], prediction)
+                                prediction = np.where(prediction > bounds[cov][1], bounds[cov][1], prediction)
                             new_df[cov] = prediction
 
                         elif covtypes[k] == 'categorical':

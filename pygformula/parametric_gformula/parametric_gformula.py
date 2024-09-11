@@ -163,6 +163,9 @@ class ParametricGformula:
         An integer indicating the number of subjects for whom to simulate data. It is set equal to the number (M) of
         subjects in obs_data, if not specified by users.
 
+    sim_trunc: Bool, default is True
+        A boolean value indicating if the simulated values of normal covariates are truncated by the observed ranges.
+
     baselags: Bool, default is False
         A boolean value specifying the convention used for lagi and lag_cumavgi terms in the model statements when
         pre-baseline times are not included in obs_data and when the current time index, t, is such that t < i. If this
@@ -258,6 +261,7 @@ class ParametricGformula:
                  time_thresholds=None,
                  time_points=None,
                  n_simul=None,
+                 sim_trunc=True,
                  baselags=False,
                  visitprocess=None,
                  restrictions=None,
@@ -306,6 +310,7 @@ class ParametricGformula:
         self.time_thresholds = time_thresholds
         self.time_points = time_points
         self.n_simul = n_simul
+        self.sim_trunc = sim_trunc
         self.baselags = baselags
         self.visitprocess = visitprocess
         self.restrictions = restrictions
@@ -451,6 +456,7 @@ class ParametricGformula:
                 'time_thresholds': self.time_thresholds,
                 'time_points': self.time_points,
                 'n_simul': self.n_simul,
+                'sim_trunc': self.sim_trunc,
                 'baselags': self.baselags,
                 'visitprocess': self.visitprocess,
                 'basecovs': self.basecovs,
@@ -572,7 +578,8 @@ class ParametricGformula:
                                    max_visits=self.max_visits, time_thresholds=self.time_thresholds,
                                    baselags=self.baselags, below_zero_indicator=self.below_zero_indicator,
                                    restrictions = self.restrictions, yrestrictions=self.yrestrictions,
-                                   compevent_restrictions = self.compevent_restrictions)
+                                   compevent_restrictions = self.compevent_restrictions,
+                                   sim_trunc=self.sim_trunc)
                  for intervention_name in self.int_descript)
             )
         else:
@@ -594,7 +601,8 @@ class ParametricGformula:
                                    max_visits=self.max_visits, time_thresholds=self.time_thresholds,
                                    baselags=self.baselags, below_zero_indicator=self.below_zero_indicator,
                                    restrictions=self.restrictions, yrestrictions=self.yrestrictions,
-                                   compevent_restrictions=self.compevent_restrictions
+                                   compevent_restrictions=self.compevent_restrictions,
+                                   sim_trunc=self.sim_trunc
                                    )
                 self.all_simulate_results.append(simulate_result)
 
@@ -692,7 +700,8 @@ class ParametricGformula:
                                                  time_thresholds=self.time_thresholds,
                                                  below_zero_indicator=self.below_zero_indicator, baselags=self.baselags,
                                                  restrictions=self.restrictions, yrestrictions=self.yrestrictions,
-                                                 compevent_restrictions=self.compevent_restrictions
+                                                 compevent_restrictions=self.compevent_restrictions,
+                                                 sim_trunc=self.sim_trunc
                                         )
                      for i in tqdm(range(self.nsamples), desc='Bootstrap progress'))
                 )
@@ -721,7 +730,8 @@ class ParametricGformula:
                                                  time_thresholds=self.time_thresholds,
                                                  below_zero_indicator=self.below_zero_indicator, baselags=self.baselags,
                                                  restrictions=self.restrictions, yrestrictions=self.yrestrictions,
-                                                 compevent_restrictions=self.compevent_restrictions
+                                                 compevent_restrictions=self.compevent_restrictions,
+                                                 sim_trunc=self.sim_trunc
                                                  )
 
                     boot_results_dicts.append(boot_result_dict)

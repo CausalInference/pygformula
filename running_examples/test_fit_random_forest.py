@@ -2,7 +2,6 @@ import numpy as np
 import re
 from sklearn.ensemble import RandomForestRegressor
 
-import pygformula
 from pygformula.interventions import static
 from pygformula import ParametricGformula
 from pygformula.data import load_basicdata_nocomp

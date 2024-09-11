@@ -1,4 +1,3 @@
-import pygformula
 from pygformula import ParametricGformula
 from pygformula.interventions import threshold
 from pygformula.data import load_binary_eof
