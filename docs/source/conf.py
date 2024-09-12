@@ -36,11 +36,12 @@ release = __version__
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 
-import matplotlib
 
 if os.environ.get('READTHEDOCS') == 'True' or not os.environ.get('DISPLAY'):
+    import matplotlib
     matplotlib.use('Agg')  # Use non-interactive backend in headless environment
 else:
+    import matplotlib
     matplotlib.use('Qt5Agg')  # Use Qt backend for local environment
 
 
