@@ -14,6 +14,8 @@ build:
       - sphinx-build -b html docs/source docs/build/html      # Build the documentation using Sphinx
   apt_packages:
     - xvfb  # Install Xvfb on the ReadTheDocs build environment
+    - libxkbcommon-x11-0
+    - libxcb-xinerama0
 
 sphinx:
   configuration: docs/source/conf.py
