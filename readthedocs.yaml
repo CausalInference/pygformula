@@ -9,13 +9,7 @@ build:
       - python -m pip install -r requirements.txt  # Install from requirements.txt
       - python -m pip install -r docs/requirements.txt  # Install from docs/requirements.txt
       - python -m pip install sphinx_rtd_theme
-      - Xvfb :99 -screen 0 1024x768x24 &       # Start Xvfb
-      - export DISPLAY=:99                     # Set the DISPLAY environment variable
       - sphinx-build -b html docs/source docs/build/html      # Build the documentation using Sphinx
-  apt_packages:
-    - xvfb  # Install Xvfb on the ReadTheDocs build environment
-    - libxkbcommon-x11-0
-    - libxcb-xinerama0
 
 sphinx:
   configuration: docs/source/conf.py
