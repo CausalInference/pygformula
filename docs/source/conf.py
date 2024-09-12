@@ -36,6 +36,14 @@ release = __version__
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 
+# Set the backend to Qt5Agg if using a graphical interface
+import matplotlib
+matplotlib.use('Qt5Agg')
+
+# Ensure DISPLAY is set for headless environments
+if not os.environ.get('DISPLAY'):
+    raise RuntimeError('Xvfb is not running or DISPLAY is not set.')
+
 
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.autosummary',

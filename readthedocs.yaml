@@ -7,6 +7,11 @@ build:
   jobs:
     post_create_environment:
       - python -m pip install sphinx_rtd_theme
+      - Xvfb :99 -screen 0 1024x768x24 &       # Start Xvfb
+      - export DISPLAY=:99                     # Set the DISPLAY environment variable
+      - sphinx-build -b html . _build/html      # Build the documentation using Sphinx
+  apt_packages:
+    - xvfb  # Install Xvfb on the ReadTheDocs build environment
 
 sphinx:
   configuration: docs/source/conf.py
