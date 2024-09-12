@@ -6,6 +6,8 @@ build:
     python: "3.8"
   jobs:
     post_create_environment:
+      - python -m pip install -r requirements.txt  # Install from requirements.txt
+      - python -m pip install -r docs/requirements.txt  # Install from docs/requirements.txt
       - python -m pip install sphinx_rtd_theme
       - Xvfb :99 -screen 0 1024x768x24 &       # Start Xvfb
       - export DISPLAY=:99                     # Set the DISPLAY environment variable
@@ -19,10 +21,3 @@ sphinx:
 formats:
    - pdf
    - epub
-
-python:
-   install:
-     - method: pip
-       path: .
-     - requirements: docs/requirements.txt
-     - requirements: requirements.txt
