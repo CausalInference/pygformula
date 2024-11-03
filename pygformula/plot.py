@@ -4,7 +4,6 @@ import seaborn as sns
 import math
 import os
 import matplotlib
-matplotlib.use('Qt5Agg')
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 
