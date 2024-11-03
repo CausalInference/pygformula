@@ -863,6 +863,10 @@ The custom predict function for the random forest model:
       g = ParametricGformula(..., covfits_custom = covfits_custom, covfits_custom = covpredict_custom, ...)
 
 
+Note that the package only provides sampling in the simulation step for the built-in covariate types.
+When the covariate is assumed to have a custom underlying distribution, users need to feed in the distribution in the
+custom fit function and sample from that distribution to get the sampled values in the custom predict function.
+
 **Running examples** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_fit_random_forest.py>`_:
 
 .. code-block::
