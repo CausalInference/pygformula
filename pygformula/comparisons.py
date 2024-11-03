@@ -195,11 +195,11 @@ def comparison_calculate(obs_data, time_name, time_points, id, covnames, covtype
                     all_levels = np.unique(obs_data[covname])
                     all_levels_obs_prob_mean = []
                     for level in all_levels:
-                        obs_level_prob = obs_data[obs_data[covname].notna()].groupby([time_name]).apply(lambda g: ((g[covname] == level)).mean()).tolist()[:time_points]
+                        obs_level_prob = obs_data.groupby([time_name]).apply(lambda g: ((g[covname] == level)).mean()).tolist()[:time_points]
                         all_levels_obs_prob_mean.append(obs_level_prob)
                     obs_means[covname] = all_levels_obs_prob_mean
                 else:
-                    obs_mean = obs_data[obs_data[covname].notna()].groupby([time_name])[covname].mean().tolist()[:time_points]
+                    obs_mean = obs_data.groupby([time_name])[covname].mean().tolist()[:time_points]
                     obs_means[covname] = obs_mean
 
         if outcome_type == 'binary_eof' or outcome_type == 'continuous_eof':

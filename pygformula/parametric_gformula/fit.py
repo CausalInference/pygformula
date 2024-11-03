@@ -128,6 +128,12 @@ def fit_covariate_model(covmodels, covnames, covtypes, covfits_custom, time_name
                        mask = fit_data[cond_var].apply(condition)
                        fit_data = fit_data[mask]
 
+            # exclude rows that contains NA values of the predictors in fit_data
+            predictors = covmodels[k].split('~')[1].strip().split(' + ')
+            all_vars = predictors + [cov]
+            all_vars = [item[2:-1] if item.startswith('C(') and item.endswith(')') else item for item in all_vars]
+            fit_data = fit_data[all_vars].dropna()
+
             if covtypes[k] == 'binary':
                 fit = smf.glm(covmodels[k], data=fit_data, family=sm.families.Binomial()).fit()
                 rmse = np.sqrt(np.mean((fit.predict() - fit_data[cov]) ** 2))
