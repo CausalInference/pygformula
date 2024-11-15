@@ -330,7 +330,6 @@ def fit_ymodel(ymodel, outcome_type, outcome_name, ymodel_fit_custom, time_name,
     if outcome_type == 'survival' or outcome_type == 'binary_eof':
         if ymodel_fit_custom is not None:
             outcome_fit = ymodel_fit_custom(ymodel, fit_data)
-            print('outcome_fit', outcome_fit)
         else:
             outcome_fit = smf.glm(ymodel, fit_data, family=sm.families.Binomial()).fit()
     elif outcome_type == 'continuous_eof':
