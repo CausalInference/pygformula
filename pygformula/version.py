@@ -22,4 +22,4 @@
 # The pygformula 1.0 implements the non-iterative conditional expectation (NICE) algorithm of the g-formula with
 # parametric models for covariates, treatments and the outcome.
 
-__version__ = '1.1.4'
+__version__ = '1.1.6'
