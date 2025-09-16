@@ -310,8 +310,10 @@ def simulate(seed, time_points, time_name, id, obs_data, basecovs,
 
                         elif covtypes[k] == 'categorical':
                             predict_probs = covariate_fits[cov].predict(new_df)
-                            predict_index = np.asarray(predict_probs).argmax(1)
-                            prediction = list(map(lambda x: pd.Categorical(obs_data[cov]).categories[x], predict_index))
+                            predict_probs = np.asarray(predict_probs)
+                            categories = pd.Categorical(obs_data[cov]).categories
+                            predict_index = [np.random.choice(len(probs), p=probs) for probs in predict_probs]
+                            prediction = [categories[i] for i in predict_index]
                             new_df[cov] = prediction
 
                         elif covtypes[k] == 'bounded normal':
