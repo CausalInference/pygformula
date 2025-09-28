@@ -262,7 +262,7 @@ def simulate(seed, time_points, time_name, id, obs_data, basecovs,
                 new_df['Ey'] = 'NA' if t < time_points - 1 else pre_y
 
             if competing and not compevent_cens:
-                new_df.loc[new_df[compevent_name] == 1, outcome_name] = 'NA'
+                new_df.loc[new_df[compevent_name] == 1, outcome_name] = pd.NA
 
             pool = pd.concat([pool[pool[time_name] < t], new_df])
             pool.sort_values([id, time_name], ascending=[True, True], inplace=True)
@@ -446,7 +446,7 @@ def simulate(seed, time_points, time_name, id, obs_data, basecovs,
                 new_df['Ey'] = 'NA' if t < time_points - 1 else pre_y
 
             if competing and not compevent_cens:
-                new_df[outcome_name] = 'NA'
+                new_df.loc[new_df[compevent_name] == 1, outcome_name] = pd.NA
 
             pool.loc[pool[time_name] == t] = new_df
 

@@ -546,7 +546,7 @@ class ParametricGformula:
             censor_fit = None
 
         if self.n_simul != len(np.unique(self.obs_data[self.id])):
-            data_list = dict(list(self.obs_data.groupby(self.id, group_keys=True)))
+            data_list = dict(list(self.obs_data.groupby(self.id, group_keys=False)))
             ids = np.unique(self.obs_data[self.id])
             new_ids = np.random.choice(ids, self.n_simul, replace=True)
             new_df = []

@@ -239,16 +239,16 @@ def Bootstrap(obs_data, boot_id, boot_seeds, int_descript, intervention_dicts, c
             compevent_fit = None
 
         if n_simul != len(np.unique(resample_data[id])):
-            data_list = dict(list(obs_data.groupby(id, group_keys=True)))
-            ids = np.unique(obs_data[id])
-            new_ids = np.random.choice(ids, n_simul, replace=True)
+            data_list = dict(list(resample_data.groupby(id, group_keys=False)))
+            boot_ids = np.unique(resample_data[id])
+            new_boot_ids = np.random.choice(boot_ids, n_simul, replace=True)
 
-            new_df = []
-            for index, new_id in enumerate(new_ids):
-                new_id_df = data_list[new_id].copy()
-                new_id_df[id] = index
-                new_df.append(new_id_df)
-            resample_data = pd.concat(new_df, ignore_index=True)
+            new_boot_df = []
+            for index, new_id in enumerate(new_boot_ids):
+                new_boot_id_df = data_list[new_id].copy()
+                new_boot_id_df[id] = index
+                new_boot_df.append(new_boot_id_df)
+            resample_data = pd.concat(new_boot_df, ignore_index=True)
 
         boot_results = []
         boot_pools = []
