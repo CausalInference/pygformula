@@ -635,7 +635,7 @@ class ParametricGformula:
             pool2 = self.pools[self.intcomp[1]]
 
             if self.competing and not self.compevent_cens:
-                import cmprsk.cmprsk as cmprsk
+                from CompRiskReg import crr as _crr
 
                 new_pool1 = pool1.groupby(self.id, group_keys=False).apply(hr_comp_data_helper,
                                            outcome_name=self.outcome_name, compevent_name=self.compevent_name)
@@ -649,8 +649,8 @@ class ParametricGformula:
                 concat_data['event'] = np.where(concat_data[self.compevent_name] == 1, 2, concat_data[self.outcome_name]).tolist()
                 ftime = concat_data[self.time_name]
                 fstatus = concat_data['event']
-                crr_res = cmprsk.crr(failure_time=ftime, failure_status=fstatus, static_covariates=concat_data[['regime']])
-                self.hazard_ratio = crr_res.hazard_ratio()[0][0]
+                crr_res = _crr(ftime=ftime.to_numpy(), fstatus=fstatus.to_numpy(), cov1=concat_data[['regime']].to_numpy())
+                self.hazard_ratio = float(np.exp(crr_res.coef[0]))
             else:
                 new_pool1 = pool1.groupby(self.id, group_keys=False).apply(hr_data_helper,
                                                                                 outcome_name=self.outcome_name)
