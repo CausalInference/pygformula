@@ -283,7 +283,7 @@ def Bootstrap(obs_data, boot_id, boot_seeds, int_descript, intervention_dicts, c
             pool2 = boot_pools[intcomp[1]]
 
             if competing and not compevent_cens:
-                import cmprsk.cmprsk as cmprsk
+                from CompRiskReg import crr as _crr
 
                 new_pool1 = pool1.groupby(id, group_keys=False).apply(hr_comp_data_helper,
                             outcome_name=outcome_name, compevent_name=compevent_name)
@@ -298,8 +298,8 @@ def Bootstrap(obs_data, boot_id, boot_seeds, int_descript, intervention_dicts, c
                                                 concat_data[outcome_name]).tolist()
                 ftime = concat_data[time_name]
                 fstatus = concat_data['event']
-                crr_res = cmprsk.crr(failure_time=ftime, failure_status=fstatus, static_covariates=concat_data[['regime']])
-                hazard_ratio = crr_res.hazard_ratio()[0][0]
+                crr_res = _crr(ftime=ftime.to_numpy(), fstatus=fstatus.to_numpy(), cov1=concat_data[['regime']].to_numpy())
+                hazard_ratio = float(np.exp(crr_res.coef[0]))
             else:
                 new_pool1 = pool1.groupby(id, group_keys=False).apply(hr_data_helper, outcome_name=outcome_name)
                 new_pool2 = pool2.groupby(id, group_keys=False).apply(hr_data_helper, outcome_name=outcome_name)
