@@ -17,10 +17,11 @@ def read_intervention_input(interventions, int_descript):
         index = intervention_key.find('_') # Get the treatment name
         treatment_name = intervention_key[index+1:]
 
-        intervention.insert(0, treatment_name)
+        intervention_copy = intervention.copy()
+        intervention_copy.insert(0, treatment_name)
         if intervention_name not in intervention_dicts:
             intervention_dicts[intervention_name] = []
-        intervention_dicts[intervention_name].append(intervention)
+        intervention_dicts[intervention_name].append(intervention_copy)
 
     return intervention_dicts
 
