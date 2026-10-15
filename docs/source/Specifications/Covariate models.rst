@@ -39,7 +39,7 @@ An example for specifying the covariate model for covariate L1 based on the hist
       L1 ~ lag1_L1 + cumavg_L1 + lag_cumavg1_L1 + L3 + t0
 
 
-Note: for more covariate transformations (e.g., polynomial terms, spline terms), see `patsy <https://patsy.readthedocs.io/en/latest/index.html>`_
+Note: for more covariate transformations (e.g., polynomial terms, spline terms), see `formulaic <https://matthewwardrop.github.io/formulaic/>`_
 for specification.
 
 

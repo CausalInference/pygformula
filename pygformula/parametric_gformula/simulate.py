@@ -309,10 +309,22 @@ def simulate(seed, time_points, time_name, id, obs_data, basecovs,
                             new_df[cov] = prediction
 
                         elif covtypes[k] == 'categorical':
-                            predict_probs = covariate_fits[cov].predict(new_df)
-                            predict_probs = np.asarray(predict_probs)
-                            categories = pd.Categorical(obs_data[cov]).categories
-                            predict_index = [np.random.choice(len(probs), p=probs) for probs in predict_probs]
+                            categories = covariate_fits[cov].categories
+                            try:
+                                predict_probs = covariate_fits[cov].predict(new_df)
+                            except ValueError as exc:
+                                raise ValueError(
+                                    f"Categorical prediction failed for covariate '{cov}' "
+                                    f"at time {t}: {exc}") from exc
+                            predict_probs = np.asarray(predict_probs, dtype=float)
+                            if not np.all(np.isfinite(predict_probs)):
+                                raise ValueError(
+                                    f"Non-finite category probabilities for covariate '{cov}' "
+                                    f"at time {t}.")
+                            # Safety net only: the fit result already returns rows that sum to 1.
+                            predict_probs = predict_probs / predict_probs.sum(axis=1, keepdims=True)
+                            predict_index = [
+                                np.random.choice(len(categories), p=probs) for probs in predict_probs]
                             prediction = [categories[i] for i in predict_index]
                             new_df[cov] = prediction
 
@@ -338,7 +350,7 @@ def simulate(seed, time_points, time_name, id, obs_data, basecovs,
                         elif covtypes[k] == 'truncated normal':
                             fit_coefficients = covariate_fits[cov]
                             _, covmodel = re.split('~', covmodels[k].replace(' ', ''))
-                            var_names = re.split('\+', covmodel)
+                            var_names = re.split(r'\+', covmodel)
                             new_data = np.concatenate((np.ones((new_df.shape[0], 1)), new_df[var_names].to_numpy()), axis=1)
                             estimated_mean = np.dot(new_data, fit_coefficients['x'][:-1])
 
@@ -403,8 +415,7 @@ def simulate(seed, time_points, time_name, id, obs_data, basecovs,
             new_df = pool[pool[time_name] == t].copy()
 
             if competing and not compevent_cens:
-                params_D = re.split('[~|\+]', compevent_model.replace(' ', ''))
-                prob_D = compevent_fit.predict(new_df[params_D])
+                prob_D = compevent_fit.predict(new_df)
                 new_df['prob_D'] = prob_D
 
                 if compevent_restrictions is not None:

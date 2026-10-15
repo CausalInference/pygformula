@@ -38,6 +38,7 @@ maintainers = [
 ]
 
 dependencies = [
+    'formulaic>=1.1.1,<2.0',
     'joblib>=1.2',
     'lifelines>=0.27',
     'matplotlib>=3.5',
@@ -63,3 +64,6 @@ Documentation = "https://pygformula.readthedocs.io"
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["pygformula*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

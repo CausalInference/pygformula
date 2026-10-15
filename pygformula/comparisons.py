@@ -89,14 +89,14 @@ def comparison_calculate(obs_data, time_name, time_points, id, covnames, covtype
     """
     if censor:
         # for non-parametric cov means and risks
-        censor_pre = censor_fit.predict(obs_data)
+        censor_pre = censor_fit.predict(obs_data, na_action="nan")
         censor_p0_inv = 1 / (1 - censor_pre)
         obs_data['censor_p0_inv'] = censor_p0_inv
         censor_inv_cum = obs_data.groupby([id])['censor_p0_inv'].cumprod()
         obs_data['censor_inv_cum'] = censor_inv_cum
         w_censor = censor_inv_cum * (1 - obs_data[censor_name])
         if outcome_type == 'survival' and compevent_cens:
-            comprisk_p0_inv = 1 / (1 - compevent_fit.predict(obs_data))
+            comprisk_p0_inv = 1 / (1 - compevent_fit.predict(obs_data, na_action="nan"))
             obs_data['comprisk_p0_inv'] = comprisk_p0_inv
             comprisk_inv_cum = obs_data.groupby([id])['comprisk_p0_inv'].cumprod()
             w_comp = np.where((obs_data[compevent_name].isna()) | (obs_data[compevent_name] == 1), 0, comprisk_inv_cum)
@@ -195,7 +195,8 @@ def comparison_calculate(obs_data, time_name, time_points, id, covnames, covtype
                     all_levels = np.unique(obs_data[covname])
                     all_levels_obs_prob_mean = []
                     for level in all_levels:
-                        obs_level_prob = obs_data.groupby([time_name]).apply(lambda g: ((g[covname] == level)).mean(), include_groups=False).tolist()[:time_points]
+                        obs_level_prob = (obs_data[covname] == level).groupby(
+                            obs_data[time_name]).mean().tolist()[:time_points]
                         all_levels_obs_prob_mean.append(obs_level_prob)
                     obs_means[covname] = all_levels_obs_prob_mean
                 else:
@@ -245,14 +246,22 @@ def comparison_calculate(obs_data, time_name, time_points, id, covnames, covtype
                     all_levels = np.unique(obs_data[covname])
                     all_levels_est_prob_mean = []
                     for level in all_levels:
-                        est_level_prob = nc_pool[nc_pool[covname].notna()].groupby([time_name]).apply(
-                            lambda g: ((g[covname] == level) * g['w_cov']).mean() / g['w_cov'].mean(), include_groups=False).tolist()[:time_points]
+                        est_level_prob = (
+                            ((nc_pool[covname] == level) * nc_pool['w_cov'])
+                            [nc_pool[covname].notna()].groupby(
+                                nc_pool[time_name][nc_pool[covname].notna()]).mean()
+                            / nc_pool['w_cov'][nc_pool[covname].notna()].groupby(
+                                nc_pool[time_name][nc_pool[covname].notna()]).mean()
+                        ).tolist()[:time_points]
                         all_levels_est_prob_mean.append(est_level_prob)
                     est_means[covname] = all_levels_est_prob_mean
                 else:
-                    est_mean = nc_pool[nc_pool[covname].notna()].groupby(time_name).apply(lambda g:
-                                                                              (g['w_cov'] * g[covname]).mean()
-                                                                             / g['w_cov'].mean(), include_groups=False).tolist()[:time_points]
+                    est_mean = (
+                        (nc_pool['w_cov'] * nc_pool[covname])[nc_pool[covname].notna()]
+                        .groupby(nc_pool[time_name][nc_pool[covname].notna()]).mean()
+                        / nc_pool['w_cov'][nc_pool[covname].notna()]
+                        .groupby(nc_pool[time_name][nc_pool[covname].notna()]).mean()
+                    ).tolist()[:time_points]
                     est_means[covname] = est_mean
         if outcome_type == 'survival':
             est_means['risk'] = nc_risk
