@@ -826,7 +826,7 @@ An example using random forest to fit a covariate model:
       def fit_rf(covmodel, covname, fit_data):
           max_depth = 2
           y_name, x_name = re.split('~', covmodel.replace(' ', ''))
-          x_name = re.split('\+', x_name.replace(' ', ''))
+          x_name = re.split(r'\+', x_name.replace(' ', ''))
           y = fit_data[y_name].to_numpy()
           X = fit_data[x_name].to_numpy()
           fit_rf = RandomForestRegressor(max_depth=max_depth, random_state=0)
@@ -848,7 +848,7 @@ The custom predict function for the random forest model:
 
       def predict_rf(covmodel, new_df, fit):
           y_name, x_name = re.split('~', covmodel.replace(' ', ''))
-          x_name = re.split('\+', x_name.replace(' ', ''))
+          x_name = re.split(r'\+', x_name.replace(' ', ''))
           X = new_df[x_name].to_numpy()
           prediction = fit.predict(X)
           return prediction
@@ -898,7 +898,7 @@ custom fit function and sample from that distribution to get the sampled values 
         def fit_rf(covmodel, covname, fit_data):
             max_depth = 2
             y_name, x_name = re.split('~', covmodel.replace(' ', ''))
-            x_name = re.split('\+', x_name.replace(' ', ''))
+            x_name = re.split(r'\+', x_name.replace(' ', ''))
             y = fit_data[y_name].to_numpy()
             X = fit_data[x_name].to_numpy()
             fit_rf = RandomForestRegressor(max_depth=max_depth, random_state=0)
@@ -907,7 +907,7 @@ custom fit function and sample from that distribution to get the sampled values 
 
         def predict_rf(covmodel, new_df, fit):
             y_name, x_name = re.split('~', covmodel.replace(' ', ''))
-            x_name = re.split('\+', x_name.replace(' ', ''))
+            x_name = re.split(r'\+', x_name.replace(' ', ''))
             X = new_df[x_name].to_numpy()
             prediction = fit.predict(X)
             return prediction
