@@ -3,10 +3,35 @@ import pandas as pd
 import seaborn as sns
 import math
 import os
+import sys
+import importlib.util
 import matplotlib
-matplotlib.use('Qt5Agg')
-import matplotlib.pyplot as plt
-import matplotlib.colors as mcolors
+
+
+def _select_backend():
+    """Select the Qt5Agg backend only when a display and a Qt binding exist.
+
+    Forcing Qt5Agg at import time fails on machines without a display or when
+    neither PyQt5 nor PySide2 is installed. In those cases leave matplotlib's
+    default backend selection untouched (it falls back to a non-interactive
+    backend).
+    """
+    if os.environ.get('MPLBACKEND'):
+        return
+    if sys.platform.startswith('linux'):
+        if not os.environ.get('DISPLAY') and not os.environ.get('WAYLAND_DISPLAY'):
+            return
+    if (
+        importlib.util.find_spec('PyQt5') is None
+        and importlib.util.find_spec('PySide2') is None
+    ):
+        return
+    matplotlib.use('Qt5Agg')
+
+
+_select_backend()
+import matplotlib.pyplot as plt  # noqa: E402  (backend selected above)
+import matplotlib.colors as mcolors  # noqa: E402  (backend selected above)
 
 
 def plot_categorical(plot_name, cov_name, categorical_obs_mean, categorical_est_mean, obs_data, time_points, time_name,

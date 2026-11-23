@@ -1,10 +1,10 @@
 import numpy as np
-import pandas as pd
 import math
 import re
 import statsmodels.api as sm
-import statsmodels.formula.api as smf
 from pytruncreg import truncreg
+from pygformula.utils.formula import drop_rows_with_missing, fit_glm_formula, get_formula_variables
+from pygformula.utils.multinomial import fit_multinomial_formula
 
 
 def fit_covariate_model(covmodels, covnames, covtypes, covfits_custom, time_name, obs_data, return_fits,
@@ -129,13 +129,11 @@ def fit_covariate_model(covmodels, covnames, covtypes, covfits_custom, time_name
                        fit_data = fit_data[mask]
 
             # exclude rows that contains NA values of the predictors in fit_data
-            predictors = covmodels[k].split('~')[1].strip().split(' + ')
-            all_vars = predictors + [cov]
-            all_vars = [item[2:-1] if item.startswith('C(') and item.endswith(')') else item for item in all_vars]
+            all_vars = sorted(set(get_formula_variables(covmodels[k]) + [cov]))
             fit_data = fit_data[all_vars].dropna()
 
             if covtypes[k] == 'binary':
-                fit = smf.glm(covmodels[k], data=fit_data, family=sm.families.Binomial()).fit()
+                fit = fit_glm_formula(covmodels[k], data=fit_data, family=sm.families.Binomial())
                 rmse = np.sqrt(np.mean((fit.predict() - fit_data[cov]) ** 2))
                 covariate_fits[cov] = fit
                 rmses[cov] = rmse
@@ -149,7 +147,7 @@ def fit_covariate_model(covmodels, covnames, covtypes, covfits_custom, time_name
                 min_cov = fit_data[cov].min()
                 max_cov = fit_data[cov].max()
                 bound = [min_cov, max_cov]
-                fit = smf.glm(covmodels[k], data=fit_data, family=sm.families.Gaussian()).fit()
+                fit = fit_glm_formula(covmodels[k], data=fit_data, family=sm.families.Gaussian())
                 rmse = np.sqrt(np.mean((fit.predict() - fit_data[cov]) ** 2))
                 bounds[cov] = bound
                 covariate_fits[cov] = fit
@@ -161,8 +159,7 @@ def fit_covariate_model(covmodels, covnames, covtypes, covfits_custom, time_name
                     model_fits_summary[cov] = fit.summary()
 
             elif covtypes[k] == 'categorical':
-                fit_data[cov] = pd.Categorical(fit_data[cov]).codes
-                fit = smf.mnlogit(covmodels[k], data=fit_data).fit()
+                fit = fit_multinomial_formula(covmodels[k], fit_data, name=cov)
                 covariate_fits[cov] = fit
                 if return_fits:
                     model_coeffs[cov] = fit.params
@@ -175,7 +172,7 @@ def fit_covariate_model(covmodels, covnames, covtypes, covfits_custom, time_name
                 max_cov = fit_data[cov].max()
                 bound = [min_cov, max_cov]
                 fit_data[cov] = fit_data[cov].apply(lambda x: (x - min_cov) / (max_cov - min_cov))
-                fit = smf.glm(covmodels[k], data=fit_data, family=sm.families.Gaussian()).fit()
+                fit = fit_glm_formula(covmodels[k], data=fit_data, family=sm.families.Gaussian())
                 rmse = np.sqrt(np.mean((fit.predict() - fit_data[cov]) ** 2))
                 bounds[cov] = bound
                 covariate_fits[cov] = fit
@@ -192,12 +189,14 @@ def fit_covariate_model(covmodels, covnames, covtypes, covfits_custom, time_name
                 bound = [min_cov, max_cov]
                 fit_data['I_{0}'.format(cov)] = fit_data[cov].apply(lambda x: 1 if x != 0 else 0)
                 fit_data['log_{0}'.format(cov)] = fit_data[cov].apply(lambda x: math.log(x) if x != 0 else 0)
-                _, fit_model_name = re.split('~', covmodels[k].replace(' ', ''))
-                indicator_model = "~".join(['I_{0}'.format(cov), fit_model_name])
-                indicator_fit = smf.glm(indicator_model, data=fit_data, family=sm.families.Binomial()).fit()
-                log_nonzero_model = "~".join(['log_{0}'.format(cov), fit_model_name])
-                non_zero_fit = smf.glm(log_nonzero_model, data=fit_data[fit_data[cov] != 0],
-                                       family=sm.families.Gaussian()).fit()
+                rhs = covmodels[k].split('~', 1)[1].strip()
+                indicator_model = f'I_{cov} ~ {rhs}'
+                indicator_fit = fit_glm_formula(
+                    indicator_model, data=fit_data, family=sm.families.Binomial())
+                log_nonzero_model = f'log_{cov} ~ {rhs}'
+                non_zero_fit = fit_glm_formula(
+                    log_nonzero_model, data=fit_data[fit_data[cov] != 0],
+                    family=sm.families.Gaussian())
                 rmse = np.sqrt(np.mean((non_zero_fit.predict() - fit_data[fit_data[cov] != 0]['log_{0}'.format(cov)]) ** 2))
                 bounds[cov] = bound
                 covariate_fits[cov] = [indicator_fit, non_zero_fit]
@@ -211,11 +210,16 @@ def fit_covariate_model(covmodels, covnames, covtypes, covfits_custom, time_name
             elif covtypes[k] == 'truncated normal':
                 truncation_value = trunc_params[k][0]
                 truncation_direction = trunc_params[k][1]
+                rhs_terms = [term.strip() for term in covmodels[k].split('~', 1)[1].split('+')]
+                if not all(re.fullmatch(r'[A-Za-z_][A-Za-z0-9_]*', term) for term in rhs_terms):
+                    raise ValueError(
+                        'truncated normal covariates support only plain terms in '
+                        'the model statement')
                 fit_results = truncreg(formula=covmodels[k], data=fit_data, point=truncation_value, direction=truncation_direction)
                 covariate_fits[cov] = fit_results['result']
 
                 _, covmodel = re.split('~', covmodels[k].replace(' ', ''))
-                var_names = re.split('\+', covmodel)
+                var_names = re.split(r'\+', covmodel)
                 new_data = np.concatenate((np.ones((fit_data.shape[0], 1)), fit_data[var_names].to_numpy()), axis=1)
                 fitted_values = np.dot(new_data, fit_results['result']['x'][:-1])
                 rmse = np.sqrt(np.mean((fitted_values - fit_data[cov]) ** 2))
@@ -229,7 +233,7 @@ def fit_covariate_model(covmodels, covnames, covtypes, covfits_custom, time_name
             elif covtypes[k] == 'absorbing':
                 fit_data = fit_data[fit_data[time_name] > 0]
                 absorb_fit_data = fit_data[fit_data['lag1_{0}'.format(cov)] == 0]
-                cov_fit = smf.glm(covmodels[k], absorb_fit_data, family=sm.families.Binomial()).fit()
+                cov_fit = fit_glm_formula(covmodels[k], absorb_fit_data, family=sm.families.Binomial())
                 rmse = np.sqrt(np.mean((cov_fit.predict() - absorb_fit_data[cov]) ** 2))
                 covariate_fits[cov] = cov_fit
                 rmses[cov] = rmse
@@ -331,12 +335,14 @@ def fit_ymodel(ymodel, outcome_type, outcome_name, ymodel_fit_custom, time_name,
         if ymodel_fit_custom is not None:
             outcome_fit = ymodel_fit_custom(ymodel, fit_data)
         else:
-            outcome_fit = smf.glm(ymodel, fit_data, family=sm.families.Binomial()).fit()
+            fit_data = drop_rows_with_missing(ymodel, fit_data, 'ymodel')
+            outcome_fit = fit_glm_formula(ymodel, fit_data, family=sm.families.Binomial())
     elif outcome_type == 'continuous_eof':
         if ymodel_fit_custom is not None:
             outcome_fit = ymodel_fit_custom(ymodel, fit_data)
         else:
-            outcome_fit = smf.glm(ymodel, data=fit_data, family=sm.families.Gaussian()).fit()
+            fit_data = drop_rows_with_missing(ymodel, fit_data, 'ymodel')
+            outcome_fit = fit_glm_formula(ymodel, fit_data, family=sm.families.Gaussian())
 
     if return_fits and not ymodel_fit_custom:
         model_coeffs[outcome_name] = outcome_fit.params
@@ -410,7 +416,8 @@ def fit_compevent_model(compevent_model, compevent_name, time_name, obs_data, re
                 fit_data = fit_data[mask]
 
     fit_data = fit_data[fit_data[compevent_name].notna()]
-    compevent_fit = smf.glm(compevent_model, fit_data, family=sm.families.Binomial()).fit()
+    fit_data = drop_rows_with_missing(compevent_model, fit_data, 'compevent model')
+    compevent_fit = fit_glm_formula(compevent_model, fit_data, family=sm.families.Binomial())
     if return_fits:
         model_coeffs[compevent_name] = compevent_fit.params
         model_stderrs[compevent_name] = compevent_fit.bse
@@ -474,7 +481,8 @@ def fit_censor_model(censor_model, censor_name, time_name, obs_data, return_fits
     fit_data = obs_data[obs_data[time_name] >= 0]
 
     fit_data = fit_data[fit_data[censor_name].notna()]
-    censor_fit = smf.glm(censor_model, fit_data, family=sm.families.Binomial()).fit()
+    fit_data = drop_rows_with_missing(censor_model, fit_data, 'censor model')
+    censor_fit = fit_glm_formula(censor_model, fit_data, family=sm.families.Binomial())
     if return_fits:
         model_coeffs[censor_name] = censor_fit.params
         model_stderrs[censor_name] = censor_fit.bse

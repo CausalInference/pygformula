@@ -42,7 +42,7 @@ event as censoring event (the default is False).
 
 Setting ‘‘compevent_cens’’ as default (False):
 
-**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_competing_event.py>`_:
+**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/run_competing_event.py>`_:
 
 .. code-block::
 

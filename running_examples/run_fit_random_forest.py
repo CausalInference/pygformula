@@ -29,7 +29,7 @@ int_descript = ['Never treat', 'Always treat']
 def fit_rf(covmodel, covname, fit_data):
     max_depth = 2
     y_name, x_name = re.split('~', covmodel.replace(' ', ''))
-    x_name = re.split('\+', x_name.replace(' ', ''))
+    x_name = re.split(r'\+', x_name.replace(' ', ''))
     y = fit_data[y_name].to_numpy()
     X = fit_data[x_name].to_numpy()
     fit_rf = RandomForestRegressor(max_depth=max_depth, random_state=0)
@@ -38,7 +38,7 @@ def fit_rf(covmodel, covname, fit_data):
 
 def predict_rf(covmodel, new_df, fit):
     y_name, x_name = re.split('~', covmodel.replace(' ', ''))
-    x_name = re.split('\+', x_name.replace(' ', ''))
+    x_name = re.split(r'\+', x_name.replace(' ', ''))
     X = new_df[x_name].to_numpy()
     prediction = fit.predict(X)
     return prediction

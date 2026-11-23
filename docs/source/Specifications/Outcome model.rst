@@ -116,7 +116,7 @@ under different user-specified treatment strategies.
 
        g = ParametricGformula(..., outcome_name = outcome_name, outcome_type = outcome_type, ymodel = ymodel, ...)
 
-**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_binary_eof.py>`_:
+**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/run_binary_eof.py>`_:
 
 .. code-block::
 
@@ -175,7 +175,7 @@ under different user-specified treatment strategies.
 
 
 
-**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_continuous_eof.py>`_:
+**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/run_continuous_eof.py>`_:
 
 .. code-block::
 
@@ -238,7 +238,7 @@ An example using random forest to fit a outcome model:
 
       def ymodel_fit_custom(ymodel, fit_data):
           y_name, x_name = re.split('~', ymodel.replace(' ', ''))
-          x_name = re.split('\+', x_name.replace(' ', ''))
+          x_name = re.split(r'\+', x_name.replace(' ', ''))
           # get feature and target data to fit ymodel
           y = fit_data[y_name].to_numpy()
           X = fit_data[x_name].to_numpy()
@@ -264,14 +264,14 @@ The example of custom predict function using the random forest model:
 
       def ymodel_predict_custom(ymodel, new_df, fit):
           y_name, x_name = re.split('~', ymodel.replace(' ', ''))
-          x_name = re.split('\+', x_name.replace(' ', ''))
+          x_name = re.split(r'\+', x_name.replace(' ', ''))
           # get feature data to predict
           X = new_df[x_name].to_numpy()
           prediction = fit.predict(X)
           return prediction
 
 
-**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_custom_ymodel.py>`_:
+**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/run_custom_ymodel.py>`_:
 
 .. code-block::
 
@@ -305,7 +305,7 @@ The example of custom predict function using the random forest model:
 
         def ymodel_fit_custom(ymodel, fit_data):
             y_name, x_name = re.split('~', ymodel.replace(' ', ''))
-            x_name = re.split('\+', x_name.replace(' ', ''))
+            x_name = re.split(r'\+', x_name.replace(' ', ''))
             # get feature and target data to fit ymodel
             y = fit_data[y_name].to_numpy()
             X = fit_data[x_name].to_numpy()
@@ -315,7 +315,7 @@ The example of custom predict function using the random forest model:
 
         def ymodel_predict_custom(ymodel, new_df, fit):
             y_name, x_name = re.split('~', ymodel.replace(' ', ''))
-            x_name = re.split('\+', x_name.replace(' ', ''))
+            x_name = re.split(r'\+', x_name.replace(' ', ''))
             # get feature data to predict
             X = new_df[x_name].to_numpy()
             prediction = fit.predict(X)

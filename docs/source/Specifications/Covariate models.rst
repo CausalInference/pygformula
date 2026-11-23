@@ -39,7 +39,7 @@ An example for specifying the covariate model for covariate L1 based on the hist
       L1 ~ lag1_L1 + cumavg_L1 + lag_cumavg1_L1 + L3 + t0
 
 
-Note: for more covariate transformations (e.g., polynomial terms, spline terms), see `patsy <https://patsy.readthedocs.io/en/latest/index.html>`_
+Note: for more covariate transformations (e.g., polynomial terms, spline terms), see `formulaic <https://matthewwardrop.github.io/formulaic/>`_
 for specification.
 
 
@@ -93,7 +93,7 @@ The new historical covariates are named as ave_last3_L1, ave_last3_L2, and ave_l
             return avg_values
 
         valid_pool = pool.groupby(id_name).filter(lambda x: max(x[time_name]) >= t)
-        pool.loc[pool[time_name] == t, '_'.join(['ave_last3', str(histvar)])] = list(valid_pool.groupby(id_name).apply(
+        pool.loc[pool[time_name] == t, '_'.join(['ave_last3', str(histvar)])] = list(valid_pool.groupby(id_name)[[time_name, histvar]].apply(
             avg_func, time_name=time_name, t=t, histvar=histvar))
 
       return pool
@@ -189,7 +189,7 @@ An example where the covariate ''L1'' is binomial distribution
       g = ParametricGformula(..., covnames = covnames, covtypes = covtypes, covmodels = covmodels, basecovs = basecovs, ...)
 
 
-**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_binary_cov.py>`_:
+**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/run_binary_cov.py>`_:
 
 .. code-block::
 
@@ -261,7 +261,7 @@ from the fitted model. Values generated outside the observed range for the covar
       g = ParametricGformula(..., covnames = covnames, covtypes = covtypes, covmodels = covmodels, basecovs = basecovs, ...)
 
 
-**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_normal_cov.py>`_:
+**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/run_normal_cov.py>`_:
 
 .. code-block::
 
@@ -329,7 +329,7 @@ Note that when the covariate model statement contains any categorical variable, 
 e.g., in the example above, users need to add a ‘‘C( )’’ on the variable indicating it's categorical.
 
 
-**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_categorical_cov.py>`_:
+**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/run_categorical_cov.py>`_:
 
 .. code-block::
 
@@ -396,7 +396,7 @@ and values generated outside the observed range for the covariate are set to the
       g = ParametricGformula(..., covnames = covnames, covtypes = covtypes, covmodels = covmodels, basecovs = basecovs, ...)
 
 
-**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_bounded_normal_cov.py>`_:
+**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/run_bounded_normal_cov.py>`_:
 
 .. code-block::
 
@@ -467,7 +467,7 @@ of the covariate.
         g = ParametricGformula(..., covnames = covnames, covtypes = covtypes, covmodels = covmodels, ...)
 
 
-**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_zero_inflated_normal_cov.py>`_:
+**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/run_zero_inflated_normal_cov.py>`_:
 
 .. code-block::
 
@@ -538,7 +538,7 @@ otherwise it should be 'NA'. In the list of two elements, the first one should b
 and the second one should be the truncated direction ('left' or 'right') of the covariate.
 
 
-**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_truncated_normal.py>`_:
+**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/run_truncated_normal.py>`_:
 
 .. code-block::
 
@@ -604,7 +604,7 @@ time and all subsequent times is set to 1.
         g = ParametricGformula(..., covnames = covnames, covtypes = covtypes, covparams = covparams,...)
 
 
-**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_absorbing_cov.py>`_:
+**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/run_absorbing_cov.py>`_:
 
 .. code-block::
 
@@ -682,7 +682,7 @@ Note that when using the new categorical time variable in the model statement, e
 the syntax example above, C() should be added.
 
 
-**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_categorical_time.py>`_:
+**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/run_categorical_time.py>`_:
 
 .. code-block::
 
@@ -747,7 +747,7 @@ of 'square' and the time name in the data, e.g., 'square_t0'.
 
         g = ParametricGformula(..., covnames = covnames, covtypes = covtypes, covmodels = covmodels, ...)
 
-**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_square_time.py>`_:
+**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/run_square_time.py>`_:
 
 .. code-block::
 
@@ -826,7 +826,7 @@ An example using random forest to fit a covariate model:
       def fit_rf(covmodel, covname, fit_data):
           max_depth = 2
           y_name, x_name = re.split('~', covmodel.replace(' ', ''))
-          x_name = re.split('\+', x_name.replace(' ', ''))
+          x_name = re.split(r'\+', x_name.replace(' ', ''))
           y = fit_data[y_name].to_numpy()
           X = fit_data[x_name].to_numpy()
           fit_rf = RandomForestRegressor(max_depth=max_depth, random_state=0)
@@ -848,7 +848,7 @@ The custom predict function for the random forest model:
 
       def predict_rf(covmodel, new_df, fit):
           y_name, x_name = re.split('~', covmodel.replace(' ', ''))
-          x_name = re.split('\+', x_name.replace(' ', ''))
+          x_name = re.split(r'\+', x_name.replace(' ', ''))
           X = new_df[x_name].to_numpy()
           prediction = fit.predict(X)
           return prediction
@@ -867,7 +867,7 @@ Note that the package only provides sampling in the simulation step for the buil
 When the covariate is assumed to have a custom underlying distribution, users need to feed in the distribution in the
 custom fit function and sample from that distribution to get the sampled values in the custom predict function.
 
-**Running examples** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_fit_random_forest.py>`_:
+**Running examples** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/run_fit_random_forest.py>`_:
 
 .. code-block::
 
@@ -898,7 +898,7 @@ custom fit function and sample from that distribution to get the sampled values 
         def fit_rf(covmodel, covname, fit_data):
             max_depth = 2
             y_name, x_name = re.split('~', covmodel.replace(' ', ''))
-            x_name = re.split('\+', x_name.replace(' ', ''))
+            x_name = re.split(r'\+', x_name.replace(' ', ''))
             y = fit_data[y_name].to_numpy()
             X = fit_data[x_name].to_numpy()
             fit_rf = RandomForestRegressor(max_depth=max_depth, random_state=0)
@@ -907,7 +907,7 @@ custom fit function and sample from that distribution to get the sampled values 
 
         def predict_rf(covmodel, new_df, fit):
             y_name, x_name = re.split('~', covmodel.replace(' ', ''))
-            x_name = re.split('\+', x_name.replace(' ', ''))
+            x_name = re.split(r'\+', x_name.replace(' ', ''))
             X = new_df[x_name].to_numpy()
             prediction = fit.predict(X)
             return prediction

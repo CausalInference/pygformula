@@ -285,9 +285,9 @@ def Bootstrap(obs_data, boot_id, boot_seeds, int_descript, intervention_dicts, c
             if competing and not compevent_cens:
                 from CompRiskReg import crr as _crr
 
-                new_pool1 = pool1.groupby(id, group_keys=False).apply(hr_comp_data_helper,
+                new_pool1 = pool1.groupby(id, group_keys=False)[pool1.columns].apply(hr_comp_data_helper,
                             outcome_name=outcome_name, compevent_name=compevent_name)
-                new_pool2 = pool2.groupby(id, group_keys=False).apply(hr_comp_data_helper,
+                new_pool2 = pool2.groupby(id, group_keys=False)[pool2.columns].apply(hr_comp_data_helper,
                             outcome_name=outcome_name, compevent_name=compevent_name)
                 new_pool1['regime'] = 0
                 new_pool2['regime'] = 1
@@ -301,8 +301,8 @@ def Bootstrap(obs_data, boot_id, boot_seeds, int_descript, intervention_dicts, c
                 crr_res = _crr(ftime=ftime.to_numpy(), fstatus=fstatus.to_numpy(), cov1=concat_data[['regime']].to_numpy())
                 hazard_ratio = float(np.exp(crr_res.coef[0]))
             else:
-                new_pool1 = pool1.groupby(id, group_keys=False).apply(hr_data_helper, outcome_name=outcome_name)
-                new_pool2 = pool2.groupby(id, group_keys=False).apply(hr_data_helper, outcome_name=outcome_name)
+                new_pool1 = pool1.groupby(id, group_keys=False)[pool1.columns].apply(hr_data_helper, outcome_name=outcome_name)
+                new_pool2 = pool2.groupby(id, group_keys=False)[pool2.columns].apply(hr_data_helper, outcome_name=outcome_name)
                 new_pool1['regime'] = 0
                 new_pool2['regime'] = 1
                 concat_data = pd.concat([new_pool1, new_pool2])

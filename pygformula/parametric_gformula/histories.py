@@ -140,7 +140,7 @@ def ave_last3(pool, histvar, time_name, t, id):
         return avg_values
 
     valid_pool = pool.groupby(id).filter(lambda x: max(x[time_name]) >= t)
-    pool.loc[pool[time_name] == t, '_'.join(['ave_last3', str(histvar)])] = list(valid_pool.groupby(id).apply(
+    pool.loc[pool[time_name] == t, '_'.join(['ave_last3', str(histvar)])] = list(valid_pool.groupby(id)[[time_name, histvar]].apply(
         avg_func, time_name=time_name, t=t, histvar=histvar))
 
 

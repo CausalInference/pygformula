@@ -7,13 +7,15 @@ Requirements
 
 The package requires python ≥ 3.8 and these necessary dependencies:
 
-   * cmprsk
+   * CompRiskReg
+   * formulaic
    * joblib
    * lifelines
    * matplotlib
    * numpy
    * pandas
    * prettytable
+   * PyQt5
    * pytruncreg
    * scipy
    * seaborn

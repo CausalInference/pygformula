@@ -100,7 +100,7 @@ by its parametric model, otherwise, its previous value is carried forward.
       restrictions = [['L2', {'L1': lambda x: x == 0}, carry_forward]]
       g = ParametricGformula(..., restrictions = restrictions, ...)
 
-**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_restrictions.py>`_:
+**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/run_restrictions.py>`_:
 
 .. code-block::
 
@@ -185,7 +185,7 @@ the probability of outcome Y is estimated by its parametric model, otherwise, it
       g = ParametricGformula(..., yrestrictions = yrestrictions, ...)
 
 
-**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_yrestrictions.py>`_:
+**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/run_yrestrictions.py>`_:
 
 .. code-block::
 
@@ -269,7 +269,7 @@ it is set to a value 0.1;
       g = ParametricGformula(..., compevent_restrictions = compevent_restrictions, ...)
 
 
-**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_comp_restrictions.py>`_:
+**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/run_comp_restrictions.py>`_:
 
 .. code-block::
 
