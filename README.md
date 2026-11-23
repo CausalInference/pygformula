@@ -42,7 +42,6 @@ The package requires python 3.8+ and these necessary dependencies:
 - statsmodels
 - tqdm
 
-Model formulas are evaluated with `formulaic` (https://matthewwardrop.github.io/formulaic/). Spline terms such as `bs()` do not extrapolate by default: values outside the range seen when fitting raise an error. To clamp them to the fitted range, set it in the formula, for example `bs(x, df=4, extrapolation='clip')`. Multinomial covariate models use the first observed category (in sorted order) as the reference category.
 
 ## Documentation
 
