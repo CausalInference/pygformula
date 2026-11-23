@@ -6,40 +6,9 @@ For survival outcomes, the pygformula provides the option of calculating the haz
 two interventions of interest. In the presence of competing events, it will return the subdistribution hazard ratio
 [1]_. Note that there is an order requirement for the input data structure that it should have the competing event before the outcome event.
 
-*Prerequisite*: If users want to calculate the hazard ratio with competing event, they needs to install additional “rpy2” package
-and install the python `"cmprsk" <https://pypi.org/project/cmprsk>`_ package. Please follow the steps below to install:
-
- - Install R to set up R environment
-
- - Install cmprsk R package in R environment:
-
-   .. code::
-
-      install.packages("cmprsk")
-
- - Install rpy2 package in python environment:
-
-   .. code::
-
-      pip install rpy2
-
- - Install cmprsk package in python environment:
-
-   .. code::
-
-      pip install cmprsk
-
-.. note::
-
-   If you encounters the problem of not finding the R environment, you can set up the R path
-   in your environment using the following command in the code:
-
-    .. code-block::
-
-       import os
-       os.environ["R_HOME"] = 'R_HOME'
-
-    where R_HOME is the R home directory path.
+The subdistribution hazard ratio is computed with the Python package
+`CompRiskReg <https://pypi.org/project/CompRiskReg>`_, a pure-Python implementation of the Fine-Gray
+competing risks regression. It is installed automatically with pygformula, so no R installation is needed.
 
 The argument for calculating the hazard ratio:
 

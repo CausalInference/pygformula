@@ -28,7 +28,7 @@ The pygformula package implements the non-iterative conditional expectation (NIC
 
 The package requires python 3.8+ and these necessary dependencies:
 
-- cmprsk
+- CompRiskReg
 - formulaic
 - joblib
 - lifelines
