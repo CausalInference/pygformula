@@ -1,6 +1,17 @@
 import numpy as np
 
 
+def _weighted_mean_by(values, weights, by):
+    """
+    Compute ``mean(values * weights) / mean(weights)`` within each group of ``by``.
+
+    Vectorized replacement for ``df.groupby(by).apply(lambda g: (g[w] * g[x]).mean() / g[w].mean())``,
+    which warns on pandas >= 2.2 and has no ``include_groups`` keyword on older pandas. NaNs are skipped
+    in each mean, as before.
+    """
+    return (values * weights).groupby(by).mean() / weights.groupby(by).mean()
+
+
 def comparison_calculate(obs_data, time_name, time_points, id, covnames, covtypes, outcome_name, outcome_type,
                          nc_pool, nc_risk, censor, censor_name, censor_fit, ipw_cutoff_quantile, ipw_cutoff_value,
                          competing=None, compevent_name=None, compevent_cens=False, compevent_fit=None):
@@ -116,15 +127,19 @@ def comparison_calculate(obs_data, time_name, time_points, id, covnames, covtype
         obs_means = {}
         if covnames is not None:
             for k, covname in enumerate(covnames):
+                obs_sub = obs_data[obs_data[covname].notna()]
                 if covtypes[k] == 'categorical':
                     all_levels = np.unique(obs_data[covname])
                     all_levels_obs_prob = []
                     for level in all_levels:
-                        obs_level_prob = obs_data[obs_data[covname].notna()].groupby([time_name]).apply(lambda g:
-                                        (((g[covname] == level) * g['IP_weight_cov']).mean()) /g['IP_weight_cov'].mean()).tolist()[:time_points]
+                        obs_level_prob = _weighted_mean_by(
+                            obs_sub[covname] == level, obs_sub['IP_weight_cov'], obs_sub[time_name]
+                        ).tolist()[:time_points]
                         all_levels_obs_prob.append(obs_level_prob)
                 else:
-                    cov_mean = obs_data[obs_data[covname].notna()].groupby(time_name).apply(lambda g: (g['IP_weight_cov'] * g[covname]).mean() / g['IP_weight_cov'].mean()).tolist()[:time_points]
+                    cov_mean = _weighted_mean_by(
+                        obs_sub[covname], obs_sub['IP_weight_cov'], obs_sub[time_name]
+                    ).tolist()[:time_points]
                     obs_means[covname] = cov_mean
 
         if outcome_type == 'binary_eof' or outcome_type == 'continuous_eof':
@@ -135,18 +150,18 @@ def comparison_calculate(obs_data, time_name, time_points, id, covnames, covtype
             if competing and not compevent_cens:
                 w_elimD = obs_data['IP_weight'] * (1 - obs_data[compevent_name])
                 obs_data['w_elimD'] = w_elimD
-                h_k = obs_data[obs_data[outcome_name].notna()].groupby(time_name).apply(
-                    lambda g: (g['w_elimD'] * g[outcome_name]).mean() / g['w_elimD'].mean())
-                h_k2 = obs_data[obs_data[compevent_name].notna()].groupby(time_name).apply(
-                    lambda g: (g['IP_weight'] * g[compevent_name]).mean() / g['IP_weight'].mean())
+                y_sub = obs_data[obs_data[outcome_name].notna()]
+                d_sub = obs_data[obs_data[compevent_name].notna()]
+                h_k = _weighted_mean_by(y_sub[outcome_name], y_sub['w_elimD'], y_sub[time_name])
+                h_k2 = _weighted_mean_by(d_sub[compevent_name], d_sub['IP_weight'], d_sub[time_name])
                 risks = np.array([list(h_k)[k] * (1 - list(h_k2)[k]) if k == 0 else list(h_k)[k]
                                   * (1 - list(h_k2)[k]) * list((1 - h_k).cumprod())[k - 1] * list((1 - h_k2).cumprod())[k - 1]
                                   for k in range(time_points)]).cumsum().tolist()[:time_points]
                 obs_means['risk'] = risks
                 obs_risk = risks[-1]
             else:
-                weight_outcome_mean = obs_data[obs_data[outcome_name].notna()].groupby(time_name).apply(
-                    lambda g: (g['IP_weight'] * g[outcome_name]).mean() / g['IP_weight'].mean())
+                y_sub = obs_data[obs_data[outcome_name].notna()]
+                weight_outcome_mean = _weighted_mean_by(y_sub[outcome_name], y_sub['IP_weight'], y_sub[time_name])
                 weight_p0_mean = 1 - weight_outcome_mean
                 risks = np.array([weight_outcome_mean.tolist()[k] if k == 0 else weight_outcome_mean.tolist()[k] *
                                  weight_p0_mean.cumprod().tolist()[k - 1] for k in
@@ -171,17 +186,18 @@ def comparison_calculate(obs_data, time_name, time_points, id, covnames, covtype
         est_means = {}
         if covnames is not None:
             for k, covname in enumerate(covnames):
+                nc_sub = nc_pool[nc_pool[covname].notna()]
                 if covtypes[k] == 'categorical':
                     all_levels = np.unique(obs_data[covname])
                     all_levels_est_prob_mean = []
                     for level in all_levels:
-                        est_level_prob = nc_pool[nc_pool[covname].notna()].groupby([time_name]).apply(
-                            lambda g: ((g[covname] == level) * g['w_cov']).mean() / g['w_cov'].mean()).tolist()[:time_points]
+                        est_level_prob = _weighted_mean_by(
+                            nc_sub[covname] == level, nc_sub['w_cov'], nc_sub[time_name]
+                        ).tolist()[:time_points]
                         all_levels_est_prob_mean.append(est_level_prob)
                     est_means[covname] = all_levels_est_prob_mean
                 else:
-                    cov_mean = nc_pool[nc_pool[covname].notna()].groupby(time_name).apply(
-                        lambda g: (g['w_cov'] * g[covname]).mean() / g['w_cov'].mean()).tolist()[:time_points]
+                    cov_mean = _weighted_mean_by(nc_sub[covname], nc_sub['w_cov'], nc_sub[time_name]).tolist()[:time_points]
                     est_means[covname] = cov_mean
         if outcome_type == 'survival':
             est_means['risk'] = nc_risk

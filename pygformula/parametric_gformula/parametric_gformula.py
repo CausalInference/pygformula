@@ -360,7 +360,7 @@ class ParametricGformula:
 
             self.ts_visit_names = ['ts_' + cov for cov in self.visit_covs]
             for i, cov in enumerate(self.visit_covs):
-                self.obs_data = self.obs_data.groupby(self.id, group_keys=False).apply(visit_func,
+                self.obs_data = self.obs_data.groupby(self.id, group_keys=False)[self.obs_data.columns].apply(visit_func,
                                          time_name=self.time_name, visit_name=self.visit_names[i],
                                          ts_visit_name=self.ts_visit_names[i])
         else:
@@ -637,9 +637,9 @@ class ParametricGformula:
             if self.competing and not self.compevent_cens:
                 from CompRiskReg import crr as _crr
 
-                new_pool1 = pool1.groupby(self.id, group_keys=False).apply(hr_comp_data_helper,
+                new_pool1 = pool1.groupby(self.id, group_keys=False)[pool1.columns].apply(hr_comp_data_helper,
                                            outcome_name=self.outcome_name, compevent_name=self.compevent_name)
-                new_pool2 = pool2.groupby(self.id, group_keys=False).apply(hr_comp_data_helper,
+                new_pool2 = pool2.groupby(self.id, group_keys=False)[pool2.columns].apply(hr_comp_data_helper,
                                            outcome_name=self.outcome_name, compevent_name=self.compevent_name)
                 new_pool1['regime'] = 0
                 new_pool2['regime'] = 1
@@ -652,9 +652,9 @@ class ParametricGformula:
                 crr_res = _crr(ftime=ftime.to_numpy(), fstatus=fstatus.to_numpy(), cov1=concat_data[['regime']].to_numpy())
                 self.hazard_ratio = float(np.exp(crr_res.coef[0]))
             else:
-                new_pool1 = pool1.groupby(self.id, group_keys=False).apply(hr_data_helper,
+                new_pool1 = pool1.groupby(self.id, group_keys=False)[pool1.columns].apply(hr_data_helper,
                                                                                 outcome_name=self.outcome_name)
-                new_pool2 = pool2.groupby(self.id, group_keys=False).apply(hr_data_helper,
+                new_pool2 = pool2.groupby(self.id, group_keys=False)[pool2.columns].apply(hr_data_helper,
                                                                                 outcome_name=self.outcome_name)
                 new_pool1['regime'] = 0
                 new_pool2['regime'] = 1

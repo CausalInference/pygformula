@@ -93,7 +93,7 @@ The new historical covariates are named as ave_last3_L1, ave_last3_L2, and ave_l
             return avg_values
 
         valid_pool = pool.groupby(id_name).filter(lambda x: max(x[time_name]) >= t)
-        pool.loc[pool[time_name] == t, '_'.join(['ave_last3', str(histvar)])] = list(valid_pool.groupby(id_name).apply(
+        pool.loc[pool[time_name] == t, '_'.join(['ave_last3', str(histvar)])] = list(valid_pool.groupby(id_name)[[time_name, histvar]].apply(
             avg_func, time_name=time_name, t=t, histvar=histvar))
 
       return pool
