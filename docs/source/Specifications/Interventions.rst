@@ -92,7 +92,7 @@ the parametric g-formula by comparing the two estimates [3]_.
 
 
 
-**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_natural_course.py>`_:
+**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/run_natural_course.py>`_:
 
 .. code-block::
 
@@ -151,7 +151,7 @@ When specifying the static intervention for one treatment,
 the treatment value at each time step k will be replaced by the kth value in the list of intervened values.
 
 
-**Running example of static intervention on one treatment variable** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_static_one_treatment.py>`_:
+**Running example of static intervention on one treatment variable** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/run_static_one_treatment.py>`_:
 
 .. code-block::
 
@@ -192,7 +192,7 @@ the treatment value at each time step k will be replaced by the kth value in the
          :align: center
 
 
-**Running example of a static intervention on multiple treatment variables** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_static_multiple_treatments.py>`_:
+**Running example of a static intervention on multiple treatment variables** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/run_static_multiple_treatments.py>`_:
 
 .. code-block::
 
@@ -315,7 +315,7 @@ The function should modify the data table ‘‘new_df’’ in place, no output
 + t: current time index.
 
 
-**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_dynamic_intervention.py>`_:
+**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/run_dynamic_intervention.py>`_:
 
 .. code-block::
 
@@ -408,7 +408,7 @@ An example of grace period intervention where the treatment is initiated when mu
 
 
 
-**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_natural_grace_period.py>`_:
+**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/run_natural_grace_period.py>`_:
 
 .. code-block::
 
@@ -481,7 +481,7 @@ in the first entry and the condition of the covariate in the second entry.
           Intervention1_A = [uniform_grace_period, [3, {'L1': lambda x: x == 1}]], ...)
 
 
-**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_uniform_grace_period.py>`_:
+**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/run_uniform_grace_period.py>`_:
 
 .. code-block::
 
@@ -560,7 +560,7 @@ set the treatment the threshold value.
            Intervention1_A = [threshold, [0.5, float('inf')]], ...)
 
 
-**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_threshold_intervention.py>`_:
+**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/run_threshold_intervention.py>`_:
 
 .. code-block::
 

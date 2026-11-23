@@ -60,7 +60,7 @@ Users can specify the two interventions by:
 The integer i in ‘‘intcomp’’ denotes the i-th intervention in the user-specified interventions. 0 denotes the natural course intervention.
 
 
-**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_bounded_normal_cov.py>`_:
+**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/run_bounded_normal_cov.py>`_:
 
 
 .. code-block::

@@ -50,7 +50,7 @@ Users can also specify a percentile value (in the argument ‘‘ipw_cutoff_quan
    please name the censoring variable any name except 'C' to avoild name confusion.
 
 
-**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_censor.py>`_:
+**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/run_censor.py>`_:
 
 .. code-block::
 

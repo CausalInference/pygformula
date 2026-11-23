@@ -116,7 +116,7 @@ under different user-specified treatment strategies.
 
        g = ParametricGformula(..., outcome_name = outcome_name, outcome_type = outcome_type, ymodel = ymodel, ...)
 
-**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_binary_eof.py>`_:
+**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/run_binary_eof.py>`_:
 
 .. code-block::
 
@@ -175,7 +175,7 @@ under different user-specified treatment strategies.
 
 
 
-**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_continuous_eof.py>`_:
+**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/run_continuous_eof.py>`_:
 
 .. code-block::
 
@@ -271,7 +271,7 @@ The example of custom predict function using the random forest model:
           return prediction
 
 
-**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/test_custom_ymodel.py>`_:
+**Running example** `[code] <https://github.com/CausalInference/pygformula/blob/main/running_examples/run_custom_ymodel.py>`_:
 
 .. code-block::
 
